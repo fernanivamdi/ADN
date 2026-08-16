@@ -15,7 +15,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar collapsed" id="sidebar">
         <div class="sidebar-header">
-            <span class="material-icons logo-icon">inventory_2</span>
+            <img src="logo.png" alt="Logo" class="sidebar-logo" id="sidebarLogo">
             <span class="logo-text">PEDIDOS</span>
         </div>
         <div class="sidebar-toggle" id="sidebarToggle">
@@ -36,13 +36,12 @@
             </a>
         </nav>
         <div class="sidebar-footer">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <span id="userDisplay"></span>
-                <span>|</span>
-                <a href="#" id="logoutLink" style="color: var(--primary); cursor:pointer;">Cerrar sesión</a>
-                <span>|</span>
-                <button id="themeToggle" class="btn btn-sm" style="background:transparent; border:1px solid var(--gray-300); padding:4px 10px; display:flex; align-items:center; gap:4px;">
-                    <span class="material-icons" style="font-size:18px;">dark_mode</span>
+            <span id="userDisplay"></span>   |   
+            <a href="#" id="logoutLink" style="color: var(--primary); cursor:pointer;">Cerrar sesión</a>
+            <div class="theme-toggle-wrapper">
+                <button class="btn btn-sm theme-toggle" id="themeToggle">
+                    <span class="material-icons" id="themeIcon">dark_mode</span>
+                    <span id="themeLabel">Oscuro</span>
                 </button>
             </div>
         </div>
@@ -133,7 +132,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
             initComparativoPage();
-            initThemeAndSidebar();
+            initTheme();
+            initSidebar();
         });
     </script>
 </body>
