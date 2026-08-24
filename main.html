@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Inventario y Ventas</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== ESTILOS GENERALES ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f2f5; color: #1a1a2e; padding: 20px; }
+        .container { max-width: 1600px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); color: white; padding: 22px 35px; border-radius: 16px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left img.logo { height: 45px; width: auto; border-radius: 8px; }
+        .header h1 { font-weight: 700; font-size: 24px; display: flex; align-items: center; gap: 12px; }
+        .header h1 i { color: #58a6ff; }
+        .header h1 span { background: #58a6ff; color: #0d1117; font-size: 11px; padding: 2px 12px; border-radius: 20px; font-weight: 600; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .header-actions button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+        .header-actions button:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
+        .header-actions button.primary { background: #58a6ff; color: #0d1117; border-color: #58a6ff; }
+        .header-actions button.primary:hover { background: #79c0ff; border-color: #79c0ff; }
+        .header-actions button.success { background: #3fb950; color: white; border-color: #3fb950; }
+        .header-actions button.success:hover { background: #56d364; border-color: #56d364; }
+        .upload-status { display: flex; flex-wrap: wrap; gap: 12px; background: white; padding: 14px 22px; border-radius: 12px; margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); align-items: center; }
+        .upload-status .label { font-weight: 600; font-size: 13px; color: #333; margin-right: 8px; }
+        .upload-status .file-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; background: #f5f5f5; transition: all 0.3s; }
+        .upload-status .file-item .icon { font-size: 12px; }
+        .upload-status .file-item.loaded { background: #dafbe1; color: #1a7f37; }
+        .upload-status .file-item.loaded .icon { color: #1a7f37; }
+        .upload-status .file-item.pending { background: #fff8e6; color: #9a6700; }
+        .upload-status .file-item.pending .icon { color: #9a6700; }
+        .view-selector { display: flex; gap: 6px; margin-bottom: 18px; background: white; padding: 5px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex-wrap: wrap; }
+        .view-selector button { padding: 9px 20px; border: none; border-radius: 8px; background: transparent; cursor: pointer; font-size: 13px; font-weight: 500; color: #57606a; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+        .view-selector button:hover { background: #f0f2f5; }
+        .view-selector button.active { background: #0d1117; color: white; box-shadow: 0 2px 8px rgba(13,17,23,0.2); }
+        .table-wrapper, .linea-table-wrapper, .comparativa-table-wrapper, .existencia-table-wrapper, .ventas-table-wrapper { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 25px; }
+        .table-header { padding: 16px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .table-header h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .table-header h2 span { background: #ddf4ff; color: #0550ae; font-size: 10px; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+        .table-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .table-controls input { padding: 7px 14px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 13px; min-width: 200px; outline: none; transition: border-color 0.3s; }
+        .table-controls input:focus { border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88,166,255,0.15); }
+        .table-controls select { padding: 7px 14px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 13px; background: white; outline: none; cursor: pointer; }
+        .table-controls select:focus { border-color: #58a6ff; }
+        .table-scroll { overflow-x: auto; padding: 0 5px 5px 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+        thead { background: #f6f8fa; border-bottom: 2px solid #d0d7de; }
+        thead th { padding: 11px 14px; text-align: left; font-weight: 600; color: #24292f; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; position: sticky; top: 0; background: #f6f8fa; z-index: 10; }
+        thead th i { margin-right: 5px; font-size: 10px; opacity: 0.6; }
+        tbody tr { border-bottom: 1px solid #f0f2f5; transition: background 0.15s; }
+        tbody tr:hover { background: #f6f8fa; }
+        tbody td { padding: 9px 14px; color: #24292f; vertical-align: middle; }
+        tbody td .codigo { font-family: 'Courier New', monospace; font-size: 12px; color: #57606a; background: #f0f2f5; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+        tbody td .articulo { font-weight: 500; color: #0d1117; }
+        .stock-input { width: 70px; padding: 4px 8px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 13px; font-weight: 600; text-align: center; background: white; transition: all 0.3s; color: #0d1117; }
+        .stock-input:focus { border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88,166,255,0.15); outline: none; }
+        .stock-input:hover { border-color: #58a6ff; }
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 12px; border-radius: 20px; font-weight: 600; font-size: 11px; }
+        .badge.high { background: #dafbe1; color: #1a7f37; }
+        .badge.medium { background: #fff8e6; color: #9a6700; }
+        .badge.low { background: #ffebe9; color: #cf222e; }
+        .badge.zero { background: #f0f2f5; color: #57606a; }
+        .badge i { font-size: 10px; }
+        .diff-positive { color: #1a7f37; font-weight: 600; }
+        .diff-negative { color: #cf222e; font-weight: 600; }
+        .footer { margin-top: 28px; text-align: center; color: #57606a; font-size: 12px; padding: 18px; border-top: 1px solid #d0d7de; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 30px; max-width: 620px; width: 92%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal h2 { font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .modal h2 i { color: #58a6ff; }
+        .modal .subtitle { color: #57606a; font-size: 14px; margin-bottom: 20px; }
+        .modal .drop-zone { border: 2px dashed #d0d7de; border-radius: 12px; padding: 35px 20px; text-align: center; margin-bottom: 18px; transition: all 0.3s; cursor: pointer; }
+        .modal .drop-zone:hover, .modal .drop-zone.dragover { border-color: #58a6ff; background: #f0f8ff; }
+        .modal .drop-zone i { font-size: 40px; color: #58a6ff; margin-bottom: 12px; }
+        .modal .drop-zone p { color: #24292f; font-size: 14px; }
+        .modal .drop-zone .file-types { font-size: 12px; color: #57606a; margin-top: 6px; }
+        .modal .file-list { margin: 15px 0; }
+        .modal .file-list .file-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; background: #f6f8fa; border-radius: 8px; margin-bottom: 6px; }
+        .modal .file-list .file-row .name { font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        .modal .file-list .file-row .name i { color: #217346; }
+        .modal .file-list .file-row .status { font-size: 11px; font-weight: 600; padding: 2px 12px; border-radius: 20px; }
+        .modal .file-list .file-row .status.loaded { background: #dafbe1; color: #1a7f37; }
+        .modal .file-list .file-row .status.pending { background: #fff8e6; color: #9a6700; }
+        .modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+        .modal .modal-actions button { padding: 9px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; }
+        .modal .modal-actions button.cancel { background: #f0f2f5; color: #24292f; }
+        .modal .modal-actions button.cancel:hover { background: #e0e4e8; }
+        .modal .modal-actions button.confirm { background: #0d1117; color: white; }
+        .modal .modal-actions button.confirm:hover { background: #1c2333; }
+        .modal .modal-actions button.confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 16px 18px; flex-direction: column; align-items: stretch; }
+            .header-left { justify-content: center; }
+            .header h1 { font-size: 18px; }
+            .header-actions { justify-content: center; }
+            .upload-status { flex-direction: column; align-items: stretch; }
+            .upload-status .label { margin-bottom: 4px; }
+            .table-header { flex-direction: column; align-items: stretch; }
+            .table-controls { flex-wrap: wrap; }
+            .table-controls input { min-width: 100%; }
+            .view-selector button { font-size: 11px; padding: 7px 12px; }
+            thead th, tbody td { padding: 7px 8px; font-size: 11px; }
+            .stock-input { width: 55px; font-size: 11px; padding: 3px 4px; }
+            .modal { padding: 20px; }
+        }
+        @media (max-width: 480px) { .view-selector button { font-size: 10px; padding: 5px 8px; } }
+
+        .table-wrapper, .linea-table-wrapper, .comparativa-table-wrapper, .existencia-table-wrapper, .ventas-table-wrapper { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .table-scroll::-webkit-scrollbar { height: 8px; }
+        .table-scroll::-webkit-scrollbar-track { background: #f0f2f5; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #d0d7de; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb:hover { background: #b0b8c0; }
+
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #0d1117; color: white; padding: 14px 24px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateY(100px); opacity: 0; transition: all 0.4s ease; z-index: 2000; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast i { font-size: 18px; color: #3fb950; }
+
+        /* ===== ESTILOS PARA FILTROS ===== */
+        .filtros-toggle {
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .filtros-toggle:hover { background: #e1e4e8; }
+        .filtros-toggle .badge-count {
+            background: #0d1117;
+            color: white;
+            border-radius: 20px;
+            padding: 0 8px;
+            font-size: 11px;
+            line-height: 18px;
+            margin-left: 2px;
+        }
+
+        .filtros-panel {
+            display: none;
+            background: white;
+            border: 1px solid #d0d7de;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 100%;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px 20px;
+        }
+        .filtros-panel.open { display: grid; }
+
+        .filtro-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filtro-item label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .filtro-item .dropdown-filtro {
+            position: relative;
+        }
+        .filtro-item .dropdown-filtro .btn-drop {
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .filtro-item .dropdown-filtro .btn-drop:hover { background: #e1e4e8; }
+        .filtro-item .dropdown-filtro .btn-drop .count {
+            background: #0d1117;
+            color: white;
+            border-radius: 20px;
+            padding: 0 6px;
+            font-size: 10px;
+            line-height: 16px;
+        }
+        .filtro-item .dropdown-filtro .menu {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: white;
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 8px 10px;
+            min-width: 180px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        .filtro-item .dropdown-filtro .menu.open { display: block; }
+        .filtro-item .dropdown-filtro .menu .checklist label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 400;
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .filtro-item .dropdown-filtro .menu .checklist label:hover { background: #f0f2f5; }
+        .filtro-item .dropdown-filtro .menu .checklist input[type="checkbox"] {
+            accent-color: #0d1117;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+        .filtro-item .dropdown-filtro .menu .checklist .item-count {
+            font-size: 10px;
+            color: #57606a;
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 0 6px;
+            border-radius: 10px;
+        }
+
+        .filtros-panel .dropdown-filtro .menu { display: none; }
+        .filtros-panel .dropdown-filtro .menu.open { display: block; }
+
+        /* Estilos para filtros numéricos (select) */
+        .filtro-numerico select {
+            width: 100%;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #d0d7de;
+            background: #f6f8fa;
+            font-size: 12px;
+            color: #000;
+            cursor: pointer;
+            outline: none;
+        }
+        .filtro-numerico select:focus {
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88,166,255,0.15);
+        }
+        .filtro-numerico .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .filtro-numerico {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filtros-panel .separador {
+            grid-column: 1 / -1;
+            border-top: 1px solid #d0d7de;
+            margin: 6px 0 2px;
+        }
+        .filtros-panel .titulo-seccion {
+            grid-column: 1 / -1;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0d1117;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ===== ENCABEZADO ===== -->
+    <header class="header">
+        <div class="header-left">
+            <img src="logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+            <h1><i class="fas fa-cubes"></i> Inventario y Ventas <span>v3.1</span></h1>
+        </div>
+        <div class="header-actions">
+            <button onclick="abrirModalCarga()" class="primary"><i class="fas fa-upload"></i> Cargar Archivos</button>
+            <button onclick="exportarCSV()" class="success"><i class="fas fa-file-export"></i> Exportar CSV</button>
+            <button onclick="window.location.reload();"><i class="fas fa-sync-alt"></i> Actualizar</button>
+        </div>
+    </header>
+
+    <!-- ===== ESTADO DE ARCHIVOS ===== -->
+    <div class="upload-status" id="uploadStatus">
+        <span class="label"><i class="fas fa-file-circle-check"></i> Archivos:</span>
+        <span class="file-item pending" id="status-matriz-existencia"><span class="icon"><i class="fas fa-circle"></i></span> Existencia MATRIZ</span>
+        <span class="file-item pending" id="status-almacen-existencia"><span class="icon"><i class="fas fa-circle"></i></span> Existencia ALMACEN</span>
+        <span class="file-item pending" id="status-sucursal-existencia"><span class="icon"><i class="fas fa-circle"></i></span> Existencia SUCURSAL</span>
+        <span class="file-item pending" id="status-ubicacion-existencia"><span class="icon"><i class="fas fa-circle"></i></span> Existencia UBICACION</span>
+        <span class="file-item pending" id="status-matriz-ventas"><span class="icon"><i class="fas fa-circle"></i></span> Ventas MATRIZ</span>
+        <span class="file-item pending" id="status-sucursal-ventas"><span class="icon"><i class="fas fa-circle"></i></span> Ventas SUCURSAL</span>
+    </div>
+
+    <!-- ===== SELECTOR DE VISTA ===== -->
+    <div class="view-selector">
+        <button class="active" data-view="articulo" onclick="cambiarVista('articulo')"><i class="fas fa-box"></i> Stock por Artículo</button>
+        <button data-view="linea" onclick="cambiarVista('linea')"><i class="fas fa-tags"></i> Stock por Línea</button>
+        <button data-view="existencia" onclick="cambiarVista('existencia')"><i class="fas fa-database"></i> Existencia</button>
+        <button data-view="ventas" onclick="cambiarVista('ventas')"><i class="fas fa-chart-bar"></i> Ventas</button>
+        <button data-view="comparativa" onclick="cambiarVista('comparativa')"><i class="fas fa-code-compare"></i> Final</button>
+    </div>
+
+    <!-- ===== TABLA STOCK POR ARTÍCULO ===== -->
+    <div class="table-wrapper" id="tablaArticulo">
+        <div class="table-header">
+            <h2><i class="fas fa-list"></i> Stock por Artículo <span>Editable</span></h2>
+            <div class="table-controls">
+                <input type="text" id="searchInputArticulo" placeholder="Buscar código o artículo..." oninput="filtrarArticulo()">
+            </div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th><i class="fas fa-barcode"></i> Código</th><th><i class="fas fa-tag"></i> Artículos</th><th><i class="fas fa-warehouse"></i> ALMACEN</th><th><i class="fas fa-building"></i> MATRIZ</th><th><i class="fas fa-store"></i> SUCURSAL</th></tr></thead>
+                <tbody id="articuloBody"><tr><td colspan="5" style="text-align:center; padding:50px 20px; color:#57606a;"><i class="fas fa-file-import" style="font-size:32px; display:block; margin-bottom:12px; color:#58a6ff;"></i><strong>Carga los 6 archivos Excel</strong></td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== TABLA STOCK POR LÍNEA ===== -->
+    <div class="linea-table-wrapper" id="tablaLinea" style="display:none;">
+        <div class="table-header">
+            <h2><i class="fas fa-tags"></i> Stock por Línea <span>Asignar stock a cada línea</span></h2>
+            <div class="table-controls"><input type="text" id="searchLinea" placeholder="Buscar línea..." oninput="filtrarLinea()"></div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th><i class="fas fa-layer-group"></i> Línea</th><th><i class="fas fa-warehouse"></i> ALMACEN</th><th><i class="fas fa-building"></i> MATRIZ</th><th><i class="fas fa-store"></i> SUCURSAL</th><th><i class="fas fa-calculator"></i> Total</th><th><i class="fas fa-box"></i> Productos</th></tr></thead>
+                <tbody id="lineaBody"><tr><td colspan="6" style="text-align:center; padding:40px; color:#57606a;"><i class="fas fa-inbox" style="font-size:24px; display:block; margin-bottom:10px;"></i>No hay datos de líneas</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== TABLA EXISTENCIA ===== -->
+    <div class="existencia-table-wrapper" id="tablaExistencia" style="display:none;">
+        <div class="table-header">
+            <h2><i class="fas fa-database"></i> Existencia por Origen <span>Columna I de cada archivo</span></h2>
+            <div class="table-controls"><input type="text" id="searchExistencia" placeholder="Buscar código o artículo..." oninput="filtrarExistencia()"></div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th><i class="fas fa-barcode"></i> Código</th><th><i class="fas fa-tag"></i> Artículo</th><th><i class="fas fa-layer-group"></i> Línea</th><th><i class="fas fa-building"></i> Existencia MATRIZ</th><th><i class="fas fa-warehouse"></i> Existencia ALMACEN</th><th><i class="fas fa-store"></i> Existencia SUCURSAL</th></tr></thead>
+                <tbody id="existenciaBody"><tr><td colspan="6" style="text-align:center; padding:40px; color:#57606a;"><i class="fas fa-inbox" style="font-size:24px; display:block; margin-bottom:10px;"></i>No hay datos de existencia</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== TABLA VENTAS ===== -->
+    <div class="ventas-table-wrapper" id="tablaVentas" style="display:none;">
+        <div class="table-header">
+            <h2><i class="fas fa-chart-bar"></i> Ventas <span>Columna H de cada archivo de ventas</span></h2>
+            <div class="table-controls"><input type="text" id="searchVentas" placeholder="Buscar código o artículo..." oninput="filtrarVentas()"></div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th><i class="fas fa-barcode"></i> Código</th><th><i class="fas fa-tag"></i> Artículo</th><th><i class="fas fa-building"></i> Ventas MATRIZ</th><th><i class="fas fa-store"></i> Ventas SUCURSAL</th><th><i class="fas fa-calculator"></i> Total Ventas</th></tr></thead>
+                <tbody id="ventasBody"><tr><td colspan="5" style="text-align:center; padding:40px; color:#57606a;"><i class="fas fa-inbox" style="font-size:24px; display:block; margin-bottom:10px;"></i>No hay datos de ventas</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== TABLA FINAL (COMPARATIVA) con nuevas columnas ===== -->
+    <div class="comparativa-table-wrapper" id="tablaComparativa" style="display:none;">
+        <div class="table-header">
+            <h2><i class="fas fa-code-compare"></i> Final <span>Resumen final</span></h2>
+            <div class="table-controls">
+                <input type="text" id="searchComparativa" placeholder="Buscar código o artículo..." oninput="filtrarComparativa()">
+                <button class="filtros-toggle" onclick="toggleFiltrosPanel()">
+                    <i class="fas fa-filter"></i> Filtros
+                    <span class="badge-count" id="filtrosActivosCount">0</span>
+                </button>
+            </div>
+        </div>
+        <!-- Panel de filtros -->
+        <div id="filtrosPanel" class="filtros-panel"></div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-barcode"></i> Código</th>
+                        <th><i class="fas fa-tag"></i> Artículo</th>
+                        <th><i class="fas fa-map-pin"></i> UBICACION</th>
+                        <th><i class="fas fa-layer-group"></i> Línea</th>
+                        <th><i class="fas fa-tag"></i> MARCA</th>
+                        <th><i class="fas fa-industry"></i> Fabricante</th>
+                        <th><i class="fas fa-building"></i> STOCK MATRIZ</th>
+                        <th><i class="fas fa-store"></i> STOCK SUCURSAL</th>
+                        <th><i class="fas fa-calendar-day"></i> INVENTARIO MATRIZ</th>
+                        <th><i class="fas fa-calendar-day"></i> INVENTARIO SUCURSAL</th>
+                        <th><i class="fas fa-chart-line"></i> RANGO MATRIZ</th>
+                        <th><i class="fas fa-chart-line"></i> RANGO SUCURSAL</th>
+                        <th><i class="fas fa-arrow-up"></i> MAYOR MATRIZ</th>
+                        <th><i class="fas fa-arrow-up"></i> MAYOR SUCURSAL</th>
+                        <th><i class="fas fa-cube"></i> PEDIDO ALMACEN</th>
+                        <th><i class="fas fa-cube"></i> PEDIDO MATRIZ</th>
+                        <th><i class="fas fa-cube"></i> PEDIDO SUCURSAL</th>
+                        <th><i class="fas fa-arrows-left-right"></i> SURTIDO ALMACEN A MATRIZ</th>
+                        <th><i class="fas fa-arrow-right-arrow-left"></i> SURTIDO ALMACEN A SUCURSAL</th>
+                        <th><i class="fas fa-cube"></i> SURTIDO</th>
+                        <th><i class="fas fa-rotate"></i> ROTACION</th>
+                    </tr>
+                </thead>
+                <tbody id="comparativaBody"><tr><td colspan="21" style="text-align:center; padding:40px; color:#57606a;"><i class="fas fa-inbox" style="font-size:24px; display:block; margin-bottom:10px;"></i>No hay datos para comparar</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <i class="fas fa-database"></i> El stock por línea se asigna manualmente en la sección correspondiente &bull;
+        <i class="fas fa-file-excel" style="color:#217346;"></i> Excel v3.1
+    </footer>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMessage">¡Datos cargados correctamente!</span></div>
+
+<!-- ===== MODAL DE CARGA ===== -->
+<div class="modal-overlay" id="modalCarga">
+    <div class="modal">
+        <h2><i class="fas fa-upload"></i> Cargar Archivos Excel</h2>
+        <p class="subtitle">Selecciona los <strong>6 archivos</strong> correspondientes:<br>Existencia (MATRIZ, ALMACEN, SUCURSAL, UBICACION) y Ventas (MATRIZ, SUCURSAL)</p>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p><strong>Haz clic o arrastra tus archivos aquí</strong></p>
+            <p class="file-types">Formatos: .xlsx, .xls</p>
+        </div>
+        <div class="file-list">
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia MATRIZ</span><span class="status pending" id="modal-status-matriz-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia ALMACEN</span><span class="status pending" id="modal-status-almacen-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia SUCURSAL</span><span class="status pending" id="modal-status-sucursal-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia UBICACION</span><span class="status pending" id="modal-status-ubicacion-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Ventas MATRIZ</span><span class="status pending" id="modal-status-matriz-ventas">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Ventas SUCURSAL</span><span class="status pending" id="modal-status-sucursal-ventas">Pendiente</span></div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" multiple style="display:none;" onchange="procesarArchivos(event)">
+        <div class="modal-actions">
+            <button class="cancel" onclick="cerrarModalCarga()">Cancelar</button>
+            <button class="confirm" id="btnConfirmarCarga" onclick="confirmarCarga()" disabled><i class="fas fa-check"></i> Cargar y Procesar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== LIBRERÍA XLSX ===== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+    // ============================================================
+    //  ESTRUCTURA DE DATOS
+    // ============================================================
+    let datos = {
+        existencia: { matriz: {}, almacen: {}, sucursal: {} },
+        existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} },
+        ventas: { matriz: {}, sucursal: {} },
+        ubicacion: {}
+    };
+    let datosCombinados = [];
+    let lineasUnicas = new Set();
+    let stockLinea = {};
+    let vistaActual = 'articulo';
+    let archivosCargados = {
+        'matriz-existencia': null,
+        'almacen-existencia': null,
+        'sucursal-existencia': null,
+        'ubicacion-existencia': null,
+        'matriz-ventas': null,
+        'sucursal-ventas': null
+    };
+
+    // ===== FILTROS =====
+    let filtrosSeleccionados = {
+        linea: [], marca: [], fabricante: []
+    };
+    // Filtros numéricos: 'todos', 'positivos', 'negativos'
+    let filtrosNumericos = {
+        pedidoMatriz: 'todos',
+        pedidoSucursal: 'todos',
+        surtidoAlmacenAMatriz: 'todos',
+        surtidoAlmacenASucursal: 'todos'
+    };
+    let filtrosActivos = 0;
+
+    // ============================================================
+    //  TOAST
+    // ============================================================
+    function mostrarToast(mensaje, exito = true) {
+        const toast = document.getElementById('toast');
+        const msg = document.getElementById('toastMessage');
+        msg.textContent = mensaje;
+        toast.querySelector('i').className = exito ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        toast.querySelector('i').style.color = exito ? '#3fb950' : '#cf222e';
+        toast.classList.add('show');
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ============================================================
+    //  MODAL
+    // ============================================================
+    function abrirModalCarga() {
+        document.getElementById('modalCarga').classList.add('active');
+        actualizarEstadoModal();
+    }
+    function cerrarModalCarga() {
+        document.getElementById('modalCarga').classList.remove('active');
+    }
+    function actualizarEstadoModal() {
+        const archivos = ['matriz-existencia','almacen-existencia','sucursal-existencia','ubicacion-existencia','matriz-ventas','sucursal-ventas'];
+        let todosCargados = true;
+        archivos.forEach(id => {
+            const el = document.getElementById(`modal-status-${id}`);
+            if (archivosCargados[id]) { el.textContent = '✓ Cargado'; el.className = 'status loaded'; }
+            else { el.textContent = '⏳ Pendiente'; el.className = 'status pending'; todosCargados = false; }
+        });
+        document.getElementById('btnConfirmarCarga').disabled = !todosCargados;
+    }
+
+    // ============================================================
+    //  PROCESAR ARCHIVOS
+    // ============================================================
+    function procesarArchivos(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+        const nombresEsperados = {
+            'existencia matriz': 'matriz-existencia',
+            'existencia almacen': 'almacen-existencia',
+            'existencia sucursal': 'sucursal-existencia',
+            'existencia ubicacion': 'ubicacion-existencia',
+            'ventas matriz': 'matriz-ventas',
+            'ventas sucursal': 'sucursal-ventas'
+        };
+        let archivosProcesados = 0;
+        for (const file of files) {
+            const nombreLower = file.name.toLowerCase();
+            let key = null;
+            for (const [nombre, clave] of Object.entries(nombresEsperados)) {
+                if (nombreLower.includes(nombre)) { key = clave; break; }
+            }
+            if (!key) {
+                if (nombreLower.includes('ubicacion')) key = 'ubicacion-existencia';
+                else if (nombreLower.includes('matriz')) {
+                    if (nombreLower.includes('exist') || nombreLower.includes('stock') || nombreLower.includes('inventario')) key = 'matriz-existencia';
+                    else if (nombreLower.includes('venta')) key = 'matriz-ventas';
+                } else if (nombreLower.includes('sucursal')) {
+                    if (nombreLower.includes('exist') || nombreLower.includes('stock') || nombreLower.includes('inventario')) key = 'sucursal-existencia';
+                    else if (nombreLower.includes('venta')) key = 'sucursal-ventas';
+                } else if (nombreLower.includes('almacen')) key = 'almacen-existencia';
+            }
+            if (key) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const sheet = workbook.Sheets[sheetName];
+                        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                        archivosCargados[key] = { nombre: file.name, datos: json };
+                        archivosProcesados++;
+                        actualizarEstadoModal();
+                        actualizarEstadoArchivos();
+                        if (archivosProcesados === files.length) {
+                            const todos = Object.values(archivosCargados).every(v => v !== null);
+                            if (todos) mostrarToast('¡Todos los archivos están listos para procesar!');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        mostrarToast(`Error al procesar "${file.name}"`, false);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                mostrarToast(`No se pudo identificar: "${file.name}"`, false);
+            }
+        }
+        event.target.value = '';
+    }
+    function actualizarEstadoArchivos() {
+        const archivos = ['matriz-existencia','almacen-existencia','sucursal-existencia','ubicacion-existencia','matriz-ventas','sucursal-ventas'];
+        archivos.forEach(id => {
+            const el = document.getElementById(`status-${id}`);
+            if (archivosCargados[id]) {
+                el.className = 'file-item loaded';
+                const label = el.textContent.replace('○','').replace('✓','').trim();
+                el.innerHTML = `<span class="icon"><i class="fas fa-check-circle"></i></span> ${label}`;
+            } else {
+                el.className = 'file-item pending';
+                const label = el.textContent.replace('○','').replace('✓','').trim();
+                el.innerHTML = `<span class="icon"><i class="fas fa-circle"></i></span> ${label}`;
+            }
+        });
+    }
+
+    // ============================================================
+    //  CONFIRMAR CARGA Y PROCESAR
+    // ============================================================
+    function confirmarCarga() {
+        const todosCargados = Object.values(archivosCargados).every(v => v !== null);
+        if (!todosCargados) { mostrarToast('Faltan archivos por cargar', false); return; }
+        try {
+            procesarDatosCargados();
+            cerrarModalCarga();
+            mostrarToast('¡Datos procesados correctamente!');
+        } catch (error) {
+            console.error(error);
+            mostrarToast('Error al procesar los datos', false);
+        }
+    }
+
+    // ============================================================
+    //  PROCESAR DATOS CARGADOS
+    // ============================================================
+    function procesarDatosCargados() {
+        datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {} };
+        lineasUnicas = new Set();
+        stockLinea = {};
+
+        const tiposExistencia = { 'matriz-existencia': 'matriz', 'almacen-existencia': 'almacen', 'sucursal-existencia': 'sucursal' };
+        for (const [key, tipo] of Object.entries(tiposExistencia)) {
+            const archivo = archivosCargados[key];
+            if (!archivo) continue;
+            const data = archivo.datos;
+            const colExistencia = 8;
+            data.forEach(row => {
+                const codigo = row[0] ? String(row[0]).trim() : null;
+                if (!codigo) return;
+                const articulo = row[1] ? String(row[1]).trim() : 'Sin descripción';
+                const existencia = parseFloat(row[colExistencia]) || 0;
+                let linea = row[3] ? String(row[3]).trim() : 'Sin línea';
+                let fabricante = '';
+                let marca = '';
+                if (tipo === 'matriz') {
+                    fabricante = row[2] ? String(row[2]).trim() : '';
+                    marca = row[4] ? String(row[4]).trim() : '';
+                }
+                if (!datos.existencia[tipo][codigo]) datos.existencia[tipo][codigo] = { articulo, linea, existencia: 0, fabricante, marca };
+                datos.existencia[tipo][codigo].existencia += existencia;
+                datos.existenciaRaw[tipo][codigo] = existencia;
+                if (articulo !== 'Sin descripción' && articulo.length > datos.existencia[tipo][codigo].articulo.length) datos.existencia[tipo][codigo].articulo = articulo;
+                if (linea !== 'Sin línea') { datos.existencia[tipo][codigo].linea = linea; lineasUnicas.add(linea); }
+                if (tipo === 'matriz' && fabricante) datos.existencia[tipo][codigo].fabricante = fabricante;
+                if (tipo === 'matriz' && marca) datos.existencia[tipo][codigo].marca = marca;
+            });
+        }
+
+        const archivoUbicacion = archivosCargados['ubicacion-existencia'];
+        if (archivoUbicacion) {
+            const data = archivoUbicacion.datos;
+            data.forEach(row => {
+                const codigo = row[0] ? String(row[0]).trim() : null;
+                if (!codigo) return;
+                const ubicacion = row[4] ? String(row[4]).trim() : '';
+                if (ubicacion) datos.ubicacion[codigo] = ubicacion;
+            });
+        }
+
+        const tiposVentas = { 'matriz-ventas': 'matriz', 'sucursal-ventas': 'sucursal' };
+        for (const [key, tipo] of Object.entries(tiposVentas)) {
+            const archivo = archivosCargados[key];
+            if (!archivo) continue;
+            const data = archivo.datos;
+            data.forEach(row => {
+                const codigo = row[1] ? String(row[1]).trim() : null;
+                if (!codigo) return;
+                const articulo = row[2] ? String(row[2]).trim() : 'Sin descripción';
+                const ventas = parseFloat(row[7]) || 0;
+                if (!datos.ventas[tipo][codigo]) datos.ventas[tipo][codigo] = { articulo, ventas: 0 };
+                datos.ventas[tipo][codigo].ventas += ventas;
+                if (articulo !== 'Sin descripción' && articulo.length > datos.ventas[tipo][codigo].articulo.length) datos.ventas[tipo][codigo].articulo = articulo;
+            });
+        }
+
+        lineasUnicas.forEach(linea => { stockLinea[linea] = { almacen: 0, matriz: 0, sucursal: 0 }; });
+        combinarDatos();
+        inicializarFiltros();
+        actualizarVista();
+    }
+
+    // ============================================================
+    //  COMBINAR DATOS (incluye MARCA)
+    // ============================================================
+    function combinarDatos() {
+        const todosLosCodigos = new Set();
+        const tipos = ['matriz','almacen','sucursal'];
+        tipos.forEach(tipo => Object.keys(datos.existencia[tipo]).forEach(codigo => todosLosCodigos.add(codigo)));
+        Object.keys(datos.ventas.matriz).forEach(codigo => todosLosCodigos.add(codigo));
+        Object.keys(datos.ventas.sucursal).forEach(codigo => todosLosCodigos.add(codigo));
+        Object.keys(datos.ubicacion).forEach(codigo => todosLosCodigos.add(codigo));
+
+        datosCombinados = [];
+        todosLosCodigos.forEach(codigo => {
+            let articulo = 'Sin descripción', linea = 'Sin línea', fabricante = '', marca = '';
+            let ubicacion = datos.ubicacion[codigo] || '';
+            if (datos.existencia.matriz[codigo]) {
+                const m = datos.existencia.matriz[codigo];
+                if (m.articulo !== 'Sin descripción') articulo = m.articulo;
+                if (m.linea !== 'Sin línea') linea = m.linea;
+                if (m.fabricante) fabricante = m.fabricante;
+                if (m.marca) marca = m.marca;
+            }
+            if (articulo === 'Sin descripción') {
+                tipos.forEach(tipo => {
+                    if (datos.existencia[tipo][codigo] && datos.existencia[tipo][codigo].articulo !== 'Sin descripción') articulo = datos.existencia[tipo][codigo].articulo;
+                });
+                if (articulo === 'Sin descripción') {
+                    if (datos.ventas.matriz[codigo] && datos.ventas.matriz[codigo].articulo !== 'Sin descripción') articulo = datos.ventas.matriz[codigo].articulo;
+                    else if (datos.ventas.sucursal[codigo] && datos.ventas.sucursal[codigo].articulo !== 'Sin descripción') articulo = datos.ventas.sucursal[codigo].articulo;
+                }
+            }
+            if (linea === 'Sin línea') {
+                tipos.forEach(tipo => {
+                    if (datos.existencia[tipo][codigo] && datos.existencia[tipo][codigo].linea !== 'Sin línea') linea = datos.existencia[tipo][codigo].linea;
+                });
+            }
+            const item = {
+                codigo, articulo, linea, fabricante, marca, ubicacion,
+                almacen: datos.existencia.almacen[codigo]?.existencia || 0,
+                matriz: datos.existencia.matriz[codigo]?.existencia || 0,
+                sucursal: datos.existencia.sucursal[codigo]?.existencia || 0,
+                ventasMatriz: datos.ventas.matriz[codigo]?.ventas || 0,
+                ventasSucursal: datos.ventas.sucursal[codigo]?.ventas || 0,
+                stockEditado: { almacen: 0, matriz: 0, sucursal: 0 }
+            };
+            item.totalStock = item.almacen + item.matriz + item.sucursal;
+            item.totalVentas = item.ventasMatriz + item.ventasSucursal;
+            datosCombinados.push(item);
+        });
+        datosCombinados.sort((a,b) => a.codigo.localeCompare(b.codigo));
+    }
+
+    // ============================================================
+    //  CÁLCULO DE VALORES DERIVADOS (para filtros y renderizado)
+    // ============================================================
+    function calcularValores(item) {
+        const indMatriz = item.stockEditado?.matriz ?? item.matriz;
+        const indSucursal = item.stockEditado?.sucursal ?? item.sucursal;
+        const linea = item.linea || 'Sin línea';
+        const lineMatriz = stockLinea[linea]?.matriz || 0;
+        const lineSucursal = stockLinea[linea]?.sucursal || 0;
+        const stockMatriz = Math.max(indMatriz, lineMatriz);
+        const stockSucursal = Math.max(indSucursal, lineSucursal);
+
+        const ventasTotales = item.ventasMatriz + item.ventasSucursal;
+        const surtido = (stockMatriz + stockSucursal) - ventasTotales;
+        const rotacion = (stockMatriz + stockSucursal) > 0 ? (ventasTotales / (stockMatriz + stockSucursal)) : 0;
+
+        let invMatriz = 0;
+        if (item.ventasMatriz > 0) invMatriz = Math.ceil((item.ventasMatriz / 180) * 7);
+        let invSucursal = 0;
+        if (item.ventasSucursal > 0) invSucursal = Math.ceil((item.ventasSucursal / 180) * 7);
+
+        let rangoMatriz = 0;
+        if (ventasTotales >= 91) rangoMatriz = 3;
+        else if (ventasTotales >= 61) rangoMatriz = 2;
+        else if (ventasTotales >= 7) rangoMatriz = 1;
+
+        let rangoSucursal = 0;
+        if (ventasTotales >= 91) rangoSucursal = 3;
+        else if (ventasTotales >= 61) rangoSucursal = 2;
+        else if (ventasTotales >= 21) rangoSucursal = 1;
+
+        const mayorMatriz = Math.max(invMatriz, stockMatriz, rangoMatriz);
+        const mayorSucursal = Math.max(invSucursal, stockSucursal, rangoSucursal);
+
+        const rawAlmacen = datos.existenciaRaw.almacen[item.codigo] || 0;
+        const rawMatriz = datos.existenciaRaw.matriz[item.codigo] || 0;
+        const rawSucursal = datos.existenciaRaw.sucursal[item.codigo] || 0;
+
+        const pedidoAlmacen = 0 - rawAlmacen;
+        const pedidoMatriz = mayorMatriz - rawMatriz;
+        const pedidoSucursal = mayorSucursal - rawSucursal;
+
+        let surtidoAlmacenAMatriz = 0;
+        if (pedidoAlmacen < 0 && pedidoMatriz > 0) {
+            const absPedidoAlmacen = Math.abs(pedidoAlmacen);
+            surtidoAlmacenAMatriz = (pedidoMatriz <= absPedidoAlmacen) ? pedidoMatriz : absPedidoAlmacen;
+        }
+
+        let surtidoAlmacenASucursal = 0;
+        if (pedidoAlmacen < 0 && pedidoSucursal > 0) {
+            const faltanteNeto = Math.abs(pedidoAlmacen) - surtidoAlmacenAMatriz;
+            if (faltanteNeto > 0) {
+                surtidoAlmacenASucursal = (pedidoSucursal <= faltanteNeto) ? pedidoSucursal : faltanteNeto;
+            }
+        }
+
+        return {
+            stockMatriz,
+            stockSucursal,
+            invMatriz,
+            invSucursal,
+            rangoMatriz,
+            rangoSucursal,
+            mayorMatriz,
+            mayorSucursal,
+            pedidoAlmacen,
+            pedidoMatriz,
+            pedidoSucursal,
+            surtidoAlmacenAMatriz,
+            surtidoAlmacenASucursal,
+            surtido,
+            rotacion
+        };
+    }
+
+    // ============================================================
+    //  RENDERIZAR STOCK POR ARTÍCULO, LÍNEA, EXISTENCIA, VENTAS
+    // ============================================================
+    function renderizarArticulo() {
+        const tbody = document.getElementById('articuloBody');
+        const searchTerm = document.getElementById('searchInputArticulo').value.toLowerCase();
+        let filtered = datosCombinados.filter(item => {
+            if (searchTerm) {
+                const codigoMatch = item.codigo.toLowerCase().includes(searchTerm);
+                const articuloMatch = item.articulo.toLowerCase().includes(searchTerm);
+                if (!codigoMatch && !articuloMatch) return false;
+            }
+            return true;
+        });
+        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#57606a;"><i class="fas fa-search" style="font-size:20px; display:block; margin-bottom:8px;"></i>No se encontraron resultados</td></tr>`; return; }
+        let html = '';
+        filtered.forEach(item => {
+            const almacen = item.stockEditado?.almacen ?? item.almacen;
+            const matriz = item.stockEditado?.matriz ?? item.matriz;
+            const sucursal = item.stockEditado?.sucursal ?? item.sucursal;
+            html += `<tr><td><span class="codigo">${item.codigo}</span></td><td><span class="articulo">${item.articulo}</span></td><td><input type="number" class="stock-input" value="${almacen}" min="0" step="1" onchange="actualizarStockIndividual('${item.codigo}','almacen',this.value)" onfocus="this.select()"></td><td><input type="number" class="stock-input" value="${matriz}" min="0" step="1" onchange="actualizarStockIndividual('${item.codigo}','matriz',this.value)" onfocus="this.select()"></td><td><input type="number" class="stock-input" value="${sucursal}" min="0" step="1" onchange="actualizarStockIndividual('${item.codigo}','sucursal',this.value)" onfocus="this.select()"></td></tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+    function actualizarStockIndividual(codigo, ubicacion, valor) {
+        const item = datosCombinados.find(d => d.codigo === codigo);
+        if (!item) return;
+        const numValor = parseInt(valor) || 0;
+        if (numValor < 0) return;
+        if (!item.stockEditado) item.stockEditado = { almacen:0, matriz:0, sucursal:0 };
+        item.stockEditado[ubicacion] = numValor;
+        if (vistaActual === 'comparativa') renderizarComparativa();
+    }
+    function filtrarArticulo() { renderizarArticulo(); }
+
+    function renderizarLineas() {
+        const tbody = document.getElementById('lineaBody');
+        const searchTerm = document.getElementById('searchLinea').value.toLowerCase();
+        let lineasArray = Array.from(lineasUnicas).filter(linea => linea.toLowerCase().includes(searchTerm));
+        const productosPorLinea = {};
+        datosCombinados.forEach(item => { const l = item.linea || 'Sin línea'; if (!productosPorLinea[l]) productosPorLinea[l] = 0; productosPorLinea[l]++; });
+        if (lineasArray.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#57606a;"><i class="fas fa-search" style="font-size:20px; display:block; margin-bottom:8px;"></i>No se encontraron líneas</td></tr>`; return; }
+        let html = '';
+        lineasArray.forEach(linea => {
+            const stock = stockLinea[linea] || { almacen:0, matriz:0, sucursal:0 };
+            const total = stock.almacen + stock.matriz + stock.sucursal;
+            const productos = productosPorLinea[linea] || 0;
+            html += `<tr><td><strong>${linea}</strong></td><td><input type="number" class="stock-input" value="${stock.almacen}" min="0" step="1" onchange="actualizarStockLinea('${linea}','almacen',this.value)" onfocus="this.select()"></td><td><input type="number" class="stock-input" value="${stock.matriz}" min="0" step="1" onchange="actualizarStockLinea('${linea}','matriz',this.value)" onfocus="this.select()"></td><td><input type="number" class="stock-input" value="${stock.sucursal}" min="0" step="1" onchange="actualizarStockLinea('${linea}','sucursal',this.value)" onfocus="this.select()"></td><td><strong>${total}</strong></td><td>${productos}</td></tr>`;
+        });
+        tbody.innerHTML = html;
+        if (vistaActual === 'comparativa') renderizarComparativa();
+    }
+    function actualizarStockLinea(linea, ubicacion, valor) {
+        const numValor = parseInt(valor) || 0;
+        if (numValor < 0) return;
+        if (!stockLinea[linea]) stockLinea[linea] = { almacen:0, matriz:0, sucursal:0 };
+        stockLinea[linea][ubicacion] = numValor;
+        renderizarLineas();
+        if (vistaActual === 'comparativa') renderizarComparativa();
+    }
+    function filtrarLinea() { renderizarLineas(); }
+
+    function renderizarVentas() {
+        const tbody = document.getElementById('ventasBody');
+        const searchTerm = document.getElementById('searchVentas').value.toLowerCase();
+        let filtered = datosCombinados.filter(item => {
+            if (item.ventasMatriz === 0 && item.ventasSucursal === 0) return false;
+            if (searchTerm) {
+                const codigoMatch = item.codigo.toLowerCase().includes(searchTerm);
+                const articuloMatch = item.articulo.toLowerCase().includes(searchTerm);
+                if (!codigoMatch && !articuloMatch) return false;
+            }
+            return true;
+        });
+        if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#57606a;"><i class="fas fa-search" style="font-size:20px; display:block; margin-bottom:8px;"></i>No se encontraron ventas</td></tr>`; return; }
+        let html = '';
+        filtered.forEach(item => {
+            const total = item.ventasMatriz + item.ventasSucursal;
+            html += `<tr><td><span class="codigo">${item.codigo}</span></td><td><span class="articulo">${item.articulo}</span></td><td>${item.ventasMatriz}</td><td>${item.ventasSucursal}</td><td><strong>${total}</strong></td></tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+    function filtrarVentas() { renderizarVentas(); }
+
+    function renderizarExistencia() {
+        const tbody = document.getElementById('existenciaBody');
+        const searchTerm = document.getElementById('searchExistencia').value.toLowerCase();
+        const codigosSet = new Set();
+        ['matriz','almacen','sucursal'].forEach(tipo => Object.keys(datos.existenciaRaw[tipo]).forEach(cod => codigosSet.add(cod)));
+        const codigos = Array.from(codigosSet);
+        if (codigos.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#57606a;"><i class="fas fa-inbox" style="font-size:20px; display:block; margin-bottom:8px;"></i>No hay datos de existencia</td></tr>`; return; }
+        let existenciaData = codigos.map(codigo => {
+            let articulo = 'Sin descripción', linea = 'Sin línea';
+            if (datos.existencia.matriz[codigo] && datos.existencia.matriz[codigo].articulo !== 'Sin descripción') articulo = datos.existencia.matriz[codigo].articulo;
+            else { ['almacen','sucursal'].forEach(tipo => { if (datos.existencia[tipo][codigo] && datos.existencia[tipo][codigo].articulo !== 'Sin descripción') articulo = datos.existencia[tipo][codigo].articulo; }); }
+            if (datos.existencia.matriz[codigo] && datos.existencia.matriz[codigo].linea !== 'Sin línea') linea = datos.existencia.matriz[codigo].linea;
+            else { ['almacen','sucursal'].forEach(tipo => { if (datos.existencia[tipo][codigo] && datos.existencia[tipo][codigo].linea !== 'Sin línea') linea = datos.existencia[tipo][codigo].linea; }); }
+            return { codigo, articulo, linea, existenciaMatriz: datos.existenciaRaw.matriz[codigo] || 0, existenciaAlmacen: datos.existenciaRaw.almacen[codigo] || 0, existenciaSucursal: datos.existenciaRaw.sucursal[codigo] || 0 };
+        });
+        if (searchTerm) existenciaData = existenciaData.filter(item => item.codigo.toLowerCase().includes(searchTerm) || item.articulo.toLowerCase().includes(searchTerm));
+        if (existenciaData.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#57606a;"><i class="fas fa-search" style="font-size:20px; display:block; margin-bottom:8px;"></i>No se encontraron resultados</td></tr>`; return; }
+        let html = '';
+        existenciaData.forEach(item => { html += `<tr><td><span class="codigo">${item.codigo}</span></td><td><span class="articulo">${item.articulo}</span></td><td><span class="badge medium">${item.linea}</span></td><td>${item.existenciaMatriz}</td><td>${item.existenciaAlmacen}</td><td>${item.existenciaSucursal}</td></tr>`; });
+        tbody.innerHTML = html;
+    }
+    function filtrarExistencia() { renderizarExistencia(); }
+
+    // ============================================================
+    //  RENDERIZAR FINAL (COMPARATIVA) CON AMBAS NUEVAS COLUMNAS
+    // ============================================================
+    function renderizarComparativa() {
+        const tbody = document.getElementById('comparativaBody');
+        const searchTerm = document.getElementById('searchComparativa').value.toLowerCase();
+
+        // Primero filtro por búsqueda y categorías (linea, marca, fabricante)
+        let filtered = datosCombinados.filter(item => {
+            if (searchTerm) {
+                const codigoMatch = item.codigo.toLowerCase().includes(searchTerm);
+                const articuloMatch = item.articulo.toLowerCase().includes(searchTerm);
+                if (!codigoMatch && !articuloMatch) return false;
+            }
+            const check = (key, value) => {
+                const selected = filtrosSeleccionados[key];
+                if (!selected || selected.length === 0) return true;
+                return selected.includes(value);
+            };
+            if (!check('linea', item.linea)) return false;
+            if (!check('marca', item.marca || '')) return false;
+            if (!check('fabricante', item.fabricante || '')) return false;
+            return true;
+        });
+
+        // Aplicar filtros numéricos
+        filtered = filtered.filter(item => {
+            const vals = calcularValores(item);
+            // PEDIDO MATRIZ
+            if (filtrosNumericos.pedidoMatriz === 'positivos' && vals.pedidoMatriz <= 0) return false;
+            if (filtrosNumericos.pedidoMatriz === 'negativos' && vals.pedidoMatriz >= 0) return false;
+            // PEDIDO SUCURSAL
+            if (filtrosNumericos.pedidoSucursal === 'positivos' && vals.pedidoSucursal <= 0) return false;
+            if (filtrosNumericos.pedidoSucursal === 'negativos' && vals.pedidoSucursal >= 0) return false;
+            // SURTIDO ALMACEN A MATRIZ
+            if (filtrosNumericos.surtidoAlmacenAMatriz === 'positivos' && vals.surtidoAlmacenAMatriz <= 0) return false;
+            if (filtrosNumericos.surtidoAlmacenAMatriz === 'negativos' && vals.surtidoAlmacenAMatriz >= 0) return false;
+            // SURTIDO ALMACEN A SUCURSAL
+            if (filtrosNumericos.surtidoAlmacenASucursal === 'positivos' && vals.surtidoAlmacenASucursal <= 0) return false;
+            if (filtrosNumericos.surtidoAlmacenASucursal === 'negativos' && vals.surtidoAlmacenASucursal >= 0) return false;
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="21" style="text-align:center; padding:30px; color:#57606a;"><i class="fas fa-search" style="font-size:20px; display:block; margin-bottom:8px;"></i>No se encontraron resultados</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(item => {
+            const vals = calcularValores(item);
+            html += `<tr>
+                <td><span class="codigo">${item.codigo}</span></td>
+                <td><span class="articulo">${item.articulo}</span></td>
+                <td>${item.ubicacion || ''}</td>
+                <td><span class="badge medium">${item.linea}</span></td>
+                <td>${item.marca || ''}</td>
+                <td>${item.fabricante || ''}</td>
+                <td>${vals.stockMatriz}</td>
+                <td>${vals.stockSucursal}</td>
+                <td>${vals.invMatriz}</td>
+                <td>${vals.invSucursal}</td>
+                <td><span class="badge ${vals.rangoMatriz === 0 ? 'zero' : vals.rangoMatriz === 1 ? 'medium' : vals.rangoMatriz === 2 ? 'high' : 'low'}">${vals.rangoMatriz}</span></td>
+                <td><span class="badge ${vals.rangoSucursal === 0 ? 'zero' : vals.rangoSucursal === 1 ? 'medium' : vals.rangoSucursal === 2 ? 'high' : 'low'}">${vals.rangoSucursal}</span></td>
+                <td><strong>${vals.mayorMatriz}</strong></td>
+                <td><strong>${vals.mayorSucursal}</strong></td>
+                <td><strong>${vals.pedidoAlmacen}</strong></td>
+                <td><strong>${vals.pedidoMatriz}</strong></td>
+                <td><strong>${vals.pedidoSucursal}</strong></td>
+                <td><strong>${vals.surtidoAlmacenAMatriz}</strong></td>
+                <td><strong>${vals.surtidoAlmacenASucursal}</strong></td>
+                <td class="${vals.surtido >= 0 ? 'diff-positive' : 'diff-negative'}">${vals.surtido}</td>
+                <td>${vals.rotacion.toFixed(2)}</td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function filtrarComparativa() { renderizarComparativa(); }
+
+    // ============================================================
+    //  CONTROL DE VISTA
+    // ============================================================
+    function cambiarVista(vista) {
+        vistaActual = vista;
+        document.querySelectorAll('.view-selector button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === vista));
+        document.getElementById('tablaArticulo').style.display = vista === 'articulo' ? 'block' : 'none';
+        document.getElementById('tablaLinea').style.display = vista === 'linea' ? 'block' : 'none';
+        document.getElementById('tablaExistencia').style.display = vista === 'existencia' ? 'block' : 'none';
+        document.getElementById('tablaVentas').style.display = vista === 'ventas' ? 'block' : 'none';
+        document.getElementById('tablaComparativa').style.display = vista === 'comparativa' ? 'block' : 'none';
+        if (vista === 'articulo') renderizarArticulo();
+        else if (vista === 'linea') renderizarLineas();
+        else if (vista === 'existencia') renderizarExistencia();
+        else if (vista === 'ventas') renderizarVentas();
+        else if (vista === 'comparativa') renderizarComparativa();
+    }
+
+    // ============================================================
+    //  FILTROS (PANEL Y LÓGICA) – incluye filtros numéricos
+    // ============================================================
+    function toggleFiltrosPanel() {
+        const panel = document.getElementById('filtrosPanel');
+        panel.classList.toggle('open');
+        if (panel.classList.contains('open') && !panel.dataset.cargado) {
+            cargarValoresFiltros();
+            panel.dataset.cargado = 'true';
+        }
+    }
+
+    function cargarValoresFiltros() {
+        const panel = document.getElementById('filtrosPanel');
+        panel.innerHTML = '';
+        const columnas = [
+            { key: 'linea', label: 'Línea', getVal: item => item.linea },
+            { key: 'marca', label: 'MARCA', getVal: item => item.marca || '' },
+            { key: 'fabricante', label: 'Fabricante', getVal: item => item.fabricante || '' }
+        ];
+
+        filtrosSeleccionados = { linea: [], marca: [], fabricante: [] };
+
+        columnas.forEach(col => {
+            const valoresSet = new Set();
+            datosCombinados.forEach(item => {
+                const val = col.getVal(item);
+                if (val !== undefined && val !== null && val !== '') valoresSet.add(val);
+            });
+            if (valoresSet.size === 0) return;
+            const valores = Array.from(valoresSet).sort((a,b) => String(a).localeCompare(String(b)));
+
+            const div = document.createElement('div');
+            div.className = 'filtro-item';
+            div.innerHTML = `
+                <label>${col.label}</label>
+                <div class="dropdown-filtro">
+                    <button class="btn-drop" onclick="toggleDropdownFiltro(this)">
+                        <span>${valores.length} valores</span>
+                        <span class="count" id="count-${col.key}">0</span>
+                    </button>
+                    <div class="menu" id="menu-${col.key}">
+                        <div class="checklist" id="checklist-${col.key}">
+                            ${valores.map(v => `
+                                <label>
+                                    <input type="checkbox" value="${v}" onchange="actualizarFiltro('${col.key}', '${v}', this.checked)">
+                                    <span>${v}</span>
+                                    <span class="item-count">${datosCombinados.filter(item => col.getVal(item) === v).length}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            panel.appendChild(div);
+        });
+
+        // --- Filtros numéricos ---
+        const numericColumns = [
+            { key: 'pedidoMatriz', label: 'PEDIDO MATRIZ' },
+            { key: 'pedidoSucursal', label: 'PEDIDO SUCURSAL' },
+            { key: 'surtidoAlmacenAMatriz', label: 'SURTIDO ALMACEN A MATRIZ' },
+            { key: 'surtidoAlmacenASucursal', label: 'SURTIDO ALMACEN A SUCURSAL' }
+        ];
+
+        // Separador y título
+        const sep = document.createElement('div');
+        sep.className = 'separador';
+        panel.appendChild(sep);
+        const titulo = document.createElement('div');
+        titulo.className = 'titulo-seccion';
+        titulo.textContent = 'Filtros por signo';
+        panel.appendChild(titulo);
+
+        numericColumns.forEach(col => {
+            const div = document.createElement('div');
+            div.className = 'filtro-numerico';
+            div.innerHTML = `
+                <label class="label">${col.label}</label>
+                <select id="filtro-num-${col.key}" onchange="actualizarFiltroNumerico('${col.key}', this.value)">
+                    <option value="todos">Todos</option>
+                    <option value="positivos">Positivos</option>
+                    <option value="negativos">Negativos</option>
+                </select>
+            `;
+            // Establecer el valor actual del filtro
+            const select = div.querySelector('select');
+            select.value = filtrosNumericos[col.key] || 'todos';
+            panel.appendChild(div);
+        });
+
+        actualizarContadorFiltros();
+    }
+
+    function toggleDropdownFiltro(btn) {
+        const menu = btn.parentElement.querySelector('.menu');
+        document.querySelectorAll('.filtros-panel .menu').forEach(m => {
+            if (m !== menu) m.classList.remove('open');
+        });
+        menu.classList.toggle('open');
+    }
+
+    function actualizarFiltro(key, value, checked) {
+        if (!filtrosSeleccionados[key]) filtrosSeleccionados[key] = [];
+        if (checked) {
+            if (!filtrosSeleccionados[key].includes(value)) filtrosSeleccionados[key].push(value);
+        } else {
+            filtrosSeleccionados[key] = filtrosSeleccionados[key].filter(v => v !== value);
+        }
+        const countEl = document.getElementById(`count-${key}`);
+        if (countEl) countEl.textContent = filtrosSeleccionados[key].length;
+        actualizarContadorFiltros();
+        renderizarComparativa();
+    }
+
+    function actualizarFiltroNumerico(key, value) {
+        filtrosNumericos[key] = value;
+        actualizarContadorFiltros();
+        renderizarComparativa();
+    }
+
+    function actualizarContadorFiltros() {
+        let total = 0;
+        Object.keys(filtrosSeleccionados).forEach(key => {
+            if (filtrosSeleccionados[key].length > 0) total++;
+        });
+        // Contar filtros numéricos activos (distintos de 'todos')
+        Object.keys(filtrosNumericos).forEach(key => {
+            if (filtrosNumericos[key] !== 'todos') total++;
+        });
+        filtrosActivos = total;
+        document.getElementById('filtrosActivosCount').textContent = total;
+    }
+
+    function inicializarFiltros() {
+        filtrosSeleccionados = { linea: [], marca: [], fabricante: [] };
+        filtrosNumericos = {
+            pedidoMatriz: 'todos',
+            pedidoSucursal: 'todos',
+            surtidoAlmacenAMatriz: 'todos',
+            surtidoAlmacenASucursal: 'todos'
+        };
+        document.getElementById('filtrosActivosCount').textContent = '0';
+        // Limpiar panel para que se recargue al abrir
+        const panel = document.getElementById('filtrosPanel');
+        panel.innerHTML = '';
+        panel.dataset.cargado = '';
+    }
+
+    document.addEventListener('click', function(e) {
+        const panel = document.getElementById('filtrosPanel');
+        if (panel && panel.classList.contains('open')) {
+            const dropdowns = panel.querySelectorAll('.dropdown-filtro');
+            dropdowns.forEach(dd => {
+                if (!dd.contains(e.target)) {
+                    dd.querySelector('.menu')?.classList.remove('open');
+                }
+            });
+        }
+    });
+
+    // ============================================================
+    //  EXPORTAR CSV – con todas las columnas
+    // ============================================================
+    function exportarCSV() {
+        if (datosCombinados.length === 0) { mostrarToast('No hay datos para exportar', false); return; }
+        let csv = 'Código,Artículo,UBICACION,Línea,MARCA,Fabricante,STOCK MATRIZ,STOCK SUCURSAL,INVENTARIO MATRIZ,INVENTARIO SUCURSAL,RANGO MATRIZ,RANGO SUCURSAL,MAYOR MATRIZ,MAYOR SUCURSAL,PEDIDO ALMACEN,PEDIDO MATRIZ,PEDIDO SUCURSAL,SURTIDO ALMACEN A MATRIZ,SURTIDO ALMACEN A SUCURSAL,SURTIDO,ROTACION\n';
+        datosCombinados.forEach(item => {
+            const vals = calcularValores(item);
+            csv += `"${item.codigo}","${item.articulo}","${item.ubicacion || ''}","${item.linea}","${item.marca || ''}","${item.fabricante || ''}",${vals.stockMatriz},${vals.stockSucursal},${vals.invMatriz},${vals.invSucursal},${vals.rangoMatriz},${vals.rangoSucursal},${vals.mayorMatriz},${vals.mayorSucursal},${vals.pedidoAlmacen},${vals.pedidoMatriz},${vals.pedidoSucursal},${vals.surtidoAlmacenAMatriz},${vals.surtidoAlmacenASucursal},${vals.surtido},${vals.rotacion.toFixed(2)}\n`;
+        });
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'inventario_y_ventas_completo.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+        mostrarToast('CSV exportado correctamente');
+    }
+
+    // ============================================================
+    //  DRAG AND DROP
+    // ============================================================
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const input = document.getElementById('fileInput');
+            const dt = new DataTransfer();
+            for (const file of files) dt.items.add(file);
+            input.files = dt.files;
+            procesarArchivos({ target: input });
+        }
+    });
+
+    // ============================================================
+    //  INICIALIZACIÓN
+    // ============================================================
+    console.log('📊 Sistema de Gestión de Inventario y Ventas v3.1');
+    console.log('✅ Columnas finales: Código, Artículo, UBICACION, Línea, MARCA, Fabricante, STOCK MATRIZ, STOCK SUCURSAL, INVENTARIO MATRIZ, INVENTARIO SUCURSAL, RANGO MATRIZ, RANGO SUCURSAL, MAYOR MATRIZ, MAYOR SUCURSAL, PEDIDO ALMACEN, PEDIDO MATRIZ, PEDIDO SUCURSAL, SURTIDO ALMACEN A MATRIZ, SURTIDO ALMACEN A SUCURSAL, SURTIDO, ROTACION');
+</script>
+</body>
+</html>
