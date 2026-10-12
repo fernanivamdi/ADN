@@ -4,9 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COTIZACION</title>
+
+    <!-- ============================================================
+         PROTECCIÓN WEB (disuasión básica)
+         Bloquea menú contextual, F12, Ctrl+Shift+I/J/C, Ctrl+U
+         ============================================================ -->
+    <script>
+        (function () {
+            // Bloquear menú contextual (clic derecho)
+            document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, false);
+
+            // Bloquear atajos de teclado hacia DevTools
+            document.addEventListener('keydown', function (e) {
+                const k = (e.key || '').toUpperCase();
+                // F12
+                if (k === 'F12') { e.preventDefault(); return false; }
+                // Ctrl+Shift+I / J / C  (DevTools / consola / inspector)
+                if (e.ctrlKey && e.shiftKey && (k === 'I' || k === 'J' || k === 'C')) {
+                    e.preventDefault(); return false;
+                }
+                // Ctrl+U (ver código fuente)
+                if (e.ctrlKey && !e.shiftKey && k === 'U') { e.preventDefault(); return false; }
+                // Ctrl+S (guardar página)
+                if (e.ctrlKey && !e.shiftKey && k === 'S') { e.preventDefault(); return false; }
+            }, false);
+
+            // Bloquear arrastrar imágenes/texto seleccionable
+            document.addEventListener('dragstart', function (e) {
+                if (e.target && (e.target.tagName === 'IMG' || e.target.tagName === 'A')) e.preventDefault();
+            }, false);
+        })();
+    </script>
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- TAURI: libs locales en lugar de CDN -->
+    <!-- Librerías locales (o CDN como respaldo desde JS) -->
     <script src="vendor/xlsx.full.min.js"></script>
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
@@ -887,39 +919,17 @@
                 r.readAsArrayBuffer(archivo);
             });
         }
-        // === FIX TAURI: lector universal de bytes compatible con navegador y Tauri ===
+        // Lector universal de bytes (solo navegador)
         async function obtenerBytesArchivo(fileInput) {
-            // En Tauri: diálogo nativo + lectura por fs (evita el bug de FileReader en WebView2/WKWebView)
-            if (isTauri) {
-                try {
-                    const { open } = window.__TAURI__.dialog;
-                    const { readFile } = window.__TAURI__.fs;
-                    const seleccionado = await open({
-                        multiple: false,
-                        directory: false,
-                        filters: [{
-                            name: 'Hojas de cálculo',
-                            extensions: ['xlsx','xlsm','xlsb','xls','xlt','xltx','ods','fods',
-                                         'csv','tsv','txt','prn','dif','slk','xml','html','htm']
-                        }]
-                    });
-                    if (!seleccionado) return { cancelado: true };
-                    const path = typeof seleccionado === 'string'
-                        ? seleccionado
-                        : (seleccionado.path || String(seleccionado));
-                    const bytes = await readFile(path);   // Uint8Array
-                    const nombre = String(path).split(/[/\\]/).pop() || 'archivo';
-                    return { nombre, bytes };
-                } catch (err) {
-                    console.error('Error abriendo archivo con Tauri:', err);
-                    return { error: err };
-                }
-            }
-            // Navegador: comportamiento original
             const f = fileInput.files && fileInput.files[0];
             if (!f) return { vacio: true };
-            const buffer = await leerArchivoComoBuffer(f);
-            return { nombre: f.name, bytes: new Uint8Array(buffer) };
+            try {
+                const buffer = await leerArchivoComoBuffer(f);
+                return { nombre: f.name, bytes: new Uint8Array(buffer) };
+            } catch (err) {
+                console.error('Error leyendo archivo:', err);
+                return { error: err };
+            }
         }
 
         function detectarTipoArchivo(bytes) {
@@ -1172,31 +1182,7 @@
             return { ...r, modo: 'sin coincidencias' };
         }
 
-        /* ========== TAURI + jsPDF helpers ========== */
-        const isTauri = !!(window.__TAURI__ && window.__TAURI__.core);
-
-        async function tauriGuardarPDF(blob, nombreArchivo) {
-            if (!isTauri) return null;
-            try {
-                const { save } = window.__TAURI__.dialog;
-                const { writeFile } = window.__TAURI__.fs;
-                const path = await save({
-                    defaultPath: nombreArchivo,
-                    filters: [{ name: 'Documento PDF', extensions: ['pdf'] }]
-                });
-                if (!path) return { guardado: false, cancelado: true };
-                const buffer = await blob.arrayBuffer();
-                await writeFile(path, new Uint8Array(buffer));
-                return { guardado: true, cancelado: false };
-            } catch (err) {
-                const msg = String(err && err.message ? err.message : err);
-                if (/cancel/i.test(msg) || (err && err.name === 'AbortError')) return { guardado: false, cancelado: true };
-                console.warn('Tauri save falló:', err);
-                return null;
-            }
-        }
-
-        // === FIX: fallbacks CDN por si vendor/ no carga ===
+        /* ========== jsPDF helpers ========== */
         const JSPDF_CDN_FALLBACKS = [
             'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
             'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
@@ -1223,7 +1209,6 @@
             return tieneBase();
         }
 
-        // === FIX: compatibilidad jsPDF 2.x/3.x ===
         function contarPaginasPDF(doc) {
             try { if (typeof doc.getNumberOfPages === 'function') return doc.getNumberOfPages(); } catch (_) {}
             try {
@@ -1627,7 +1612,6 @@
                 return { sorted, proveedorMostrar, provObj: sorted.find(p => p.proveedor === proveedorMostrar) };
             }
 
-            // ============ FIX PDF: helper para obtener productos de un proveedor ============
             function obtenerProductosParaPDF(tipo, proveedor) {
                 const cfg = CONFIG_TIPO[tipo];
                 const items = [];
@@ -1680,17 +1664,6 @@
             }
             window.addEventListener('beforeunload', () => { guardarDatos(); guardarPedidosLS(); });
             setInterval(() => guardarDatos(), 10000);
-
-            async function registrarCierreTauri() {
-                if (!isTauri) return;
-                try {
-                    const appWindow = window.__TAURI__.window.getCurrentWindow();
-                    await appWindow.onCloseRequested(async (event) => {
-                        try { datosModificados = true; await guardarDatos(); guardarPedidosLS(); }
-                        catch (e) { console.warn('Error al guardar al cerrar:', e); }
-                    });
-                } catch (e) { console.warn('No se pudo registrar onCloseRequested:', e); }
-            }
 
             function showToast(message, type = 'info') {
                 const container = document.getElementById('toastContainer');
@@ -1861,7 +1834,6 @@
                 if (!this.checked) document.getElementById('porcentajeDescuento').value = '0';
             });
 
-            // === FIX TAURI: handler reescrito para funcionar en navegador y Tauri ===
             document.getElementById('btnAgregarProveedor').addEventListener('click', async () => {
                 const nombre = document.getElementById('nombreProveedor').value.trim();
                 const fileInput = document.getElementById('archivoProveedor');
@@ -1871,9 +1843,7 @@
                 const porcentajeDescuento = aplicarDescuento ? (parseFloat(document.getElementById('porcentajeDescuento').value) || 0) : 0;
 
                 if (!nombre) { showToast('Ingrese el nombre del proveedor', 'warning'); return; }
-
-                // En navegador seguimos exigiendo el input; en Tauri el diálogo se abre solo.
-                if (!isTauri && !fileInput.files[0]) { showToast('Seleccione un archivo', 'warning'); return; }
+                if (!fileInput.files[0]) { showToast('Seleccione un archivo', 'warning'); return; }
 
                 if (proveedores.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
                     showToast('Ya existe un proveedor con este nombre', 'warning'); return;
@@ -1882,10 +1852,8 @@
                 const btn = document.getElementById('btnAgregarProveedor');
                 btn.disabled = true;
                 try {
-                    // === Lectura compatible Tauri / navegador ===
                     const archivoData = await obtenerBytesArchivo(fileInput);
-                    if (archivoData.cancelado) { showToast('Selección cancelada', 'warning'); return; }
-                    if (archivoData.vacio)    { showToast('Seleccione un archivo', 'warning'); return; }
+                    if (archivoData.vacio)  { showToast('Seleccione un archivo', 'warning'); return; }
                     if (archivoData.error) {
                         showToast('Error abriendo archivo: ' + (archivoData.error.message || archivoData.error), 'danger');
                         return;
@@ -1946,7 +1914,6 @@
                     marcarTablaDirty('sucursal');
                     guardarDatos();
 
-                    // Limpiar formulario
                     document.getElementById('nombreProveedor').value = '';
                     document.getElementById('archivoProveedor').value = '';
                     document.getElementById('activarStockMinimo').checked = false;
@@ -2454,8 +2421,7 @@
 
             async function guardarPDFConSelector(doc, nombreArchivo) {
                 const blob = doc.output('blob');
-                const tauriRes = await tauriGuardarPDF(blob, nombreArchivo);
-                if (tauriRes) return tauriRes;
+                // Solo navegador moderno: showSaveFilePicker (Chrome/Edge). Fallback: descarga tradicional.
                 if (typeof window.showSaveFilePicker === 'function') {
                     try {
                         const handle = await window.showSaveFilePicker({
@@ -2743,7 +2709,6 @@
                     renderizarChipsProveedores([], manejarReordenProveedor);
                 }
                 cargarPedidosLS();
-                registrarCierreTauri();
             }
             init();
         }
