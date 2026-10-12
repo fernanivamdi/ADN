@@ -1,0 +1,65 @@
+<!-- ============================================================
+     PROTECCIÓN WEB — Dificulta copia/inspección (no bloquea 100%)
+     ============================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    // 1) Bloquear menú contextual (clic derecho)
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        return false;
+    });
+
+    // 2) Bloquear atajos: F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+P
+    document.addEventListener('keydown', function (e) {
+        const k = (e.key || '').toUpperCase();
+        if (k === 'F12') { e.preventDefault(); return false; }
+        if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) { e.preventDefault(); return false; }
+        if (e.ctrlKey && (k === 'U' || k === 'S' || k === 'P')) { e.preventDefault(); return false; }
+        if (e.metaKey && e.altKey && ['I','J','C','U'].includes(k)) { e.preventDefault(); return false; }
+    });
+
+    // 3) Anti-embedding (framebusting): impedir que la metan en un iframe
+    try {
+        if (window.top !== window.self) {
+            window.top.location = window.self.location;
+        }
+    } catch (e) { /* cross-origin: bloquear render */ document.documentElement.innerHTML = ''; }
+
+    // 4) Detección pasiva de DevTools (aviso, no bloqueo)
+    let devtoolsAbierto = false;
+    const umbral = 160;
+    setInterval(function () {
+        const wDiff = window.outerWidth - window.innerWidth;
+        const hDiff = window.outerHeight - window.innerHeight;
+        const abierto = (wDiff > umbral) || (hDiff > umbral);
+        if (abierto && !devtoolsAbierto) {
+            devtoolsAbierto = true;
+            console.clear();
+            console.log('%c⛔ Contenido protegido — Farmacias ADN',
+                        'color:#D70015;font-size:20px;font-weight:bold;');
+        } else if (!abierto) {
+            devtoolsAbierto = false;
+        }
+    }, 1000);
+
+    // 5) Deshabilitar arrastre de imágenes y selección de texto fuera de inputs
+    document.addEventListener('dragstart', function (e) {
+        if (e.target && e.target.tagName !== 'INPUT') e.preventDefault();
+    });
+    document.addEventListener('selectstart', function (e) {
+        const t = e.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+        e.preventDefault();
+    });
+
+    // 6) Marca de autor invisible (si alguien copia el HTML, se ve la firma)
+    console.log('%cFARMACIAS ADN — Sistema interno. Uso no autorizado prohibido.',
+                'color:#0071E3;font-weight:bold;font-size:14px;');
+})();
+</script>
+
+<!-- 7) Evitar que buscadores indexen el sistema -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
