@@ -429,36 +429,6 @@
         .mode-option:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
 
         /* =====================================================
-           BOTÓN CERRAR SESIÓN
-           ===================================================== */
-        .logout-btn {
-            pointer-events: auto;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            height: 36px;
-            padding: 0 14px;
-            background: rgba(255, 255, 255, 0.82);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            backdrop-filter: saturate(180%) blur(20px);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 980px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(31, 60, 110, 0.08);
-            color: #6E6E73;
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: color 0.2s ease, background 0.2s ease;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        .logout-btn:hover { color: var(--danger); background: rgba(255, 255, 255, 0.95); }
-        .logout-btn .material-icons { font-size: 16px; width: 16px; height: 16px; }
-
-        /* =====================================================
            RESPONSIVE
            ===================================================== */
         @media (max-width: 480px) {
@@ -468,7 +438,6 @@
             .top-bar { height: 52px; padding: 0 14px; }
             .top-bar .top-bar-brand { gap: 6px; }
             .mode-option { padding: 0 11px; font-size: 11.5px; letter-spacing: 0.02em; }
-            .logout-btn { padding: 0 10px; font-size: 11px; }
         }
 
         /* =====================================================
@@ -543,11 +512,6 @@
                     <a href="cotizacion.html" class="mode-option" id="optPedido" role="tab" aria-selected="false" data-src="cotizacion.html">PEDIDO</a>
                 </div>
             </div>
-
-            <button class="logout-btn" id="logoutBtn" type="button" aria-label="Cerrar sesión">
-                <span class="material-icons" aria-hidden="true">logout</span>
-                Salir
-            </button>
         </div>
 
         <iframe id="marco" name="marco" src="binario.html" title="Contenido principal"></iframe>
@@ -674,28 +638,6 @@
         optPedido.addEventListener('click', function (e) {
             e.preventDefault();
             cambiarModo('pedido');
-        });
-
-        /* =============================================
-           CERRAR SESIÓN
-           ============================================= */
-        document.getElementById('logoutBtn').addEventListener('click', function () {
-            // Oculta la app y vuelve a mostrar el login
-            document.getElementById('appContainer').classList.remove('visible');
-            document.getElementById('loginOverlay').classList.remove('hidden');
-
-            // Limpia los campos y el iframe
-            inputUsuario.value  = '';
-            inputPassword.value = '';
-            inputPassword.setAttribute('type', 'password');
-            document.getElementById('togglePassword').textContent = 'visibility';
-            document.getElementById('marco').src = 'binario.html';
-
-            // Regresa el interruptor a SURTIDO
-            cambiarModo('surtido');
-
-            // Enfoca el usuario
-            setTimeout(() => inputUsuario.focus(), 350);
         });
     </script>
 </body>
