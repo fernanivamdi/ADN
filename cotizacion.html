@@ -7,29 +7,17 @@
 
     <!-- ============================================================
          PROTECCIÓN WEB (disuasión básica)
-         Bloquea menú contextual, F12, Ctrl+Shift+I/J/C, Ctrl+U
          ============================================================ -->
     <script>
         (function () {
-            // Bloquear menú contextual (clic derecho)
             document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, false);
-
-            // Bloquear atajos de teclado hacia DevTools
             document.addEventListener('keydown', function (e) {
                 const k = (e.key || '').toUpperCase();
-                // F12
                 if (k === 'F12') { e.preventDefault(); return false; }
-                // Ctrl+Shift+I / J / C  (DevTools / consola / inspector)
-                if (e.ctrlKey && e.shiftKey && (k === 'I' || k === 'J' || k === 'C')) {
-                    e.preventDefault(); return false;
-                }
-                // Ctrl+U (ver código fuente)
+                if (e.ctrlKey && e.shiftKey && (k === 'I' || k === 'J' || k === 'C')) { e.preventDefault(); return false; }
                 if (e.ctrlKey && !e.shiftKey && k === 'U') { e.preventDefault(); return false; }
-                // Ctrl+S (guardar página)
                 if (e.ctrlKey && !e.shiftKey && k === 'S') { e.preventDefault(); return false; }
             }, false);
-
-            // Bloquear arrastrar imágenes/texto seleccionable
             document.addEventListener('dragstart', function (e) {
                 if (e.target && (e.target.tagName === 'IMG' || e.target.tagName === 'A')) e.preventDefault();
             }, false);
@@ -38,7 +26,6 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Librerías locales (o CDN como respaldo desde JS) -->
     <script src="vendor/xlsx.full.min.js"></script>
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
@@ -205,8 +192,8 @@
         .btn-danger { background: var(--peligro-suave); color: var(--peligro-texto); border: 1px solid var(--peligro-borde); }
         .btn-danger:hover { background: var(--peligro); color: #fff; border-color: var(--peligro); transform: scale(1.05); }
         .btn-sm { padding: 8px 16px; font-size: 14px; }
-        .btn-xs { padding: 6px 10px; font-size: 13px; gap: 4px; }
-        .btn-xs .material-icons { font-size: 16px; }
+        .btn-xs { padding: 4px 6px; font-size: 12px; gap: 3px; }
+        .btn-xs .material-icons { font-size: 14px; }
         .btn-lg { padding: 14px 28px; font-size: 17px; }
         .btn-lg .material-icons { font-size: 20px; }
         .btn-block { width: 100%; }
@@ -275,31 +262,31 @@
         .table-scroll::-webkit-scrollbar-track { background: transparent; }
         .table-scroll::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 6px; border: 3px solid var(--tarjeta); }
         .table-scroll::-webkit-scrollbar-thumb:hover { background: var(--texto-terciario); }
-        .table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+        .table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
         .table thead { background: var(--tarjeta); }
         .table th {
-            padding: 14px 10px; text-align: left; font-weight: 600; color: var(--texto-secundario);
-            font-size: 12px; text-transform: none; letter-spacing: 0; white-space: nowrap;
+            padding: 8px 6px; text-align: left; font-weight: 600; color: var(--texto-secundario);
+            font-size: 11.5px; text-transform: none; letter-spacing: 0; white-space: nowrap;
             position: sticky; top: 0; background: var(--tarjeta); z-index: 10;
             box-shadow: inset 0 -1px 0 var(--borde-suave);
         }
-        .table th:first-child, .table td:first-child { padding-left: 24px; }
-        .table th:last-child, .table td:last-child { padding-right: 24px; }
+        .table th:first-child, .table td:first-child { padding-left: 14px; }
+        .table th:last-child, .table td:last-child { padding-right: 14px; width: 56px; min-width: 56px; }
         .table tbody tr { border-bottom: 1px solid var(--borde-suave); transition: background 0.2s ease; }
         .table tbody tr:last-child { border-bottom: none; }
         .table tbody tr:hover { background: var(--fondo-suave); cursor: pointer; }
-        .table tbody td { padding: 12px 10px; color: var(--texto-principal); vertical-align: middle; }
+        .table tbody td { padding: 5px 6px; color: var(--texto-principal); vertical-align: middle; line-height: 1.15; }
         .table tbody tr.virtual-spacer, .table tbody tr.virtual-spacer:hover { background: transparent; border: none; cursor: default; pointer-events: none; }
         .table tbody tr.virtual-spacer td { padding: 0 !important; border: 0 !important; background: transparent; line-height: 0; font-size: 0; }
         .table tbody td .articulo, .table tbody td .producto-nombre-clickable { font-weight: 700; color: var(--texto-principal); }
         .table tbody td strong {
             font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
-            font-size: 12px; font-weight: 600; color: var(--texto-secundario);
-            background: var(--relleno); padding: 3px 9px; border-radius: 6px; display: inline-block; letter-spacing: 0;
+            font-size: 11px; font-weight: 600; color: var(--texto-secundario);
+            background: var(--relleno); padding: 2px 6px; border-radius: 5px; display: inline-block; letter-spacing: 0;
         }
-        .table th.col-descripcion, .table td.col-descripcion { width: 320px; min-width: 320px; max-width: 320px; }
+        .table th.col-descripcion, .table td.col-descripcion { width: 260px; min-width: 260px; max-width: 260px; }
         .desc-truncate {
-            display: inline-block; max-width: 320px; overflow: hidden; text-overflow: ellipsis;
+            display: inline-block; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
             white-space: nowrap; vertical-align: middle; font-weight: 700; color: var(--texto-principal);
         }
         .segunda-opcion-badge { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; user-select: none; }
@@ -331,35 +318,35 @@
         .popover-proveedores .pop-item .pop-precio { font-size: 13px; font-weight: 700; color: var(--texto-principal); font-variant-numeric: tabular-nums; }
         .popover-proveedores .pop-item .pop-existencia { font-size: 11px; color: var(--texto-secundario); }
         .piezas-input {
-            width: 68px; height: 34px; padding: 0 6px; border: 1px solid var(--borde); border-radius: 10px;
-            font-size: 14px; font-weight: 600; text-align: center; background: var(--tarjeta);
+            width: 58px; height: 26px; padding: 0 4px; border: 1px solid var(--borde); border-radius: 8px;
+            font-size: 12.5px; font-weight: 600; text-align: center; background: var(--tarjeta);
             color: var(--texto-principal); font-family: inherit; font-variant-numeric: tabular-nums;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .piezas-input:hover { border-color: var(--texto-terciario); }
         .piezas-input:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-anillo); }
         .proveedor-select {
-            height: 34px; padding: 0 26px 0 8px; border: 1px solid var(--borde); border-radius: 10px;
-            font-size: 13px; font-weight: 500; font-family: inherit; background-color: var(--tarjeta);
+            height: 26px; padding: 0 22px 0 6px; border: 1px solid var(--borde); border-radius: 8px;
+            font-size: 12px; font-weight: 500; font-family: inherit; background-color: var(--tarjeta);
             color: var(--texto-principal); cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
             -webkit-appearance: none; appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 8px center; min-width: 128px; max-width: 200px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 6px center; min-width: 108px; max-width: 180px;
         }
         .proveedor-select:hover { border-color: #C7C7CC; }
         .proveedor-select:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-anillo); }
-        .prov-cell { display: inline-flex; align-items: center; gap: 5px; flex-wrap: nowrap; }
+        .prov-cell { display: inline-flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
         .empate-badge {
             display: inline-flex; align-items: center; justify-content: center;
-            min-width: 38px; height: 20px; padding: 0 7px; border-radius: 999px;
+            min-width: 30px; height: 16px; padding: 0 5px; border-radius: 999px;
             background: var(--alerta-suave); color: var(--alerta-texto); border: 1px solid var(--alerta-borde);
-            font-size: 10.5px; font-weight: 700; letter-spacing: -0.01em; vertical-align: middle;
+            font-size: 9.5px; font-weight: 700; letter-spacing: -0.01em; vertical-align: middle;
             white-space: nowrap; font-variant-numeric: tabular-nums;
         }
         .badge {
-            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-            min-width: 32px; padding: 3px 10px; border-radius: var(--radio-boton);
-            font-weight: 600; font-size: 12px; line-height: 1.4; letter-spacing: -0.005em;
+            display: inline-flex; align-items: center; justify-content: center; gap: 3px;
+            min-width: 26px; padding: 1px 7px; border-radius: var(--radio-boton);
+            font-weight: 600; font-size: 11px; line-height: 1.3; letter-spacing: -0.005em;
         }
         .badge-success { background: var(--exito-suave);   color: var(--exito-texto);   border: 1px solid var(--exito-borde); }
         .badge-warning { background: var(--alerta-suave);  color: var(--alerta-texto);  border: 1px solid var(--alerta-borde); }
@@ -594,6 +581,9 @@
         <button class="nav-btn action-btn" id="btnActualizar" title="Borrar pedidos Guardados">
             <span class="material-icons">refresh</span>            
         </button>
+        <button class="nav-btn action-btn" id="btnEnviarPedido" title="Enviar Pedido por correo" style="background:linear-gradient(135deg,#34C759 0%,#2AB04D 100%);color:#fff;">
+            <span class="material-icons">send</span>           
+        </button>
     </div>
 
     <main class="main-content" id="mainContent">
@@ -665,7 +655,22 @@
                                    accept=".xlsx,.xlsm,.xlsb,.xls,.xlt,.xltx,.ods,.fods,.csv,.tsv,.txt,.prn,.dif,.slk,.xml,.html,.htm,.numbers,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.ms-excel.sheet.binary.macroEnabled.12,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.oasis.opendocument.spreadsheet,text/csv,text/plain">
                         </div>
                     </div>
-                    <button id="btnAgregarProveedor" class="btn btn-primary btn-lg btn-block">
+                    <div class="input-group" style="margin-top: 4px;">
+                        <div class="form-group">
+                            <label class="form-label" for="correoProveedor">Correo</label>
+                            <div class="combobox-wrapper" style="position:relative;">
+                                <input type="email" id="correoProveedor" class="form-input"
+                                       list="listaCorreos" placeholder="Seleccionar o escribir correo..."
+                                       autocomplete="off" spellcheck="false">
+                                <span class="material-icons combobox-arrow" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--texto-secundario);">expand_more</span>
+                                <datalist id="listaCorreos">
+                                    <option value="IVAN@OUTLOOK.COM">
+                                    <option value="NADRO@OUTLOOK.COM">
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btnAgregarProveedor" class="btn btn-primary btn-lg btn-block" style="margin-top:20px;">
                         <span class="material-icons">add</span> Agregar Proveedor
                     </button>
                     <div id="listaProveedores" class="proveedor-list" style="margin-top:24px;"></div>
@@ -803,6 +808,60 @@
         </div>
     </div>
 
+    <!-- ===== MODAL ENVIAR PEDIDO ===== -->
+    <div class="modal-overlay" id="modalEnviarPedido">
+        <div class="modal" role="dialog" aria-modal="true" style="max-width: 520px;">
+            <div class="modal-header">
+                <h2><span class="material-icons" style="color:var(--exito);">send</span> Enviar Pedido</h2>
+                <button class="modal-close" onclick="cerrarModalEnviar()" aria-label="Cerrar">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="selectProveedorEnvio">Proveedor</label>
+                <select id="selectProveedorEnvio" class="form-input"
+                        style="-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:40px;
+                        background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);
+                        background-repeat:no-repeat;background-position:right 14px center;">
+                    <option value="">-- Selecciona un proveedor --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="correoAsignadoEnvio">Correo asignado</label>
+                <div class="combobox-wrapper" style="position:relative;">
+                    <input type="email" id="correoAsignadoEnvio" class="form-input"
+                           list="listaCorreosEnvio" placeholder="Escribe o selecciona un correo..."
+                           autocomplete="off" spellcheck="false">
+                    <span class="material-icons combobox-arrow" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--texto-secundario);">expand_more</span>
+                    <datalist id="listaCorreosEnvio">
+                        <option value="IVAN@OUTLOOK.COM">
+                        <option value="NADRO@OUTLOOK.COM">
+                    </datalist>
+                </div>
+            </div>
+            <div class="checkbox-group" style="margin-top:4px;margin-bottom:8px;">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="chkDescargarPDF" checked>
+                    <label for="chkDescargarPDF">Descargar PDF Completo antes de enviar</label>
+                </div>
+            </div>
+            <div class="alert alert-info" style="margin-top:8px;">
+                <span class="material-icons">info</span>
+                <div style="font-size:13px;" id="infoEnvioTexto">
+                    Al enviar: se descargará el <b>PDF Completo</b> del proveedor y se abrirá Outlook Web con el borrador ya redactado. Después <b>arrastra el PDF descargado</b> al correo para adjuntarlo.
+                </div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:20px;">
+                <button class="btn btn-danger" id="btnCancelarEnvio" style="flex:1;">
+                    <span class="material-icons">close</span> Cancelar
+                </button>
+                <button class="btn btn-success" id="btnConfirmarEnvio" style="flex:1;">
+                    <span class="material-icons">send</span> Enviar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="popover-proveedores" id="popoverProveedores" role="tooltip"></div>
     <div class="toast-container" id="toastContainer"></div>
 
@@ -919,7 +978,6 @@
                 r.readAsArrayBuffer(archivo);
             });
         }
-        // Lector universal de bytes (solo navegador)
         async function obtenerBytesArchivo(fileInput) {
             const f = fileInput.files && fileInput.files[0];
             if (!f) return { vacio: true };
@@ -1467,8 +1525,8 @@
             let cacheEmpates = new Map();
 
             const VIRTUAL = {
-                matriz:   { items: [], start: -1, end: -1, rowH: 56, ready: false },
-                sucursal: { items: [], start: -1, end: -1, rowH: 56, ready: false }
+                matriz:   { items: [], start: -1, end: -1, rowH: 38, ready: false },
+                sucursal: { items: [], start: -1, end: -1, rowH: 38, ready: false }
             };
             const tablaDirty = { matriz: true, sucursal: true };
 
@@ -1665,7 +1723,7 @@
             window.addEventListener('beforeunload', () => { guardarDatos(); guardarPedidosLS(); });
             setInterval(() => guardarDatos(), 10000);
 
-            function showToast(message, type = 'info') {
+            function showToast(message, type = 'info', duration = 3000) {
                 const container = document.getElementById('toastContainer');
                 while (container.children.length >= 5) container.removeChild(container.firstChild);
                 const toast = document.createElement('div');
@@ -1676,7 +1734,7 @@
                 setTimeout(() => {
                     toast.style.animation = 'slideOut 0.3s ease forwards';
                     setTimeout(() => toast.remove(), 300);
-                }, 3000);
+                }, duration);
             }
 
             function manejarReordenProveedor(fromIndex, toIndex) {
@@ -1819,8 +1877,12 @@
                 }
             }
             navItems.forEach(item => {
-                item.addEventListener('click', () => navegarA(item.dataset.section));
+                item.addEventListener('click', () => {
+                    if (!item.dataset.section) return;
+                    navegarA(item.dataset.section);
+                });
                 item.addEventListener('keydown', (e) => {
+                    if (!item.dataset.section) return;
                     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
                 });
             });
@@ -1836,6 +1898,7 @@
 
             document.getElementById('btnAgregarProveedor').addEventListener('click', async () => {
                 const nombre = document.getElementById('nombreProveedor').value.trim();
+                const correo = (document.getElementById('correoProveedor').value || '').trim().toUpperCase();
                 const fileInput = document.getElementById('archivoProveedor');
                 const activarStock = document.getElementById('activarStockMinimo').checked;
                 const stockMinimo = activarStock ? (parseInt(document.getElementById('stockMinimo').value) || 20) : 0;
@@ -1903,7 +1966,8 @@
 
                     proveedores.push({
                         nombre, productos: productosFinales, stockMinimo,
-                        descuento: aplicarDescuento ? porcentajeDescuento : 0, activarStock
+                        descuento: aplicarDescuento ? porcentajeDescuento : 0, activarStock,
+                        correo: correo || ''
                     });
 
                     marcarModificado();
@@ -1915,6 +1979,7 @@
                     guardarDatos();
 
                     document.getElementById('nombreProveedor').value = '';
+                    document.getElementById('correoProveedor').value = '';
                     document.getElementById('archivoProveedor').value = '';
                     document.getElementById('activarStockMinimo').checked = false;
                     document.getElementById('stockMinimo').value = '20';
@@ -1949,7 +2014,7 @@
                             <span class="material-icons" style="color:var(--acento);">store</span>
                             <div>
                                 <div class="proveedor-name">${escapeHtml(p.nombre)}</div>
-                                <div class="product-count">${p.productos.length} productos | Stock mín: ${p.activarStock ? p.stockMinimo : 'No'} | Desc: ${p.descuento}%</div>
+                                <div class="product-count">${p.productos.length} productos | Stock mín: ${p.activarStock ? p.stockMinimo : 'No'} | Desc: ${p.descuento}%${p.correo ? ' | ✉ ' + escapeHtml(p.correo) : ''}</div>
                             </div>
                         </div>
                         <button class="btn btn-danger btn-sm btn-eliminar-proveedor" data-index="${index}" aria-label="Eliminar proveedor ${escapeAttr(p.nombre)}">
@@ -2154,7 +2219,7 @@
                 const scrollTop = scrollEl.scrollTop;
                 const viewH = scrollEl.clientHeight || 500;
                 const rowH = state.rowH;
-                const overscan = 6;
+                const overscan = 10;
                 const start = Math.max(0, Math.floor(scrollTop / rowH) - overscan);
                 const end = Math.min(items.length, Math.ceil((scrollTop + viewH) / rowH) + overscan);
                 if (!reset && start === state.start && end === state.end) return;
@@ -2225,7 +2290,7 @@
                 tablaDirty[tipo] = false;
                 const state = VIRTUAL[tipo];
                 state.items = pendientes;
-                state.rowH = 56;
+                state.rowH = 38;
                 state.start = -1;
                 state.end = -1;
                 prepararVirtual(tipo);
@@ -2421,7 +2486,6 @@
 
             async function guardarPDFConSelector(doc, nombreArchivo) {
                 const blob = doc.output('blob');
-                // Solo navegador moderno: showSaveFilePicker (Chrome/Edge). Fallback: descarga tradicional.
                 if (typeof window.showSaveFilePicker === 'function') {
                     try {
                         const handle = await window.showSaveFilePicker({
@@ -2698,6 +2762,235 @@
             document.getElementById('btnPDFCombinadoSucursal').addEventListener('click', generarPDFCombinado);
 
             document.getElementById('btnActualizar').addEventListener('click', limpiarPedidos);
+
+            /* ============================================================
+               ENVIAR PEDIDO
+               ============================================================ */
+            window.cerrarModalEnviar = function () {
+                document.getElementById('modalEnviarPedido').classList.remove('show');
+                actualizarListaProveedores();
+            };
+
+            function abrirModalEnviar() {
+                const select = document.getElementById('selectProveedorEnvio');
+                select.innerHTML = '<option value="">-- Selecciona un proveedor --</option>';
+
+                if (!proveedores || proveedores.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.disabled = true;
+                    opt.textContent = '(No hay proveedores cargados)';
+                    select.appendChild(opt);
+                } else {
+                    proveedores.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.nombre;
+                        opt.textContent = p.nombre + (p.correo ? `  —  ${p.correo}` : '  (sin correo)');
+                        select.appendChild(opt);
+                    });
+                }
+
+                document.getElementById('correoAsignadoEnvio').value = '';
+                document.getElementById('chkDescargarPDF').checked = true;
+                document.getElementById('infoEnvioTexto').innerHTML = 'Al enviar: se descargará el <b>PDF Completo</b> del proveedor y se abrirá Outlook Web con el borrador ya redactado. Después <b>arrastra el PDF descargado</b> al correo para adjuntarlo.';
+                document.getElementById('modalEnviarPedido').classList.add('show');
+            }
+
+            document.getElementById('btnEnviarPedido').addEventListener('click', abrirModalEnviar);
+            document.getElementById('btnCancelarEnvio').addEventListener('click', cerrarModalEnviar);
+            document.getElementById('modalEnviarPedido').addEventListener('click', function (e) {
+                if (e.target === this) cerrarModalEnviar();
+            });
+
+            // Al elegir proveedor → autocompletar el correo asignado
+            document.getElementById('selectProveedorEnvio').addEventListener('change', (e) => {
+                const nombre = e.target.value;
+                const inputCorreo = document.getElementById('correoAsignadoEnvio');
+                if (!nombre) { inputCorreo.value = ''; return; }
+                const prov = proveedores.find(p => p.nombre === nombre);
+                inputCorreo.value = prov && prov.correo ? prov.correo : '';
+            });
+
+            // Al escribir un correo nuevo → guardarlo en el proveedor
+            document.getElementById('correoAsignadoEnvio').addEventListener('input', (e) => {
+                const nombre = document.getElementById('selectProveedorEnvio').value;
+                if (!nombre) return;
+                const prov = proveedores.find(p => p.nombre === nombre);
+                if (!prov) return;
+                const nuevoCorreo = (e.target.value || '').trim().toUpperCase();
+                if (prov.correo !== nuevoCorreo) {
+                    prov.correo = nuevoCorreo;
+                    marcarModificado();
+                    guardarDatos();
+                }
+            });
+
+            // Actualizar texto informativo según el checkbox
+            document.getElementById('chkDescargarPDF').addEventListener('change', (e) => {
+                const info = document.getElementById('infoEnvioTexto');
+                if (e.target.checked) {
+                    info.innerHTML = 'Al enviar: se descargará el <b>PDF Completo</b> del proveedor y se abrirá Outlook Web con el borrador ya redactado. Después <b>arrastra el PDF descargado</b> al correo para adjuntarlo.';
+                } else {
+                    info.innerHTML = 'Al enviar: se abrirá Outlook Web directamente con el borrador redactado. <b>No se generará ni descargará PDF</b>.';
+                }
+            });
+
+            async function generarYDescargarPDFCompleto(nombreProveedorSeleccionado) {
+                const ok = await asegurarJsPDF();
+                if (!ok) {
+                    showToast('No se pudo cargar la librería de PDF (jspdf).', 'danger');
+                    return null;
+                }
+                const { jsPDF } = window.jspdf;
+
+                const itemsMatriz   = obtenerProductosParaPDF('matriz',   nombreProveedorSeleccionado);
+                const itemsSucursal = obtenerProductosParaPDF('sucursal', nombreProveedorSeleccionado);
+
+                if (itemsMatriz.length === 0 && itemsSucursal.length === 0) {
+                    showToast(`No hay productos del proveedor "${nombreProveedorSeleccionado}" en ningún pedido cargado.`, 'warning');
+                    return null;
+                }
+
+                const nombreProveedor = nombreProveedorPDF(nombreProveedorSeleccionado);
+                const doc = new jsPDF();
+                const pageWidth  = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 14;
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(20);
+                doc.setTextColor(...PDF_COLORS.DARK);
+                doc.text(nombreProveedor, margin, 14);
+
+                doc.setDrawColor(...PDF_COLORS.PRIMARY);
+                doc.setLineWidth(0.6);
+                doc.line(margin, 18, pageWidth - margin, 18);
+
+                let cursorY = 26;
+
+                if (itemsMatriz.length > 0) {
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(12);
+                    doc.setTextColor(...PDF_COLORS.DARK);
+                    doc.text('PEDIDO MATRIZ', margin, cursorY);
+                    cursorY += 4;
+
+                    let totalMatriz = 0;
+                    const rowsMatriz = itemsMatriz.map(({ prod, resolved }) => {
+                        const precio = resolved.provObj.precio;
+                        const subtotal = precio * prod.piezas;
+                        totalMatriz += subtotal;
+                        return [prod.codigo, prod.descripcion, prod.piezas, formatCurrency(precio), formatCurrency(subtotal)];
+                    });
+
+                    doc.autoTable({
+                        startY: cursorY,
+                        head: [['Código', 'Descripción', 'Pzas', 'Precio', 'Subtotal']],
+                        body: rowsMatriz,
+                        foot: [['', '', { content: `Total Matriz:  ${formatCurrency(totalMatriz)}`, colSpan: 3, styles: { halign: 'left', fontStyle: 'bold' } }]],
+                        margin: { left: margin, right: margin },
+                        ...estilosTablaPDF(PDF_COLORS.PRIMARY),
+                        footStyles: {
+                            fillColor: PDF_COLORS.SUBTOTAL_M, textColor: PDF_COLORS.PRIMARY,
+                            fontStyle: 'bold', fontSize: 9, halign: 'left',
+                            cellPadding: { top: 2.5, bottom: 2.5, left: 4, right: 3 }
+                        }
+                    });
+                    cursorY = doc.lastAutoTable.finalY + 10;
+                }
+
+                if (itemsSucursal.length > 0) {
+                    if (itemsMatriz.length > 0 && cursorY > pageHeight - 60) {
+                        doc.addPage();
+                        cursorY = 24;
+                    }
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(12);
+                    doc.setTextColor(...PDF_COLORS.DARK);
+                    doc.text('PEDIDO SUCURSAL', margin, cursorY);
+                    cursorY += 4;
+
+                    let totalSucursal = 0;
+                    const rowsSucursal = itemsSucursal.map(({ prod, resolved }) => {
+                        const precio = resolved.provObj.precio;
+                        const subtotal = precio * prod.piezas;
+                        totalSucursal += subtotal;
+                        return [prod.codigo, prod.descripcion, prod.piezas, formatCurrency(precio), formatCurrency(subtotal)];
+                    });
+
+                    doc.autoTable({
+                        startY: cursorY,
+                        head: [['Código', 'Descripción', 'Pzas', 'Precio', 'Subtotal']],
+                        body: rowsSucursal,
+                        foot: [['', '', { content: `Total Sucursal:  ${formatCurrency(totalSucursal)}`, colSpan: 3, styles: { halign: 'left', fontStyle: 'bold' } }]],
+                        margin: { left: margin, right: margin },
+                        ...estilosTablaPDF(PDF_COLORS.SUCCESS),
+                        footStyles: {
+                            fillColor: PDF_COLORS.SUBTOTAL_S, textColor: [26, 122, 58],
+                            fontStyle: 'bold', fontSize: 9, halign: 'left',
+                            cellPadding: { top: 2.5, bottom: 2.5, left: 4, right: 3 }
+                        }
+                    });
+                    cursorY = doc.lastAutoTable.finalY + 10;
+                }
+
+                dibujarPieDePagina(doc, margin);
+
+                const nombreArchivo = `${nombreProveedor.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`;
+                doc.save(nombreArchivo);
+                return nombreArchivo;
+            }
+
+            document.getElementById('btnConfirmarEnvio').addEventListener('click', async () => {
+                const nombre = document.getElementById('selectProveedorEnvio').value;
+                if (!nombre) { showToast('Selecciona un proveedor', 'warning'); return; }
+
+                const prov = proveedores.find(p => p.nombre === nombre);
+                if (!prov) { showToast('Proveedor no encontrado', 'danger'); return; }
+
+                const correoModal = (document.getElementById('correoAsignadoEnvio').value || '').trim().toUpperCase();
+                if (!correoModal) {
+                    showToast('Asigna un correo al proveedor para continuar.', 'warning');
+                    document.getElementById('correoAsignadoEnvio').focus();
+                    return;
+                }
+
+                if (prov.correo !== correoModal) {
+                    prov.correo = correoModal;
+                    marcarModificado();
+                    guardarDatos();
+                }
+
+                const descargarPDF = document.getElementById('chkDescargarPDF').checked;
+                const btn = document.getElementById('btnConfirmarEnvio');
+                btn.disabled = true;
+                try {
+                    let archivo = null;
+                    if (descargarPDF) {
+                        archivo = await generarYDescargarPDFCompleto(nombre);
+                        if (!archivo) return;
+                    }
+
+                    const asunto = encodeURIComponent('PEDIDO FARMACIAS ADN');
+                    const cuerpo = encodeURIComponent('SE ENVIA PEDIDO ADN DEL DIA');
+                    const para   = encodeURIComponent(correoModal);
+                    const urlOutlook = `https://outlook.live.com/mail/0/deeplink/compose?to=${para}&subject=${asunto}&body=${cuerpo}`;
+
+                    const delay = archivo ? 350 : 0;
+                    setTimeout(() => { window.open(urlOutlook, '_blank'); }, delay);
+
+                    if (archivo) {
+                        showToast(`PDF "${archivo}" descargado. Adjúntalo en Outlook (${correoModal}).`, 'success', 6000);
+                    } else {
+                        showToast(`Outlook abierto con borrador para ${correoModal} (sin PDF).`, 'success', 6000);
+                    }
+                    cerrarModalEnviar();
+                } catch (err) {
+                    console.error('Error al enviar pedido:', err);
+                    showToast('Error al enviar pedido: ' + (err && err.message ? err.message : err), 'danger');
+                } finally {
+                    btn.disabled = false;
+                }
+            });
 
             async function init() {
                 const tieneDatos = await cargarDatos();

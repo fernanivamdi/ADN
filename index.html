@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FARMACIAS ADN</title>
 
-    <!-- ========== FAVICON (IMAGEN DE LA PESTAÑA) ========== -->
+    <!-- ========== FAVICON ========== -->
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
@@ -19,12 +19,31 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <!-- ========== PROTECCIÓN CONTRA INSPECCIÓN (disuasión) ========== -->
+    <script>
+        // Bloquear menú contextual (clic derecho)
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Bloquear atajos comunes de inspección
+        document.addEventListener('keydown', e => {
+            // F12
+            if (e.key === 'F12') return e.preventDefault();
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+                return e.preventDefault();
+            }
+            // Ctrl+U (ver código fuente)
+            if (e.ctrlKey && e.key.toUpperCase() === 'U') return e.preventDefault();
+            // Ctrl+S (guardar página)
+            if (e.ctrlKey && e.key.toUpperCase() === 'S') return e.preventDefault();
+        });
+    </script>
+
     <style>
         /* =====================================================
            VARIABLES GLOBALES — ESTILO APPLE (TONOS CLAROS)
            ===================================================== */
         :root {
-            /* Colores EXACTOS Apple */
             --fondo: #F5F5F7;
             --fondo-oscuro: #000000;
             --tarjeta: #FFFFFF;
@@ -38,28 +57,23 @@
             --borde: #D2D2D7;
             --borde-oscuro: #424245;
 
-            /* Estado */
             --danger: #FF3B30;
             --glow-acento: rgba(0, 113, 227, 0.18);
             --glow-peligro: rgba(255, 59, 48, 0.18);
 
-            /* Superficies */
             --relleno-input: #FFFFFF;
             --cristal: rgba(255, 255, 255, 0.86);
             --cristal-borde: rgba(255, 255, 255, 0.70);
             --cristal-sombra: 0 4px 20px rgba(31, 60, 110, 0.14), 0 30px 70px rgba(31, 60, 110, 0.28);
 
-            /* Fondo claro solicitado (#70ABFF) */
             --fondo-claro: #70ABFF;
 
-            /* Medidas Apple */
             --radio-suave: 12px;
             --radio-medio: 18px;
             --radio-tarjeta: 28px;
             --radio-boton: 980px;
             --ancho-contenido: 980px;
 
-            /* Animaciones */
             --transicion: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
             --curva-apple: cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -67,15 +81,8 @@
         /* =====================================================
            BASE GENERAL
            ===================================================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
@@ -104,13 +111,11 @@
             padding: 24px;
             background-color: #70ABFF;
         }
-
         .login-overlay.hidden {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
         }
-
         .login-overlay::before {
             content: '';
             position: absolute;
@@ -128,14 +133,6 @@
             --cristal: rgba(255, 255, 255, 0.88);
             --cristal-borde: rgba(255, 255, 255, 0.75);
             --cristal-sombra: 0 4px 20px rgba(31, 60, 110, 0.16), 0 30px 70px rgba(31, 60, 110, 0.30);
-            --texto-principal: #1D1D1F;
-            --texto-secundario: #6E6E73;
-            --borde: #D2D2D7;
-            --relleno-input: #FFFFFF;
-            --acento: #0071E3;
-            --acento-hover: #0077ED;
-            --glow-acento: rgba(0, 113, 227, 0.18);
-            --danger: #FF3B30;
 
             position: relative;
             z-index: 2;
@@ -154,21 +151,17 @@
         }
 
         @keyframes loginSlideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         /* =====================================================
-           LOGO DENTRO DEL LOGIN — SOLO TIPOGRAFÍA
+           LOGO — SOLO TIPOGRAFÍA
            ===================================================== */
         .login-logo {
             display: flex;
             justify-content: center;
             margin-bottom: 26px;
         }
-
         .logo-adn {
             display: flex;
             flex-direction: column;
@@ -180,7 +173,6 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display",
                          "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-
         .logo-adn-top {
             width: 112%;
             display: flex;
@@ -192,7 +184,6 @@
             padding: 0 1px 6px;
             border-bottom: 3.5px solid currentColor;
         }
-
         .logo-adn-bottom {
             display: flex;
             justify-content: space-between;
@@ -229,7 +220,6 @@
             margin-bottom: 18px;
             position: relative;
         }
-
         .login-field label {
             display: block;
             font-size: 13px;
@@ -245,7 +235,6 @@
             display: flex;
             align-items: center;
         }
-
         .login-input-wrapper .material-icons {
             position: absolute;
             font-size: 20px;
@@ -254,10 +243,8 @@
             transition: color 0.25s var(--transicion);
             z-index: 1;
         }
-
         .login-input-wrapper .material-icons.person { left: 15px; }
         .login-input-wrapper .material-icons.lock   { left: 15px; }
-
         .login-input-wrapper .material-icons.eye {
             right: 15px;
             cursor: pointer;
@@ -266,10 +253,7 @@
             user-select: none;
             transition: color 0.2s ease, opacity 0.2s ease;
         }
-
-        .login-input-wrapper .material-icons.eye:hover {
-            color: var(--texto-principal);
-        }
+        .login-input-wrapper .material-icons.eye:hover { color: var(--texto-principal); }
 
         .login-field input {
             width: 100%;
@@ -285,21 +269,16 @@
             -webkit-appearance: none;
             appearance: none;
         }
-
         .login-field input::placeholder {
             color: var(--texto-secundario);
             opacity: 0.75;
         }
-
         .login-field input:focus {
             border-color: var(--acento);
             box-shadow: 0 0 0 3px var(--glow-acento);
         }
-
         .login-field:focus-within .material-icons.person,
-        .login-field:focus-within .material-icons.lock {
-            color: var(--acento);
-        }
+        .login-field:focus-within .material-icons.lock { color: var(--acento); }
 
         /* =====================================================
            BOTÓN DE INICIAR SESIÓN
@@ -322,21 +301,10 @@
             -webkit-appearance: none;
             appearance: none;
         }
-
-        .login-btn:hover {
-            background: var(--acento-hover);
-            transform: scale(1.01);
-        }
-
-        .login-btn:active {
-            transform: scale(0.985);
-            opacity: 0.92;
-        }
-
-        .login-btn:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 3px var(--glow-acento);
-        }
+        .login-btn:hover { background: var(--acento-hover); transform: scale(1.01); }
+        .login-btn:active { transform: scale(0.985); opacity: 0.92; }
+        .login-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
+        .login-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
         /* =====================================================
            CONTENEDOR PRINCIPAL (IFRAME + TOP BAR)
@@ -348,12 +316,7 @@
             visibility: hidden;
             transition: opacity 0.5s var(--curva-apple) 0.15s, visibility 0.5s var(--curva-apple) 0.15s;
         }
-
-        .app-container.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .app-container.visible { opacity: 1; visibility: visible; }
         .app-container iframe {
             width: 100%;
             height: 100%;
@@ -365,7 +328,7 @@
         }
 
         /* =====================================================
-           TOP BAR — POSICIÓN SUPERIOR IZQUIERDA
+           TOP BAR
            ===================================================== */
         .top-bar {
             position: absolute;
@@ -375,17 +338,15 @@
             height: 56px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 0 28px;
             z-index: 20;
-            pointer-events: none;         /* deja pasar clics al iframe */
+            pointer-events: none;
         }
 
-        /* =====================================================
-           TOP-BAR-BRAND — INTERRUPTOR SURTIDO / PEDIDO
-           ===================================================== */
         .top-bar .top-bar-brand {
             pointer-events: auto;
-            flex: 0 0 auto;                /* primer hijo flex → pegado a la izquierda */
+            flex: 0 0 auto;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -394,7 +355,6 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-
         .top-bar .top-bar-brand .material-icons {
             font-size: 18px;
             line-height: 1;
@@ -403,12 +363,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: var(--acento);          /* #0071E3 */
+            color: var(--acento);
             flex: 0 0 auto;
         }
 
         /* =====================================================
-           SEGMENTED CONTROL — PASTILLA CON BOTONES DE 32px
+           SEGMENTED CONTROL
            ===================================================== */
         .segmented-control {
             position: relative;
@@ -419,12 +379,11 @@
             -webkit-backdrop-filter: saturate(180%) blur(20px);
             backdrop-filter: saturate(180%) blur(20px);
             border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 980px;          /* pastilla */
+            border-radius: 980px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(31, 60, 110, 0.08);
-            height: 36px;                  /* 32 px botones + 2 px padding × 2 */
+            height: 36px;
         }
 
-        /* Pulgar azul deslizante */
         .segmented-thumb {
             position: absolute;
             top: 2px;
@@ -432,25 +391,21 @@
             bottom: 2px;
             width: calc(50% - 2px);
             background: var(--acento);
-            border-radius: 980px;          /* pastilla */
+            border-radius: 980px;
             box-shadow: 0 1px 3px rgba(0, 113, 227, 0.35);
             transition: transform 0.42s var(--curva-apple);
             z-index: 1;
             pointer-events: none;
         }
+        #modeSwitch[data-mode="pedido"] .segmented-thumb { transform: translateX(100%); }
 
-        #modeSwitch[data-mode="pedido"] .segmented-thumb {
-            transform: translateX(100%);
-        }
-
-        /* Opciones SURTIDO / PEDIDO — altura 32 px, pastilla */
         .mode-option {
             position: relative;
             z-index: 2;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            height: 32px;                  /* ALTURA 32 px */
+            height: 32px;
             padding: 0 16px;
             font-family: inherit;
             font-size: 13px;
@@ -462,82 +417,70 @@
             color: #6E6E73;
             background: transparent;
             border: none;
-            border-radius: 980px;          /* pastilla */
+            border-radius: 980px;
             transition: color 0.3s var(--curva-apple);
             cursor: pointer;
             -webkit-appearance: none;
             appearance: none;
         }
+        .mode-option:hover { color: var(--texto-principal); }
+        .mode-option.active { color: #FFFFFF; }
+        .mode-option.active:hover { color: #FFFFFF; }
+        .mode-option:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
 
-        .mode-option:hover {
-            color: var(--texto-principal);
+        /* =====================================================
+           BOTÓN CERRAR SESIÓN
+           ===================================================== */
+        .logout-btn {
+            pointer-events: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 36px;
+            padding: 0 14px;
+            background: rgba(255, 255, 255, 0.82);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 980px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(31, 60, 110, 0.08);
+            color: #6E6E73;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 0.2s ease, background 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
         }
-
-        .mode-option.active {
-            color: #FFFFFF;
-        }
-
-        .mode-option.active:hover {
-            color: #FFFFFF;
-        }
-
-        .mode-option:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 3px var(--glow-acento);
-        }
+        .logout-btn:hover { color: var(--danger); background: rgba(255, 255, 255, 0.95); }
+        .logout-btn .material-icons { font-size: 16px; width: 16px; height: 16px; }
 
         /* =====================================================
            RESPONSIVE
            ===================================================== */
         @media (max-width: 480px) {
-            .login-card {
-                padding: 40px 26px 36px;
-                border-radius: 24px;
-            }
-
-            .logo-adn {
-                transform: scale(0.86);
-                transform-origin: center center;
-                margin: -6px 0;
-            }
-
-            .login-title {
-                font-size: 24px;
-                margin-bottom: 28px;
-            }
-
-            .top-bar {
-                height: 52px;
-                padding: 0 14px;
-            }
-
-            .top-bar .top-bar-brand {
-                gap: 6px;
-            }
-
-            .mode-option {
-                padding: 0 11px;
-                font-size: 11.5px;
-                letter-spacing: 0.02em;
-            }
+            .login-card { padding: 40px 26px 36px; border-radius: 24px; }
+            .logo-adn { transform: scale(0.86); transform-origin: center center; margin: -6px 0; }
+            .login-title { font-size: 24px; margin-bottom: 28px; }
+            .top-bar { height: 52px; padding: 0 14px; }
+            .top-bar .top-bar-brand { gap: 6px; }
+            .mode-option { padding: 0 11px; font-size: 11.5px; letter-spacing: 0.02em; }
+            .logout-btn { padding: 0 10px; font-size: 11px; }
         }
 
         /* =====================================================
            ACCESIBILIDAD — MOVIMIENTO REDUCIDO
            ===================================================== */
         @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
+            *, *::before, *::after {
                 animation-duration: 0.001ms !important;
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.001ms !important;
             }
-
-            .login-card {
-                opacity: 1;
-                transform: none;
-            }
+            .login-card { opacity: 1; transform: none; }
         }
     </style>
 </head>
@@ -545,13 +488,11 @@
 <body>
 
     <!-- =====================================================
-         PANTALLA DE INICIO DE SESIÓN (FONDO #70ABFF)
+         PANTALLA DE INICIO DE SESIÓN
          ===================================================== -->
     <div class="login-overlay" id="loginOverlay">
-
         <div class="login-card">
 
-            <!-- LOGO TIPOGRÁFICO: FARMACIAS ADN -->
             <div class="login-logo">
                 <div class="logo-adn" role="img" aria-label="Farmacias ADN">
                     <div class="logo-adn-top">
@@ -585,9 +526,7 @@
             <button class="login-btn" id="loginBtn" onclick="iniciarSesion()">
                 Iniciar Sesión
             </button>
-
         </div>
-
     </div>
 
     <!-- =====================================================
@@ -595,35 +534,23 @@
          ===================================================== -->
     <div class="app-container" id="appContainer">
 
-        <!-- TOP BAR — INTERRUPTOR SUPERIOR IZQUIERDO -->
         <div class="top-bar">
             <div class="top-bar-brand" id="modeSwitch" data-mode="surtido" role="tablist" aria-label="Cambiar entre Surtido y Pedido">
-
                 <span class="material-icons" aria-hidden="true">receipt_long</span>
-
                 <div class="segmented-control">
                     <span class="segmented-thumb" aria-hidden="true"></span>
-
-                    <a href="binario.html"
-                       class="mode-option active"
-                       id="optSurtido"
-                       role="tab"
-                       aria-selected="true"
-                       data-src="binario.html">SURTIDO</a>
-
-                    <a href="cotizacion.html"
-                       class="mode-option"
-                       id="optPedido"
-                       role="tab"
-                       aria-selected="false"
-                       data-src="cotizacion.html">PEDIDO</a>
+                    <a href="binario.html" class="mode-option active" id="optSurtido" role="tab" aria-selected="true" data-src="binario.html">SURTIDO</a>
+                    <a href="cotizacion.html" class="mode-option" id="optPedido" role="tab" aria-selected="false" data-src="cotizacion.html">PEDIDO</a>
                 </div>
-
             </div>
+
+            <button class="logout-btn" id="logoutBtn" type="button" aria-label="Cerrar sesión">
+                <span class="material-icons" aria-hidden="true">logout</span>
+                Salir
+            </button>
         </div>
 
         <iframe id="marco" name="marco" src="binario.html" title="Contenido principal"></iframe>
-
     </div>
 
     <!-- =====================================================
@@ -637,8 +564,8 @@
             { user: 'ivxn',   pass: '2705'  },
             { user: 'jose',   pass: 'a2011' },
             { user: 'JOSE',   pass: 'A2011' },
-            { user: 'carlos', pass: 'c1' },
-            { user: 'carlos', pass: 'C1' }
+            { user: 'carlos', pass: 'c1'    },
+            { user: 'carlos', pass: 'C1'    }
         ];
 
         const inputUsuario  = document.getElementById('usuario');
@@ -646,19 +573,17 @@
 
         const ESTILO_ERROR = {
             borderColor: 'var(--danger)',
-            boxShadow: '0 0 0 4px rgba(220, 38, 38, 0.15)'
+            boxShadow: '0 0 0 4px rgba(255, 59, 48, 0.15)'
         };
 
         function marcarError(el) {
             el.style.borderColor = ESTILO_ERROR.borderColor;
             el.style.boxShadow   = ESTILO_ERROR.boxShadow;
         }
-
         function limpiarError(el) {
             el.style.borderColor = '';
             el.style.boxShadow   = '';
         }
-
         function limpiarErroresDiferidos() {
             setTimeout(() => {
                 limpiarError(inputUsuario);
@@ -675,24 +600,10 @@
 
             let hayError = false;
 
-            if (!usuario) {
-                marcarError(inputUsuario);
-                hayError = true;
-            } else {
-                limpiarError(inputUsuario);
-            }
+            if (!usuario)  { marcarError(inputUsuario);  hayError = true; } else limpiarError(inputUsuario);
+            if (!password) { marcarError(inputPassword); hayError = true; } else limpiarError(inputPassword);
 
-            if (!password) {
-                marcarError(inputPassword);
-                hayError = true;
-            } else {
-                limpiarError(inputPassword);
-            }
-
-            if (hayError) {
-                limpiarErroresDiferidos();
-                return;
-            }
+            if (hayError) { limpiarErroresDiferidos(); return; }
 
             const usuarioNormalizado = usuario.toLowerCase();
             const esValido = CREDENCIALES.some(cred =>
@@ -709,6 +620,7 @@
 
             document.getElementById('loginOverlay').classList.add('hidden');
             document.getElementById('appContainer').classList.add('visible');
+            document.getElementById('marco').src = 'binario.html';
         }
 
         /* =============================================
@@ -724,15 +636,10 @@
            LOGIN CON TECLA ENTER
            ============================================= */
         inputPassword.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                iniciarSesion();
-            }
+            if (e.key === 'Enter') iniciarSesion();
         });
-
         inputUsuario.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                inputPassword.focus();
-            }
+            if (e.key === 'Enter') inputPassword.focus();
         });
 
         /* =============================================
@@ -764,10 +671,31 @@
             e.preventDefault();
             cambiarModo('surtido');
         });
-
         optPedido.addEventListener('click', function (e) {
             e.preventDefault();
             cambiarModo('pedido');
+        });
+
+        /* =============================================
+           CERRAR SESIÓN
+           ============================================= */
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            // Oculta la app y vuelve a mostrar el login
+            document.getElementById('appContainer').classList.remove('visible');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+
+            // Limpia los campos y el iframe
+            inputUsuario.value  = '';
+            inputPassword.value = '';
+            inputPassword.setAttribute('type', 'password');
+            document.getElementById('togglePassword').textContent = 'visibility';
+            document.getElementById('marco').src = 'binario.html';
+
+            // Regresa el interruptor a SURTIDO
+            cambiarModo('surtido');
+
+            // Enfoca el usuario
+            setTimeout(() => inputUsuario.focus(), 350);
         });
     </script>
 </body>
