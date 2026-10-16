@@ -123,7 +123,7 @@
         .chip-order-select:hover { background-color: #fff; transform: scale(1.05); box-shadow: 0 0 0 2px var(--acento-anillo); }
         .chip-order-select:focus { outline: none; box-shadow: 0 0 0 3px var(--acento-anillo); }
         .provider-chip:hover .chip-order-select { border-color: rgba(255,255,255,0.7); }
-        .main-content { padding: 24px; padding-top: calc(var(--header-h) + 48px); min-height: 100vh; transition: padding 0.2s; }
+        .main-content { padding: 24px; padding-top: var(--header-h); min-height: 100vh; transition: padding 0.2s; }
         .page-container { max-width: var(--ancho-contenido); margin: 0 auto; }
         .card {
             background: var(--tarjeta); border-radius: var(--radio-medio); padding: 32px;
@@ -262,7 +262,7 @@
         .table-scroll::-webkit-scrollbar-track { background: transparent; }
         .table-scroll::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 6px; border: 3px solid var(--tarjeta); }
         .table-scroll::-webkit-scrollbar-thumb:hover { background: var(--texto-terciario); }
-        .table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+        .table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
         .table thead { background: var(--tarjeta); }
         .table th {
             padding: 8px 6px; text-align: left; font-weight: 600; color: var(--texto-secundario);
@@ -271,12 +271,21 @@
             box-shadow: inset 0 -1px 0 var(--borde-suave);
         }
         .table th:first-child, .table td:first-child { padding-left: 14px; }
-        .table th:last-child, .table td:last-child { padding-right: 14px; width: 56px; min-width: 56px; }
-        .table tbody tr { border-bottom: 1px solid var(--borde-suave); transition: background 0.2s ease; }
-        .table tbody tr:last-child { border-bottom: none; }
-        .table tbody tr:hover { background: var(--fondo-suave); cursor: pointer; }
+        .table th:last-child, .table td:last-child { padding-right: 14px; }
+        .table th.col-acciones, .table td.col-acciones { width: 56px; min-width: 56px; }
+
+        /* ===== FILAS SIN LÍNEA NEGRA DIVISORIA ===== */
+        .table tbody tr {
+            border-bottom: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            background: #FFFFFF;
+        }
+        .table tbody tr:hover { background: #E3E3E9; }
+        /* ========================================== */
+
         .table tbody td { padding: 5px 6px; color: var(--texto-principal); vertical-align: middle; line-height: 1.15; }
-        .table tbody tr.virtual-spacer, .table tbody tr.virtual-spacer:hover { background: transparent; border: none; cursor: default; pointer-events: none; }
+        .table tbody tr.virtual-spacer, .table tbody tr.virtual-spacer:hover { background: transparent !important; border: none !important; cursor: default; pointer-events: none; }
         .table tbody tr.virtual-spacer td { padding: 0 !important; border: 0 !important; background: transparent; line-height: 0; font-size: 0; }
         .table tbody td .articulo, .table tbody td .producto-nombre-clickable { font-weight: 700; color: var(--texto-principal); }
         .table tbody td strong {
@@ -285,9 +294,15 @@
             background: var(--relleno); padding: 2px 6px; border-radius: 5px; display: inline-block; letter-spacing: 0;
         }
         .table th.col-descripcion, .table td.col-descripcion { width: 260px; min-width: 260px; max-width: 260px; }
+        .table td.exist-cell { font-variant-numeric: tabular-nums; text-align: center; color: var(--texto-secundario); font-weight: 500; }
         .desc-truncate {
             display: inline-block; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
             white-space: nowrap; vertical-align: middle; font-weight: 700; color: var(--texto-principal);
+        }
+        .linea-encargo {
+            font-weight: 700;
+            color: var(--texto-principal);
+            letter-spacing: -0.01em;
         }
         .segunda-opcion-badge { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; user-select: none; }
         .segunda-opcion-badge:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,113,227,0.25); }
@@ -512,7 +527,7 @@
             .provider-status .label { display: none; }
             .provider-chip { font-size: 11px; padding: 2px 3px 2px 9px; }
             .chip-order-select { height: 18px; min-width: 34px; font-size: 10px; padding: 0 12px 0 3px; background-position: right 3px center; }
-            .main-content { padding: 14px; padding-top: calc(var(--header-h) + 24px); }
+            .main-content { padding: 14px; padding-top: var(--header-h); }
             .card { padding: 22px; }
             .input-group { flex-direction: column; align-items: stretch; }
             .input-group .form-group { margin-bottom: 0; }
@@ -716,17 +731,18 @@
                         <table class="table" id="tablaMatriz">
                             <thead>
                                 <tr>
+                                    <th class="col-acciones">Acciones</th>
+                                    <th>Proveedor</th>
                                     <th>Código</th>
                                     <th class="col-descripcion">Descripción</th>
                                     <th>Piezas</th>
-                                    <th>Existencia</th>
                                     <th>Precio Unit.</th>
                                     <th>Subtotal</th>
-                                    <th>Proveedor</th>
+                                    <th>Exist. Matriz</th>
+                                    <th>Exist. Sucursal</th>
                                     <th>2da Opción</th>
                                     <th>Línea</th>
                                     <th>Marca</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="cuerpoMatriz"></tbody>
@@ -774,17 +790,18 @@
                         <table class="table" id="tablaSucursal">
                             <thead>
                                 <tr>
+                                    <th class="col-acciones">Acciones</th>
+                                    <th>Proveedor</th>
                                     <th>Código</th>
                                     <th class="col-descripcion">Descripción</th>
                                     <th>Piezas</th>
-                                    <th>Existencia</th>
                                     <th>Precio Unit.</th>
                                     <th>Subtotal</th>
-                                    <th>Proveedor</th>
+                                    <th>Exist. Matriz</th>
+                                    <th>Exist. Sucursal</th>
                                     <th>2da Opción</th>
                                     <th>Línea</th>
                                     <th>Marca</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="cuerpoSucursal"></tbody>
@@ -1462,7 +1479,10 @@
                         codigo: item.codigoNormalizado, articulo: item.articulo,
                         linea: item.linea || '', pedidoMatriz: pedidoMatrizOk,
                         pedidoSucursal: pedidoSucursalOk, marca: item.marca || '',
-                        fabricante: item.fabricante || '', fabricanteSucursal: item.fabricanteSucursal || ''
+                        fabricante: item.fabricante || '', fabricanteSucursal: item.fabricanteSucursal || '',
+                        existenciaAlmacen:  Number(item.existenciaAlmacen  ?? item.almacen)  || 0,
+                        existenciaMatriz:   Number(item.existenciaMatriz   ?? item.matriz)   || 0,
+                        existenciaSucursal: Number(item.existenciaSucursal ?? item.sucursal) || 0
                     });
                 }
             });
@@ -1590,10 +1610,31 @@
                     const ps = JSON.parse(localStorage.getItem(STORAGE_KEYS_PEDIDOS.productosSucursal) || 'null');
                     const mm = JSON.parse(localStorage.getItem(STORAGE_KEYS_PEDIDOS.manualesMatriz)    || 'null');
                     const ms = JSON.parse(localStorage.getItem(STORAGE_KEYS_PEDIDOS.manualesSucursal)  || 'null');
-                    if (Array.isArray(pm)) productosMatriz = pm;
+
+                    if (Array.isArray(pm)) productosMatriz   = pm;
                     if (Array.isArray(ps)) productosSucursal = ps;
-                    if (Array.isArray(mm)) productosManualesMatriz = mm.map(m => productosMatriz.find(p => String(p.codigo) === String(m.codigo)) || m);
-                    if (Array.isArray(ms)) productosManualesSucursal = ms.map(m => productosSucursal.find(p => String(p.codigo) === String(m.codigo)) || m);
+
+                    const rehidratarManual = (arr, base) => (arr || []).map(m => {
+                        const encontrado = base.find(p => String(p.codigo) === String(m.codigo));
+                        if (encontrado) {
+                            encontrado.linea = 'ENCARGO';
+                            encontrado.esManual = true;
+                            return encontrado;
+                        }
+                        return { ...m, linea: 'ENCARGO', esManual: true };
+                    });
+
+                    if (Array.isArray(mm)) productosManualesMatriz   = rehidratarManual(mm, productosMatriz);
+                    if (Array.isArray(ms)) productosManualesSucursal = rehidratarManual(ms, productosSucursal);
+
+                    productosMatriz = [
+                        ...productosManualesMatriz,
+                        ...productosMatriz.filter(p => !productosManualesMatriz.some(m => mismoCodigo(m.codigo, p.codigo)))
+                    ];
+                    productosSucursal = [
+                        ...productosManualesSucursal,
+                        ...productosSucursal.filter(p => !productosManualesSucursal.some(m => mismoCodigo(m.codigo, p.codigo)))
+                    ];
                 } catch (e) { console.warn('No se pudieron cargar los pedidos de localStorage:', e); }
             }
 
@@ -2079,34 +2120,36 @@
                     codigo: p.codigo, descripcion: p.articulo || 'Sin descripción',
                     piezas: tipo === 'matriz' ? p.pedidoMatriz : p.pedidoSucursal,
                     linea: p.linea || '', marca: p.marca || '', fabricante: p.fabricante || '',
-                    pedidoMatriz: p.pedidoMatriz, pedidoSucursal: p.pedidoSucursal
+                    pedidoMatriz: p.pedidoMatriz, pedidoSucursal: p.pedidoSucursal,
+                    existenciaAlmacen: p.existenciaAlmacen || 0,
+                    existenciaMatriz: p.existenciaMatriz || 0,
+                    existenciaSucursal: p.existenciaSucursal || 0
                 }));
-                cfg.productos = [...productos, ...cfg.manuales];
+                cfg.productos = [...cfg.manuales, ...productos];
                 marcarTablaDirty(tipo);
                 guardarPedidosLS();
-                document.getElementById(cfg.estadoId).innerHTML = `
-                    <div class="alert alert-info">
-                        <span class="material-icons">check_circle</span>
-                        <div>${productos.length} productos cargados + ${cfg.manuales.length} agregados manualmente.</div>
-                    </div>
-                `;
-                showToast(`${cfg.label} cargado (${productos.length} productos)`, 'success');
+                document.getElementById(cfg.estadoId).innerHTML = '';
+                showToast(`${cfg.label} cargado: ${productos.length} productos + ${cfg.manuales.length} manuales`, 'success');
             }
             document.getElementById('btnCargarMatriz').addEventListener('click', () => cargarPedido('matriz'));
             document.getElementById('btnCargarSucursal').addEventListener('click', () => cargarPedido('sucursal'));
 
             window.agregarAlPedido = function (codigo, descripcion, cantidad, tipo) {
                 const cfg = CONFIG_TIPO[tipo];
-                const nuevo = { codigo, descripcion, piezas: cantidad, linea: '', marca: '', fabricante: '', esManual: true };
+                const nuevo = {
+                    codigo, descripcion, piezas: cantidad,
+                    linea: 'ENCARGO', marca: '', fabricante: '', esManual: true,
+                    existenciaAlmacen: 0, existenciaMatriz: 0, existenciaSucursal: 0
+                };
                 if (cfg.productos.some(p => mismoCodigo(p.codigo, codigo))) {
                     showToast(`Este producto ya está en el ${cfg.label}`, 'warning');
                     return;
                 }
                 cfg.manuales = [nuevo, ...cfg.manuales];
-                cfg.productos = [...cfg.productos, nuevo];
+                cfg.productos = [nuevo, ...cfg.productos];
                 marcarTablaDirty(tipo);
                 guardarPedidosLS();
-                showToast(`Producto ${codigo} agregado manualmente (${cantidad} piezas)`, 'success');
+                showToast(`Producto ${codigo} agregado como ENCARGO (${cantidad} piezas)`, 'success');
             };
             window.eliminarProducto = function (codigo, tipo) {
                 const cfg = CONFIG_TIPO[tipo];
@@ -2117,14 +2160,10 @@
                 showToast(`Producto ${codigo} eliminado`, 'warning');
             };
 
-            function htmlExistencia(provObj) {
-                if (!provObj) return '-';
-                let html = `<span class="badge badge-success">${provObj.existencia}</span>`;
-                if (provObj.activarStock && provObj.existencia < provObj.stockMinimo) {
-                    html += `<span class="material-icons" style="font-size:16px;margin-left:4px;color:var(--alerta);" title="Existencia baja">warning</span>
-                        <div style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--peligro-suave);color:var(--peligro-texto);border-radius:6px;font-size:0.7rem;font-weight:600;margin-top:4px;">Existencia baja</div>`;
-                }
-                return html;
+            function celdaLinea(prod) {
+                const linea = String(prod.linea || '').trim();
+                if (linea.toUpperCase() === 'ENCARGO') return '<span class="linea-encargo">ENCARGO</span>';
+                return escapeHtml(abreviarLinea(linea));
             }
 
             function crearFilaTabla(prod, tipo, opciones, resolved) {
@@ -2132,23 +2171,28 @@
                 const descEscaped = escapeHtml(descFull);
                 const descTitleAttr = escapeAttr(descFull);
                 const marcaAbrev = abreviarMarca(prod.marca);
-                const lineaAbrev = abreviarLinea(prod.linea);
+                const lineaCelda = celdaLinea(prod);
+                const exMat = Number(prod.existenciaMatriz) || 0;
+                const exSuc = Number(prod.existenciaSucursal) || 0;
+                const btnEliminar = `<button class="btn btn-danger btn-xs btn-eliminar-producto" data-codigo="${escapeAttr(prod.codigo)}" data-tipo="${tipo}" title="Eliminar"><span class="material-icons" style="font-size:16px;">delete</span></button>`;
+
                 if (!opciones || opciones.length === 0) {
                     const row = document.createElement('tr');
                     row.dataset.codigo = prod.codigo;
                     row.dataset.subtotal = '0';
                     row.innerHTML = `
+                        <td class="col-acciones">${btnEliminar}</td>
+                        <td><span class="badge badge-warning">FDC</span></td>
                         <td><strong>${escapeHtml(prod.codigo)}</strong></td>
                         <td class="col-descripcion"><span class="desc-truncate" title="${descTitleAttr}">${descEscaped}</span></td>
                         <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1"></td>
-                        <td><span class="badge badge-warning">FDC</span></td>
                         <td>-</td>
                         <td>-</td>
-                        <td><span class="text-muted">Sin proveedor</span></td>
+                        <td class="exist-cell"><span class="badge badge-info">${exMat}</span></td>
+                        <td class="exist-cell"><span class="badge badge-success">${exSuc}</span></td>
                         <td><span class="text-muted">N/A</span></td>
-                        <td>${escapeHtml(lineaAbrev)}</td>
+                        <td>${lineaCelda}</td>
                         <td>${escapeHtml(marcaAbrev)}</td>
-                        <td><button class="btn btn-danger btn-xs btn-eliminar-producto" data-codigo="${escapeAttr(prod.codigo)}" data-tipo="${tipo}" title="Eliminar"><span class="material-icons" style="font-size:16px;">delete</span></button></td>
                     `;
                     return row;
                 }
@@ -2172,17 +2216,18 @@
                 row.dataset.proveedorActual = proveedorMostrar;
                 row.dataset.subtotal = String(subtotal);
                 row.innerHTML = `
+                    <td class="col-acciones">${btnEliminar}</td>
+                    <td><div class="prov-cell"><select class="proveedor-select">${optionsHtml}</select>${tieBadgeHTML}</div></td>
                     <td><strong>${escapeHtml(prod.codigo)}</strong></td>
                     <td class="col-descripcion"><span class="desc-truncate" title="${descTitleAttr}">${descEscaped}</span></td>
                     <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1"></td>
-                    <td>${htmlExistencia(provObj)}</td>
                     <td class="precio-unit">${formatCurrency(provObj.precio)}</td>
                     <td class="subtotal-cell text-highlight">${formatCurrency(subtotal)}</td>
-                    <td><div class="prov-cell"><select class="proveedor-select">${optionsHtml}</select>${tieBadgeHTML}</div></td>
+                    <td class="exist-cell"><span class="badge badge-info">${exMat}</span></td>
+                    <td class="exist-cell"><span class="badge badge-success">${exSuc}</span></td>
                     <td>${segundaOpcionHTML}</td>
-                    <td>${escapeHtml(lineaAbrev)}</td>
+                    <td>${lineaCelda}</td>
                     <td>${escapeHtml(marcaAbrev)}</td>
-                    <td><button class="btn btn-danger btn-xs btn-eliminar-producto" data-codigo="${escapeAttr(prod.codigo)}" data-tipo="${tipo}" title="Eliminar"><span class="material-icons" style="font-size:16px;">delete</span></button></td>
                 `;
                 return row;
             }
@@ -2234,14 +2279,14 @@
                 const topPad = start * rowH;
                 const bottomPad = (items.length - end) * rowH;
                 const frag = document.createDocumentFragment();
-                if (topPad > 0) frag.appendChild(crearSpacerRow(topPad, 11));
+                if (topPad > 0) frag.appendChild(crearSpacerRow(topPad, 12));
                 for (let i = start; i < end; i++) {
                     const it = items[i];
                     const row = crearFilaTabla(it.prod, tipo, it.opciones, it.resolved || undefined);
                     row.dataset.virtualIndex = String(i);
                     frag.appendChild(row);
                 }
-                if (bottomPad > 0) frag.appendChild(crearSpacerRow(bottomPad, 11));
+                if (bottomPad > 0) frag.appendChild(crearSpacerRow(bottomPad, 12));
                 tbody.innerHTML = '';
                 tbody.appendChild(frag);
                 if (reset && !_remeasure) {
@@ -2267,7 +2312,7 @@
                 if (countEl) countEl.textContent = productos.length ? productos.length.toLocaleString() + ' productos' : '';
                 cerrarPopoverProveedores();
                 if (proveedores.length === 0 || productos.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:50px 20px;color:var(--texto-secundario);"><span class="material-icons" style="font-size:32px;display:block;margin-bottom:12px;color:var(--acento);">file_import</span><strong>Cargue proveedores y ${cfg.label}.</strong></td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:50px 20px;color:var(--texto-secundario);"><span class="material-icons" style="font-size:32px;display:block;margin-bottom:12px;color:var(--acento);">file_import</span><strong>Cargue proveedores y ${cfg.label}.</strong></td></tr>`;
                     document.getElementById(cfg.totalId).textContent = '$0.00';
                     tablaDirty[tipo] = false;
                     VIRTUAL[tipo].items = [];
@@ -2308,7 +2353,6 @@
                 if (!select) return;
                 const selectedOption = select.options[select.selectedIndex];
                 const precio = parseFloat(selectedOption.dataset.precio) || 0;
-                const existencia = parseInt(selectedOption.dataset.existencia) || 0;
                 const proveedor = select.value;
                 const codigo = row.dataset.codigo;
                 const piezasInput = row.querySelector('.piezas-input');
@@ -2318,8 +2362,8 @@
                 row.querySelector('.precio-unit').textContent = formatCurrency(precio);
                 const anotadas = obtenerAnotadas(codigo);
                 const provObj = anotadas.find(p => p.proveedor === proveedor);
-                row.cells[3].innerHTML = provObj ? htmlExistencia(provObj) : `<span class="badge badge-success">${existencia}</span>`;
-                const celdaProv = row.cells[6];
+                // La celda "Proveedor" ahora es la columna índice 1
+                const celdaProv = row.cells[1];
                 const provCell = celdaProv.querySelector('.prov-cell') || celdaProv;
                 let badgeEl = celdaProv.querySelector('.empate-badge');
                 const debeMostrar = !!(provObj && provObj.hayEmpate && provObj.numeroEmpate);
@@ -2334,7 +2378,8 @@
                 row.dataset.subtotal = String(subtotal);
                 const segunda = anotadas.find(p => p.proveedor !== proveedor);
                 const segundaPrefijo = (segunda && segunda.hayEmpate) ? `#${segunda.numeroEmpate} ` : '';
-                row.cells[7].innerHTML = segunda
+                // "2da Opción" ahora es la columna índice 9
+                row.cells[9].innerHTML = segunda
                     ? `<span class="badge badge-info segunda-opcion-badge" data-codigo="${escapeAttr(codigo)}" title="Clic para ver todas las opciones">${segundaPrefijo}${escapeHtml(segunda.proveedor)} - ${formatCurrency(segunda.precio)}</span>`
                     : '<span class="text-muted">No disponible</span>';
                 row.dataset.proveedorActual = proveedor;
@@ -2402,7 +2447,7 @@
                             actualizarTotal(tipo);
 
                             if (state.items.length === 0) {
-                                tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:50px 20px;color:var(--texto-secundario);"><span class="material-icons" style="font-size:32px;display:block;margin-bottom:12px;color:var(--acento);">filter_alt_off</span><strong>No hay productos de "${escapeHtml(filtroProv)}" en el ${cfg.label}.</strong></td></tr>`;
+                                tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:50px 20px;color:var(--texto-secundario);"><span class="material-icons" style="font-size:32px;display:block;margin-bottom:12px;color:var(--acento);">filter_alt_off</span><strong>No hay productos de "${escapeHtml(filtroProv)}" en el ${cfg.label}.</strong></td></tr>`;
                                 state.start = -1;
                                 state.end = -1;
                             } else {
