@@ -287,31 +287,15 @@
         }
         /* Fila oscura (alterna) */
         .table tbody tr.fila-oscura { background: var(--fila-oscura); }
-        /* Hover verde suave (más vivo) — aplica a cualquier fila */
-        .table tbody tr:hover,
-        .table tbody tr.fila-oscura:hover {
-            background: var(--fila-hover);
-        }
-        /* Todas las celdas y su contenido en negritas al hacer hover */
-        .table tbody tr:hover td,
-        .table tbody tr:hover td * {
-            font-weight: 700 !important;
-        }
-        /* Mantener el color del texto legible */
-        .table tbody tr:hover td,
-        .table tbody tr:hover td .desc-truncate,
-        .table tbody tr:hover td .linea-encargo,
-        .table tbody tr:hover td strong,
-        .table tbody tr:hover td span {
-            color: var(--texto-principal);
-        }
-        .table tbody tr:hover td.text-muted,
-        .table tbody tr:hover td .text-muted {
-            color: var(--texto-terciario);
-        }
-        .table tbody tr:hover td .text-highlight {
-            color: var(--peligro-texto);
-        }
+          
+       /* Hover verde suave — SOLO ilumina el fondo, sin agrandar ni poner negritas */
+       .table tbody tr:hover,
+       .table tbody tr.fila-oscura:hover {
+       background: var(--fila-hover);
+       }
+     
+
+
         /* ========================================== */
 
         .table tbody td { padding: 5px 6px; color: var(--texto-principal); vertical-align: middle; line-height: 1.15; }
@@ -886,9 +870,15 @@
                            list="listaCorreosEnvio" placeholder="Escribe o selecciona un correo..."
                            autocomplete="off" spellcheck="false">
                     <span class="material-icons combobox-arrow" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--texto-secundario);">expand_more</span>
-                    <datalist id="listaCorreosEnvio">
-                        <option value="IVAN@OUTLOOK.COM">
-                        <option value="NADRO@OUTLOOK.COM">
+                        <datalist id="listaCorreosEnvio">                        
+                        <option value="adm.casol2@gmail.com">
+                        <option value="severo.jimenez32@farmater.com.mx">
+                        <option value="peter97443@gmail.com">
+                        <option value="f_jrdlc04@yahoo.com.mx">
+                        <option value="vcortes_66@hotmail.com">
+                        <option value="rv.00758@fanasa.com">
+                        <option value="leoncioabra@gmail.com">
+                        <option value="farmacia_adn_5@outlook.com">
                     </datalist>
                 </div>
             </div>
@@ -2220,12 +2210,35 @@
                 guardarPedidosLS();
                 showToast(`Producto ${codigo} agregado como ENCARGO (${cantidad} piezas)`, 'success');
             };
+
+            /* =========================================================
+               ELIMINAR PRODUCTO — conserva la posición del scroll
+               ========================================================= */
             window.eliminarProducto = function (codigo, tipo) {
                 const cfg = CONFIG_TIPO[tipo];
+
+                // 1) Guardar la posición actual del scroll ANTES de reconstruir la tabla
+                const scrollEl = document.querySelector(`#section-${tipo} .table-scroll`);
+                const savedScrollTop = scrollEl ? scrollEl.scrollTop : 0;
+
+                // 2) Eliminar el producto
                 cfg.productos = cfg.productos.filter(p => !mismoCodigo(p.codigo, codigo));
                 cfg.manuales  = cfg.manuales.filter(p  => !mismoCodigo(p.codigo, codigo));
                 actualizarFiltrosProveedores();
+
+                // 3) Reconstruir la tabla (internamente hace scrollTop = 0)
                 marcarTablaDirty(tipo);
+
+                // 4) Restaurar el scroll y repintar las filas virtuales en la nueva posición
+                const sec = document.getElementById('section-' + tipo);
+                if (scrollEl && sec && sec.classList.contains('active')) {
+                    scrollEl.scrollTop = savedScrollTop;
+                    const state = VIRTUAL[tipo];
+                    state.start = -1;
+                    state.end = -1;
+                    pintarVirtual(tipo, false);
+                }
+
                 guardarPedidosLS();
                 showToast(`Producto ${codigo} eliminado`, 'warning');
             };
@@ -3123,7 +3136,7 @@
                     }
 
                     const asunto = encodeURIComponent('PEDIDO FARMACIAS ADN');
-                    const cuerpo = encodeURIComponent('SE ENVIA PEDIDO ADN DEL DIA');
+                    const cuerpo = encodeURIComponent('');
                     const para   = encodeURIComponent(correoModal);
                     const urlOutlook = `https://outlook.live.com/mail/0/deeplink/compose?to=${para}&subject=${asunto}&body=${cuerpo}`;
 
