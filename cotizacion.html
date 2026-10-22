@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COTIZACION</title>
 
-    <!-- ============================================================
-         PROTECCIÓN WEB (disuasión básica)
-         ============================================================ -->
     <script>
         (function () {
             document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, false);
@@ -47,7 +44,6 @@
             --vidrio: rgba(255,255,255,0.72); --vidrio-linea: rgba(0,0,0,0.08);
             --relleno: rgba(118,118,128,0.12); --segmento: rgba(118,118,128,0.12); --segmento-activo: #FFFFFF;
             --header-h: 56px; --transicion: all 0.3s cubic-bezier(0.25,0.1,0.25,1);
-            /* ===== Colores fila cebra y hover verde ===== */
             --fila-clara:   #FFFFFF;
             --fila-oscura:  #EDF2F7;
             --fila-hover:   #B5E6C1;
@@ -278,26 +274,17 @@
         .table th:last-child, .table td:last-child { padding-right: 14px; }
         .table th.col-acciones, .table td.col-acciones { width: 56px; min-width: 56px; }
 
-        /* ===== FILAS CEBRA + HOVER VERDE + NEGRITAS ===== */
         .table tbody tr {
             border-bottom: none;
             transition: background 0.18s ease;
             cursor: pointer;
             background: var(--fila-clara);
         }
-        /* Fila oscura (alterna) */
         .table tbody tr.fila-oscura { background: var(--fila-oscura); }
-          
-       /* Hover verde suave — SOLO ilumina el fondo, sin agrandar ni poner negritas */
-       .table tbody tr:hover,
-       .table tbody tr.fila-oscura:hover {
-       background: var(--fila-hover);
-       }
-     
-
-
-        /* ========================================== */
-
+        .table tbody tr:hover,
+        .table tbody tr.fila-oscura:hover {
+            background: var(--fila-hover);
+        }
         .table tbody td { padding: 5px 6px; color: var(--texto-principal); vertical-align: middle; line-height: 1.15; }
         .table tbody tr.virtual-spacer, .table tbody tr.virtual-spacer:hover { background: transparent !important; border: none !important; cursor: default; pointer-events: none; }
         .table tbody tr.virtual-spacer td { padding: 0 !important; border: 0 !important; background: transparent; line-height: 0; font-size: 0; }
@@ -313,11 +300,7 @@
             display: inline-block; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
             white-space: nowrap; vertical-align: middle; font-weight: 700; color: var(--texto-principal);
         }
-        .linea-encargo {
-            font-weight: 700;
-            color: var(--texto-principal);
-            letter-spacing: -0.01em;
-        }
+        .linea-encargo { font-weight: 700; color: var(--texto-principal); letter-spacing: -0.01em; }
         .segunda-opcion-badge { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; user-select: none; }
         .segunda-opcion-badge:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,113,227,0.25); }
         .popover-proveedores {
@@ -360,10 +343,11 @@
             color: var(--texto-principal); cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
             -webkit-appearance: none; appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 6px center; min-width: 108px; max-width: 180px;
+            background-repeat: no-repeat; background-position: right 6px center; min-width: 108px; max-width: 200px;
         }
         .proveedor-select:hover { border-color: #C7C7CC; }
         .proveedor-select:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-anillo); }
+        .proveedor-select.es-faltante { background-color: var(--alerta-suave); color: var(--alerta-texto); border-color: var(--alerta-borde); font-weight: 700; }
         .prov-cell { display: inline-flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
         .empate-badge {
             display: inline-flex; align-items: center; justify-content: center;
@@ -381,7 +365,8 @@
         .badge-warning { background: var(--alerta-suave);  color: var(--alerta-texto);  border: 1px solid var(--alerta-borde); }
         .badge-danger  { background: var(--peligro-suave); color: var(--peligro-texto); border: 1px solid var(--peligro-borde); }
         .badge-info    { background: var(--acento-suave);  color: var(--acento-texto);  border: 1px solid var(--acento-borde); }
-        .text-highlight { color: var(--peligro-texto); font-weight: 600; }
+        /* Subtotales SIEMPRE en negro, nunca rojo */
+        .text-highlight { color: var(--texto-principal); font-weight: 600; }
         .text-muted { color: var(--texto-terciario); font-style: italic; }
         .table-bottom { padding: 0 32px 32px; display: flex; flex-direction: column; gap: 16px; }
         .total-card {
@@ -738,9 +723,6 @@
                             <button id="btnPDFCombinadoMatriz" class="btn-toolbar combinado" title="Genera un solo PDF con Pedido Matriz + Pedido Sucursal">
                                 <span class="material-icons">library_books</span> PDF Completo
                             </button>
-                            <button id="btnPedidoCompletoMatriz" class="btn-toolbar" style="background:linear-gradient(135deg,#FF9500 0%,#FF6B00 100%);color:#fff;" title="PDF con TODO el pedido: código, descripción, 1ra y 2da opción">
-                                <span class="material-icons">list_alt</span> Pedido Completo
-                            </button>
                         </div>
                     </div>
                     <div id="estadoMatriz" class="estado-container"></div>
@@ -800,9 +782,6 @@
                             <button id="btnPDFCombinadoSucursal" class="btn-toolbar combinado" title="Genera un solo PDF con Pedido Matriz + Pedido Sucursal">
                                 <span class="material-icons">library_books</span> PDF Completo
                             </button>
-                            <button id="btnPedidoCompletoSucursal" class="btn-toolbar" style="background:linear-gradient(135deg,#FF9500 0%,#FF6B00 100%);color:#fff;" title="PDF con TODO el pedido: código, descripción, 1ra y 2da opción">
-                                <span class="material-icons">list_alt</span> Pedido Completo
-                            </button>
                         </div>
                     </div>
                     <div id="estadoSucursal" class="estado-container"></div>
@@ -851,7 +830,6 @@
         </div>
     </div>
 
-    <!-- ===== MODAL ENVIAR PEDIDO ===== -->
     <div class="modal-overlay" id="modalEnviarPedido">
         <div class="modal" role="dialog" aria-modal="true" style="max-width: 520px;">
             <div class="modal-header">
@@ -995,7 +973,6 @@
             return '';
         }
 
-        /* ========== LECTOR UNIVERSAL ========== */
         const XLSX_CDN_FALLBACKS = [
             'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
@@ -1163,7 +1140,6 @@
             throw ultimoError || new Error('El archivo no contiene hojas legibles');
         }
 
-        /* ========== DETECCIÓN DE COLUMNAS ========== */
         const RE_COL = {
             precio:      /\b(precio|precios|price|costo|cost|importe|pu|unitario|lista|neto)\b/,
             existencia:  /\b(existencia|existencias|exist|stock|inventario|inv|cantidad|cant|qty|disponible|disp|saldo|unidades)\b/,
@@ -1289,7 +1265,6 @@
             return { ...r, modo: 'sin coincidencias' };
         }
 
-        /* ========== jsPDF helpers ========== */
         const JSPDF_CDN_FALLBACKS = [
             'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
             'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
@@ -1302,7 +1277,6 @@
         async function asegurarJsPDF() {
             const tieneBase = () => !!(window.jspdf && window.jspdf.jsPDF);
             const tieneAuto = () => !!(window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API && window.jspdf.jsPDF.API.autoTable);
-
             if (!tieneBase()) {
                 for (const url of JSPDF_CDN_FALLBACKS) {
                     try { await cargarScriptExterno(url); if (tieneBase()) break; } catch (_) {}
@@ -1515,7 +1489,6 @@
             return resultados;
         }
 
-        // ========== INDEXEDDB ==========
         function openDB() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open('CotizadorProDB', 1);
@@ -1562,6 +1535,8 @@
 
         // ========== APP PRINCIPAL ==========
         function inicializarApp() {
+            const FALTANTE_VALUE = '__FALTANTE__';
+
             let proveedores = [];
             let todosLosPedidos = [];
             let datosModificados = false;
@@ -1718,38 +1693,84 @@
                 cacheOpciones.set(key, result);
                 return result;
             }
-            function obtenerAnotadas(codigo, opcionesPrecalculadas) {
+
+            function obtenerAnotadas(codigo) {
                 const key = String(codigo);
                 const cached = cacheEmpates.get(key);
                 if (cached) return cached;
-                const opciones = (opcionesPrecalculadas && opcionesPrecalculadas.length > 0)
-                    ? opcionesPrecalculadas
-                    : obtenerOpcionesProducto(codigo, true);
+                const opciones = obtenerOpcionesProducto(codigo, false);
                 const anotadas = anotarEmpates(ordenarPorPrecioLuegoPrioridad(opciones));
                 cacheEmpates.set(key, anotadas);
                 return anotadas;
             }
+
             function ordenarPorPrecioLuegoPrioridad(arr) {
                 return [...arr].sort(compararPrecioLuegoOrden);
             }
-            function resolverProveedor(prod, opciones) {
-                const sorted = obtenerAnotadas(prod.codigo, opciones);
-                let proveedorMostrar = prod.proveedorSeleccionado || sorted[0].proveedor;
-                if (!sorted.some(p => p.proveedor === proveedorMostrar)) {
-                    proveedorMostrar = sorted[0].proveedor;
-                    prod.proveedorSeleccionado = proveedorMostrar;
+
+            /* ===== STOCK MÍNIMO REQUERIDO =====
+               Un proveedor se considera "disponible por defecto" cuando su
+               existencia supera el umbral:
+                 - Si activó "Stock mínimo requerido": existencia > stockMinimo
+                 - Si NO lo activó: existencia > 20 (umbral por defecto)
+               El usuario SIEMPRE puede elegirlo manualmente desde el dropdown. */
+            function cumpleStockMinimo(p) {
+                const umbral = p.activarStock ? (Number(p.stockMinimo) || 20) : 20;
+                return (Number(p.existencia) || 0) > umbral;
+            }
+            function etiquetaStockProveedor(p) {
+                const ex = Number(p.existencia) || 0;
+                if (ex === 0) return ' <span class="text-muted">(sin stock)</span>';
+                if (!cumpleStockMinimo(p)) return ' <span class="text-muted">(stock bajo)</span>';
+                return '';
+            }
+
+            /* ===== resolverProveedor =====
+               - esFDC: código no existe en ningún Excel.
+               - esFaltante: existen proveedores pero ninguno tiene stock suficiente
+                 (>20 o umbral declarado) y el usuario no forzó uno manualmente.
+               - Si el usuario eligió manualmente un proveedor (con o sin stock),
+                 se respeta, salvo que ya no exista en el índice. */
+            function resolverProveedor(prod) {
+                const sorted = obtenerAnotadas(prod.codigo);
+                if (sorted.length === 0) {
+                    prod.proveedorMostrado = null;
+                    return { sorted: [], proveedorMostrar: null, provObj: null, esFaltante: false, esFDC: true };
                 }
+                let proveedorMostrar = prod.proveedorSeleccionado;
+
+                if (proveedorMostrar && proveedorMostrar !== FALTANTE_VALUE &&
+                    !sorted.some(p => p.proveedor === proveedorMostrar)) {
+                    proveedorMostrar = null;
+                    prod.proveedorSeleccionado = null;
+                }
+
+                if (proveedorMostrar === FALTANTE_VALUE) {
+                    prod.proveedorMostrado = null;
+                    return { sorted, proveedorMostrar: null, provObj: null, esFaltante: true, esFDC: false };
+                }
+
+                if (!proveedorMostrar) {
+                    const conStock = sorted.filter(cumpleStockMinimo);
+                    if (conStock.length > 0) {
+                        proveedorMostrar = conStock[0].proveedor;
+                    } else {
+                        prod.proveedorMostrado = null;
+                        return { sorted, proveedorMostrar: null, provObj: null, esFaltante: true, esFDC: false };
+                    }
+                }
+
                 prod.proveedorMostrado = proveedorMostrar;
-                return { sorted, proveedorMostrar, provObj: sorted.find(p => p.proveedor === proveedorMostrar) };
+                const provObj = sorted.find(p => p.proveedor === proveedorMostrar);
+                return { sorted, proveedorMostrar, provObj, esFaltante: false, esFDC: false };
             }
 
             function obtenerProductosParaPDF(tipo, proveedor) {
                 const cfg = CONFIG_TIPO[tipo];
                 const items = [];
                 cfg.productos.forEach(prod => {
-                    const opciones = obtenerOpcionesProducto(prod.codigo, true);
-                    if (opciones.length === 0) return;
-                    const resolved = resolverProveedor(prod, opciones);
+                    const resolved = resolverProveedor(prod);
+                    if (resolved.esFDC || resolved.esFaltante) return;
                     if (resolved.proveedorMostrar === proveedor) {
                         items.push({ prod, resolved });
                     }
@@ -1837,20 +1858,26 @@
                     modal.classList.add('show');
                     return;
                 }
-                const mejor = ordenados[0];
-                const otros = ordenados.slice(1);
+                const conStock = ordenados.filter(cumpleStockMinimo);
+                const hayStock = conStock.length > 0;
+                const mejor = conStock[0] || ordenados[0];
+                const otros = ordenados.filter(p => p.proveedor !== mejor.proveedor);
                 const badgeMejor = mejor.hayEmpate
                     ? `<span class="empate-badge" title="Empate: ${mejor.totalEmpate} proveedores con el mismo precio. Este es el #${mejor.numeroEmpate} en prioridad.">#${mejor.numeroEmpate}/${mejor.totalEmpate}</span>`
                     : '';
+                const maxCantidad = Math.max(1, mejor.existencia);
                 let html = `<div class="product-detail">
                     <div class="product-sub">Pieza</div>
                     <div class="product-sku"><strong>SKU:</strong> ${escapeHtml(codigo)}</div>
                     <div class="total-price">${formatCurrency(mejor.precio)}</div>
                     <div class="ref">${escapeHtml(mejor.proveedor)} ${badgeMejor}</div>
-                    <div class="stock"><strong>Disponibles:</strong> ${mejor.existencia}</div>
-                    <div class="quantity-control">
+                    <div class="stock"><strong>Disponibles:</strong> ${mejor.existencia}</div>`;
+                if (!hayStock) {
+                    html += `<div class="alert alert-warning" style="margin-top:0;"><span class="material-icons">warning</span><div><strong>Sin stock suficiente:</strong> Ningún proveedor supera el stock mínimo requerido para este producto. Puedes agregarlo como ENCARGO.</div></div>`;
+                }
+                html += `<div class="quantity-control">
                         <button class="btn-qty-minus" aria-label="Disminuir cantidad">−</button>
-                        <input type="number" id="cantidadDetalle" value="1" min="1" max="${mejor.existencia}" step="1">
+                        <input type="number" id="cantidadDetalle" value="1" min="1" max="${maxCantidad}" step="1">
                         <button class="btn-qty-plus" aria-label="Aumentar cantidad">+</button>
                     </div>
                     <button class="add-btn" id="btnAgregarCarrito"><span class="material-icons">add_shopping_cart</span> AGREGAR AL PEDIDO</button>`;
@@ -1858,7 +1885,8 @@
                     html += `<div class="other-providers"><h4>Otras opciones disponibles</h4>`;
                     otros.forEach(prov => {
                         const prefijo = prov.hayEmpate ? `<span class="empate-badge">#${prov.numeroEmpate}</span> ` : '';
-                        html += `<div class="other-provider-item"><span>${prefijo}${escapeHtml(prov.proveedor)}</span><span>${formatCurrency(prov.precio)} (${prov.existencia} disp.)</span></div>`;
+                        const sinStock = etiquetaStockProveedor(prov);
+                        html += `<div class="other-provider-item"><span>${prefijo}${escapeHtml(prov.proveedor)}</span><span>${formatCurrency(prov.precio)} (${prov.existencia} disp.)${sinStock}</span></div>`;
                     });
                     html += `</div>`;
                 }
@@ -1894,7 +1922,8 @@
                 } else {
                     pop.innerHTML = `<div class="pop-header"><span class="material-icons">store</span>Otras opciones (${alternativas.length})</div><div class="pop-list">${alternativas.map(p => {
                         const posBadge = p.hayEmpate ? `<span class="pop-pos empate">#${p.numeroEmpate}</span>` : `<span class="pop-pos">${p.pos}</span>`;
-                        return `<div class="pop-item"><div class="pop-nombre">${posBadge}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(p.proveedor)}</span></div><div class="pop-detalle"><span class="pop-precio">${formatCurrency(p.precio)}</span><span class="pop-existencia">${p.existencia} disp.</span></div></div>`;
+                        const sinStock = etiquetaStockProveedor(p);
+                        return `<div class="pop-item"><div class="pop-nombre">${posBadge}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(p.proveedor)}</span></div><div class="pop-detalle"><span class="pop-precio">${formatCurrency(p.precio)}</span><span class="pop-existencia">${p.existencia} disp.${sinStock}</span></div></div>`;
                     }).join('')}</div>`;
                 }
                 pop.classList.add('show');
@@ -2111,19 +2140,14 @@
                 renderizarChipsProveedores(proveedores, manejarReordenProveedor);
             }
 
-            /* =========================================================
-               Proveedores que REALMENTE tienen al menos un producto
-               asignado en el pedido del tipo indicado.
-               ========================================================= */
             function obtenerProveedoresConPedido(tipo) {
                 const cfg = CONFIG_TIPO[tipo];
                 const setProv = new Set();
                 if (!cfg || !Array.isArray(cfg.productos) || cfg.productos.length === 0) return setProv;
                 cfg.productos.forEach(prod => {
-                    const opciones = obtenerOpcionesProducto(prod.codigo, true);
-                    if (opciones.length === 0) return;
-                    const resolved = resolverProveedor(prod, opciones);
-                    if (resolved && resolved.proveedorMostrar) setProv.add(resolved.proveedorMostrar);
+                    const resolved = resolverProveedor(prod);
+                    if (resolved.esFDC || resolved.esFaltante) return;
+                    if (resolved.proveedorMostrar) setProv.add(resolved.proveedorMostrar);
                 });
                 return setProv;
             }
@@ -2173,148 +2197,28 @@
                 return cambios;
             }
 
-            /* =========================================================
-               CARGAR PEDIDO (MATRIZ / SUCURSAL) DESDE EXCEL
-               Formato requerido:
-                 Col A = Código de barras
-                 Col B = Descripción
-                 Col D = Piezas (cantidad)
-               El resto de datos (línea, marca, existencias, proveedores)
-               se enriquece desde localStorage (inv_datosCombinados, etc.)
-               ========================================================= */
             function cargarPedido(tipo) {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.xlsx,.xlsm,.xlsb,.xls,.xlt,.xltx,.ods,.fods,.csv,.tsv,.txt,.prn,.dif,.slk,.xml,.html,.htm,.numbers,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.ms-excel.sheet.binary.macroEnabled.12,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.oasis.opendocument.spreadsheet,text/csv,text/plain';
-                input.onchange = async () => {
-                    const file = input.files && input.files[0];
-                    if (!file) return;
-                    await procesarExcelPedido(file, tipo);
-                };
-                input.click();
-            }
-
-            async function procesarExcelPedido(file, tipo) {
                 const cfg = CONFIG_TIPO[tipo];
-                try {
-                    // 1) Leer archivo
-                    const buffer = await leerArchivoComoBuffer(file);
-                    if (!buffer || buffer.byteLength === 0) {
-                        showToast('El archivo está vacío', 'warning');
-                        return;
-                    }
-
-                    let hojas;
-                    try {
-                        hojas = await leerLibroUniversal(buffer);
-                    } catch (err) {
-                        showToast('No se pudo leer el archivo: ' + (err && err.message ? err.message : err), 'danger');
-                        return;
-                    }
-                    if (!hojas || !hojas.length) {
-                        showToast('El archivo no contiene hojas legibles', 'warning');
-                        return;
-                    }
-
-                    // 2) Cargar datos enriquecidos desde localStorage
-                    const datosGuardados       = localStorage.getItem('inv_datosCombinados');
-                    const stockEditadoGuardado = localStorage.getItem('inv_stockEditado');
-                    const noDispGuardado       = localStorage.getItem('inv_noDisponible');
-
-                    const datosCombinados = datosGuardados ? JSON.parse(datosGuardados) : [];
-                    const stockEditadoMap = stockEditadoGuardado ? JSON.parse(stockEditadoGuardado) : {};
-                    const noDispMap       = noDispGuardado ? JSON.parse(noDispGuardado) : {};
-
-                    const mapaDatos = new Map();
-                    datosCombinados.forEach(item => {
-                        const cod = normalizarCodigo(item.codigo);
-                        if (cod) mapaDatos.set(cod, item);
-                    });
-
-                    // 3) Procesar la primera hoja con datos válidos
-                    let productos = [];
-                    let descartados = 0;
-                    let hojaUsada = '';
-
-                    for (const hoja of hojas) {
-                        const texto = hoja.texto || [];
-                        if (texto.length === 0) continue;
-
-                        // Detectar fila de encabezado
-                        let inicio = 0;
-                        const fila0 = texto[0] || [];
-                        const a0 = normTxt(fila0[0] || '');
-                        const b0 = normTxt(fila0[1] || '');
-                        const d0 = normTxt(fila0[3] || '');
-                        if (
-                            /codigo|barras|sku|clave|ean|upc|code/.test(a0) ||
-                            /descripcion|producto|articulo|nombre|desc/.test(b0) ||
-                            /cantidad|piezas|qty|cant|pieza/.test(d0)
-                        ) {
-                            inicio = 1;
-                        }
-
-                        const productosHoja = [];
-                        let descartadosHoja = 0;
-
-                        for (let f = inicio; f < texto.length; f++) {
-                            const fila = texto[f];
-                            if (!fila || !fila.some(c => String(c || '').trim() !== '')) continue;
-
-                            const codigo      = normalizarCodigo(fila[0]);
-                            const descripcion = String(fila[1] || '').trim();
-                            const piezasRaw   = String(fila[3] || '').trim();
-                            const piezas      = parseInt(piezasRaw.replace(/[^\d-]/g, ''), 10) || 0;
-
-                            if (!codigo || piezas <= 0) { descartadosHoja++; continue; }
-
-                            const itemLS = mapaDatos.get(codigo) || {};
-                            const stockEdit = stockEditadoMap[codigo] || {};
-
-                            productosHoja.push({
-                                codigo,
-                                descripcion: descripcion || itemLS.articulo || 'Sin descripción',
-                                piezas,
-                                linea:     itemLS.linea     || '',
-                                marca:     itemLS.marca     || '',
-                                fabricante: itemLS.fabricante || '',
-                                existenciaAlmacen:  Number(itemLS.existenciaAlmacen  ?? itemLS.almacen  ?? stockEdit.almacen)  || 0,
-                                existenciaMatriz:   Number(itemLS.existenciaMatriz   ?? itemLS.matriz   ?? stockEdit.matriz)   || 0,
-                                existenciaSucursal: Number(itemLS.existenciaSucursal ?? itemLS.sucursal ?? stockEdit.sucursal) || 0
-                            });
-                        }
-
-                        if (productosHoja.length > 0) {
-                            productos   = productosHoja;
-                            descartados = descartadosHoja;
-                            hojaUsada   = hoja.nombre;
-                            break; // primera hoja válida
-                        }
-                    }
-
-                    if (productos.length === 0) {
-                        showToast('No se encontraron productos válidos. Verifique columnas: A=Código, B=Descripción, D=Piezas.', 'warning', 6000);
-                        return;
-                    }
-
-                    // 4) Asignar al pedido y refrescar
-                    cfg.productos = [...cfg.manuales, ...productos];
-                    actualizarFiltrosProveedores();
-                    marcarTablaDirty(tipo);
-                    guardarPedidosLS();
-                    document.getElementById(cfg.estadoId).innerHTML = '';
-
-                    let msg = `${cfg.label}: ${productos.length} productos desde "${hojaUsada}"`;
-                    if (cfg.manuales.length > 0) msg += ` + ${cfg.manuales.length} manuales`;
-                    if (descartados > 0) msg += ` — ${descartados} filas descartadas (sin código o sin piezas)`;
-                    showToast(msg, 'success', 5000);
-
-                } catch (err) {
-                    console.error('Error procesando Excel de pedido:', err);
-                    showToast('Error: ' + (err && err.message ? err.message : err), 'danger');
-                }
+                const pedidos = obtenerPedidosPositivos();
+                if (pedidos.length === 0) { showToast('No se encontraron pedidos positivos.', 'warning'); return; }
+                todosLosPedidos = pedidos;
+                const filtrados = pedidos.filter(p => tipo === 'matriz' ? p.pedidoMatriz > 0 : p.pedidoSucursal > 0);
+                const productos = filtrados.map(p => ({
+                    codigo: p.codigo, descripcion: p.articulo || 'Sin descripción',
+                    piezas: tipo === 'matriz' ? p.pedidoMatriz : p.pedidoSucursal,
+                    linea: p.linea || '', marca: p.marca || '', fabricante: p.fabricante || '',
+                    pedidoMatriz: p.pedidoMatriz, pedidoSucursal: p.pedidoSucursal,
+                    existenciaAlmacen: p.existenciaAlmacen || 0,
+                    existenciaMatriz: p.existenciaMatriz || 0,
+                    existenciaSucursal: p.existenciaSucursal || 0
+                }));
+                cfg.productos = [...cfg.manuales, ...productos];
+                actualizarFiltrosProveedores();
+                marcarTablaDirty(tipo);
+                guardarPedidosLS();
+                document.getElementById(cfg.estadoId).innerHTML = '';
+                showToast(`${cfg.label} cargado: ${productos.length} productos + ${cfg.manuales.length} manuales`, 'success');
             }
-
             document.getElementById('btnCargarMatriz').addEventListener('click', () => cargarPedido('matriz'));
             document.getElementById('btnCargarSucursal').addEventListener('click', () => cargarPedido('sucursal'));
 
@@ -2337,25 +2241,14 @@
                 showToast(`Producto ${codigo} agregado como ENCARGO (${cantidad} piezas)`, 'success');
             };
 
-            /* =========================================================
-               ELIMINAR PRODUCTO — conserva la posición del scroll
-               ========================================================= */
             window.eliminarProducto = function (codigo, tipo) {
                 const cfg = CONFIG_TIPO[tipo];
-
-                // 1) Guardar la posición actual del scroll ANTES de reconstruir la tabla
                 const scrollEl = document.querySelector(`#section-${tipo} .table-scroll`);
                 const savedScrollTop = scrollEl ? scrollEl.scrollTop : 0;
-
-                // 2) Eliminar el producto
                 cfg.productos = cfg.productos.filter(p => !mismoCodigo(p.codigo, codigo));
                 cfg.manuales  = cfg.manuales.filter(p  => !mismoCodigo(p.codigo, codigo));
                 actualizarFiltrosProveedores();
-
-                // 3) Reconstruir la tabla (internamente hace scrollTop = 0)
                 marcarTablaDirty(tipo);
-
-                // 4) Restaurar el scroll y repintar las filas virtuales en la nueva posición
                 const sec = document.getElementById('section-' + tipo);
                 if (scrollEl && sec && sec.classList.contains('active')) {
                     scrollEl.scrollTop = savedScrollTop;
@@ -2364,7 +2257,6 @@
                     state.end = -1;
                     pintarVirtual(tipo, false);
                 }
-
                 guardarPedidosLS();
                 showToast(`Producto ${codigo} eliminado`, 'warning');
             };
@@ -2375,7 +2267,7 @@
                 return escapeHtml(abreviarLinea(linea));
             }
 
-            function crearFilaTabla(prod, tipo, opciones, resolved) {
+            function crearFilaTabla(prod, tipo, resolved) {
                 const descFull = prod.descripcion || '';
                 const descEscaped = escapeHtml(descFull);
                 const descTitleAttr = escapeAttr(descFull);
@@ -2385,7 +2277,10 @@
                 const exSuc = Number(prod.existenciaSucursal) || 0;
                 const btnEliminar = `<button class="btn btn-danger btn-xs btn-eliminar-producto" data-codigo="${escapeAttr(prod.codigo)}" data-tipo="${tipo}" title="Eliminar"><span class="material-icons" style="font-size:16px;">delete</span></button>`;
 
-                if (!opciones || opciones.length === 0) {
+                if (!resolved) resolved = resolverProveedor(prod);
+
+                // FDC real: ningún proveedor en los Excel tiene este código
+                if (resolved.esFDC) {
                     const row = document.createElement('tr');
                     row.dataset.codigo = prod.codigo;
                     row.dataset.subtotal = '0';
@@ -2405,33 +2300,54 @@
                     `;
                     return row;
                 }
-                if (!resolved) resolved = resolverProveedor(prod, opciones);
-                const { sorted, proveedorMostrar, provObj } = resolved;
-                const subtotal = provObj.precio * prod.piezas;
+
+                const { sorted, proveedorMostrar, provObj, esFaltante } = resolved;
+
+                // Dropdown: FALTANTE como primera opción + TODOS los proveedores.
+                // El usuario puede elegir CUALQUIER proveedor aunque no cumpla el stock mínimo.
+                const faltanteOptionHtml = `<option value="${FALTANTE_VALUE}" ${esFaltante ? 'selected' : ''}>FALTANTE (ningún proveedor con stock suficiente)</option>`;
                 const optionsHtml = sorted.map(p => {
                     const prefijo = (p.hayEmpate && p.numeroEmpate) ? `#${p.numeroEmpate} ` : '';
-                    return `<option value="${escapeAttr(p.proveedor)}" data-precio="${p.precio}" data-existencia="${p.existencia}" ${p.proveedor === proveedorMostrar ? 'selected' : ''}>${prefijo}${escapeHtml(p.proveedor)} ($${p.precio.toFixed(2)})</option>`;
+                    const ex = Number(p.existencia) || 0;
+                    const marcaStock = ex === 0 ? ' · sin stock' : (!cumpleStockMinimo(p) ? ' · stock bajo' : '');
+                    const sel = (!esFaltante && p.proveedor === proveedorMostrar) ? 'selected' : '';
+                    return `<option value="${escapeAttr(p.proveedor)}" data-precio="${p.precio}" data-existencia="${p.existencia}" ${sel}>${prefijo}${escapeHtml(p.proveedor)} ($${p.precio.toFixed(2)})${marcaStock}</option>`;
                 }).join('');
-                const tieBadgeHTML = (provObj && provObj.hayEmpate && provObj.numeroEmpate)
+
+                const tieBadgeHTML = (!esFaltante && provObj && provObj.hayEmpate && provObj.numeroEmpate)
                     ? `<span class="empate-badge" title="Empate: ${provObj.totalEmpate} proveedores con el mismo precio. Este es el #${provObj.numeroEmpate} en prioridad.">#${provObj.numeroEmpate}/${provObj.totalEmpate}</span>`
                     : '';
-                const segundaOpcion = sorted.find(p => p.proveedor !== proveedorMostrar);
+
+                const subtotal = esFaltante ? 0 : (provObj.precio * prod.piezas);
+                const precioUnitStr = esFaltante ? '-' : formatCurrency(provObj.precio);
+                const subtotalStr = esFaltante ? '<span class="text-muted">-</span>' : `<span class="text-highlight">${formatCurrency(subtotal)}</span>`;
+
+                let segundaOpcion;
+                if (esFaltante) {
+                    segundaOpcion = sorted[0];
+                } else {
+                    segundaOpcion = sorted.find(p => p.proveedor !== proveedorMostrar && cumpleStockMinimo(p))
+                                 || sorted.find(p => p.proveedor !== proveedorMostrar);
+                }
                 const segundaPrefijo = (segundaOpcion && segundaOpcion.hayEmpate) ? `#${segundaOpcion.numeroEmpate} ` : '';
+                const segundaSinStock = segundaOpcion ? etiquetaStockProveedor(segundaOpcion) : '';
                 const segundaOpcionHTML = segundaOpcion
-                    ? `<span class="badge badge-info segunda-opcion-badge" data-codigo="${escapeAttr(prod.codigo)}" title="Clic para ver todas las opciones">${segundaPrefijo}${escapeHtml(segundaOpcion.proveedor)} - ${formatCurrency(segundaOpcion.precio)}</span>`
+                    ? `<span class="badge badge-info segunda-opcion-badge" data-codigo="${escapeAttr(prod.codigo)}" title="Clic para ver todas las opciones">${segundaPrefijo}${escapeHtml(segundaOpcion.proveedor)} - ${formatCurrency(segundaOpcion.precio)}${segundaSinStock}</span>`
                     : '<span class="text-muted">No disponible</span>';
+
+                const selectCls = esFaltante ? 'proveedor-select es-faltante' : 'proveedor-select';
                 const row = document.createElement('tr');
                 row.dataset.codigo = prod.codigo;
-                row.dataset.proveedorActual = proveedorMostrar;
+                row.dataset.proveedorActual = esFaltante ? '' : proveedorMostrar;
                 row.dataset.subtotal = String(subtotal);
                 row.innerHTML = `
                     <td class="col-acciones">${btnEliminar}</td>
-                    <td><div class="prov-cell"><select class="proveedor-select">${optionsHtml}</select>${tieBadgeHTML}</div></td>
+                    <td><div class="prov-cell"><select class="${selectCls}">${faltanteOptionHtml}${optionsHtml}</select>${tieBadgeHTML}</div></td>
                     <td><strong>${escapeHtml(prod.codigo)}</strong></td>
                     <td class="col-descripcion"><span class="desc-truncate" title="${descTitleAttr}">${descEscaped}</span></td>
                     <td><input type="number" class="piezas-input" value="${prod.piezas}" min="1"></td>
-                    <td class="precio-unit">${formatCurrency(provObj.precio)}</td>
-                    <td class="subtotal-cell text-highlight">${formatCurrency(subtotal)}</td>
+                    <td class="precio-unit">${precioUnitStr}</td>
+                    <td class="subtotal-cell">${subtotalStr}</td>
                     <td class="exist-cell"><span class="badge badge-info">${exMat}</span></td>
                     <td class="exist-cell"><span class="badge badge-success">${exSuc}</span></td>
                     <td>${segundaOpcionHTML}</td>
@@ -2482,12 +2398,10 @@
                 const rowH = state.rowH;
                 const overscan = 10;
 
-                // ===== LOTE DE TAMAÑO FIJO (fix del "brinco" al final) =====
                 const batchSize = Math.ceil(viewH / rowH) + 2 * overscan;
                 const maxStart  = Math.max(0, items.length - batchSize);
                 const start     = Math.min(Math.max(0, Math.floor(scrollTop / rowH) - overscan), maxStart);
                 const end       = Math.min(items.length, start + batchSize);
-                // ============================================================
 
                 if (!reset && start === state.start && end === state.end) return;
                 state.start = start;
@@ -2498,9 +2412,8 @@
                 if (topPad > 0) frag.appendChild(crearSpacerRow(topPad, 12));
                 for (let i = start; i < end; i++) {
                     const it = items[i];
-                    const row = crearFilaTabla(it.prod, tipo, it.opciones, it.resolved || undefined);
+                    const row = crearFilaTabla(it.prod, tipo, it.resolved || undefined);
                     row.dataset.virtualIndex = String(i);
-                    // ===== CLASE CEBRA: pares claras, impares oscuras =====
                     row.classList.add(i % 2 === 0 ? 'fila-clara' : 'fila-oscura');
                     frag.appendChild(row);
                 }
@@ -2520,6 +2433,7 @@
                     }
                 }
             }
+
             function actualizarTabla(tipo, diferido = false) {
                 const token = ++renderToken[tipo];
                 const cfg = CONFIG_TIPO[tipo];
@@ -2541,19 +2455,24 @@
                 const pendientes = [];
                 let total = 0;
                 productos.forEach(prod => {
-                    const opciones = obtenerOpcionesProducto(prod.codigo, true);
+                    const resolved = resolverProveedor(prod);
                     if (filtroProv === 'FALTANTES') {
-                        if (opciones.length === 0) pendientes.push({ prod, opciones, resolved: null });
+                        if (resolved.esFDC || resolved.esFaltante) pendientes.push({ prod, resolved });
                         return;
                     }
-                    if (opciones.length === 0) {
-                        if (filtroProv === 'todos') pendientes.push({ prod, opciones, resolved: null });
+                    if (resolved.esFDC) {
+                        if (filtroProv === 'todos') pendientes.push({ prod, resolved });
                         return;
                     }
-                    const resolved = resolverProveedor(prod, opciones);
-                    if (filtroProv !== 'todos' && resolved.proveedorMostrar !== filtroProv) return;
-                    total += resolved.provObj.precio * prod.piezas;
-                    pendientes.push({ prod, opciones, resolved });
+                    if (resolved.esFaltante) {
+                        if (filtroProv === 'todos') pendientes.push({ prod, resolved });
+                        return;
+                    }
+                    if (filtroProv !== 'todos' && resolved.proveedorMostrar !== filtroProv) {
+                        if (!prod.proveedorSeleccionado || prod.proveedorSeleccionado === FALTANTE_VALUE) return;
+                    }
+                    if (resolved.provObj) total += resolved.provObj.precio * prod.piezas;
+                    pendientes.push({ prod, resolved });
                 });
                 document.getElementById(cfg.totalId).textContent = formatCurrency(total);
                 tablaDirty[tipo] = false;
@@ -2565,21 +2484,40 @@
                 prepararVirtual(tipo);
                 pintarVirtual(tipo, true);
             }
+
             function actualizarFila(row, tipo) {
                 const cfg = CONFIG_TIPO[tipo];
                 const select = row.querySelector('.proveedor-select');
                 if (!select) return;
-                const selectedOption = select.options[select.selectedIndex];
-                const precio = parseFloat(selectedOption.dataset.precio) || 0;
                 const proveedor = select.value;
                 const codigo = row.dataset.codigo;
                 const piezasInput = row.querySelector('.piezas-input');
                 const piezas = parseInt(piezasInput.value) || 0;
                 const prod = cfg.productos.find(p => mismoCodigo(p.codigo, codigo));
                 if (prod && piezas >= 1) prod.piezas = piezas;
-                row.querySelector('.precio-unit').textContent = formatCurrency(precio);
+
+                const esFaltante = (proveedor === FALTANTE_VALUE);
                 const anotadas = obtenerAnotadas(codigo);
-                const provObj = anotadas.find(p => p.proveedor === proveedor);
+                let precio = 0, subtotal = 0, provObj = null;
+                if (!esFaltante) {
+                    const selectedOption = select.options[select.selectedIndex];
+                    precio = parseFloat(selectedOption.dataset.precio) || 0;
+                    subtotal = precio * piezas;
+                    provObj = anotadas.find(p => p.proveedor === proveedor);
+                }
+
+                const oldSubtotal = parseFloat(row.dataset.subtotal) || 0;
+
+                row.querySelector('.precio-unit').textContent = esFaltante ? '-' : formatCurrency(precio);
+                row.querySelector('.subtotal-cell').innerHTML = esFaltante
+                    ? '<span class="text-muted">-</span>'
+                    : `<span class="text-highlight">${formatCurrency(subtotal)}</span>`;
+                row.dataset.subtotal = String(subtotal);
+                row.dataset.proveedorActual = esFaltante ? '' : proveedor;
+
+                if (esFaltante) select.classList.add('es-faltante');
+                else select.classList.remove('es-faltante');
+
                 const celdaProv = row.cells[1];
                 const provCell = celdaProv.querySelector('.prov-cell') || celdaProv;
                 let badgeEl = celdaProv.querySelector('.empate-badge');
@@ -2587,18 +2525,22 @@
                 if (debeMostrar) {
                     if (!badgeEl) { badgeEl = document.createElement('span'); badgeEl.className = 'empate-badge'; provCell.appendChild(badgeEl); }
                     badgeEl.textContent = `#${provObj.numeroEmpate}/${provObj.totalEmpate}`;
-                    badgeEl.title = `Empate: ${provObj.totalEmpate} proveedores con el mismo precio. Este es el #${provObj.numeroEmpate} en prioridad.`;
+                    badgeEl.title = `Empate: ${provObj.totalEmpate} proveedores con el mismo precio.`;
                 } else if (badgeEl) badgeEl.remove();
-                const oldSubtotal = parseFloat(row.dataset.subtotal) || 0;
-                const subtotal = precio * piezas;
-                row.querySelector('.subtotal-cell').innerHTML = `<span class="text-highlight">${formatCurrency(subtotal)}</span>`;
-                row.dataset.subtotal = String(subtotal);
-                const segunda = anotadas.find(p => p.proveedor !== proveedor);
+
+                let segunda;
+                if (esFaltante) {
+                    segunda = anotadas[0];
+                } else {
+                    segunda = anotadas.find(p => p.proveedor !== proveedor && cumpleStockMinimo(p))
+                           || anotadas.find(p => p.proveedor !== proveedor);
+                }
                 const segundaPrefijo = (segunda && segunda.hayEmpate) ? `#${segunda.numeroEmpate} ` : '';
+                const segundaSinStock = segunda ? etiquetaStockProveedor(segunda) : '';
                 row.cells[9].innerHTML = segunda
-                    ? `<span class="badge badge-info segunda-opcion-badge" data-codigo="${escapeAttr(codigo)}" title="Clic para ver todas las opciones">${segundaPrefijo}${escapeHtml(segunda.proveedor)} - ${formatCurrency(segunda.precio)}</span>`
+                    ? `<span class="badge badge-info segunda-opcion-badge" data-codigo="${escapeAttr(codigo)}" title="Clic para ver todas las opciones">${segundaPrefijo}${escapeHtml(segunda.proveedor)} - ${formatCurrency(segunda.precio)}${segundaSinStock}</span>`
                     : '<span class="text-muted">No disponible</span>';
-                row.dataset.proveedorActual = proveedor;
+
                 const filtroProv = document.getElementById(cfg.filtroId).value;
                 if (filtroProv !== 'FALTANTES') {
                     const totalEl = document.getElementById(cfg.totalId);
@@ -2608,17 +2550,16 @@
                 marcarModificado();
                 guardarPedidosLSDebounced();
             }
+
             function actualizarTotal(tipo) {
                 const cfg = CONFIG_TIPO[tipo];
                 const filtroProv = document.getElementById(cfg.filtroId).value;
                 let total = 0;
                 if (filtroProv === 'FALTANTES') { document.getElementById(cfg.totalId).textContent = '$0.00'; return; }
-                cfg.productos.forEach(prod => {
-                    const opciones = obtenerOpcionesProducto(prod.codigo, true);
-                    if (opciones.length === 0) return;
-                    const res = resolverProveedor(prod, opciones);
-                    if (filtroProv !== 'todos' && res.proveedorMostrar !== filtroProv) return;
-                    total += res.provObj.precio * prod.piezas;
+                VIRTUAL[tipo].items.forEach(it => {
+                    const resolved = it.resolved || resolverProveedor(it.prod);
+                    if (resolved.esFDC || resolved.esFaltante) return;
+                    if (resolved.provObj) total += resolved.provObj.precio * it.prod.piezas;
                 });
                 document.getElementById(cfg.totalId).textContent = formatCurrency(total);
             }
@@ -2639,12 +2580,15 @@
                     const nuevoProveedor = e.target.value;
                     const prod = cfg.productos.find(p => mismoCodigo(p.codigo, codigo));
 
-                    if (prod) { prod.proveedorSeleccionado = nuevoProveedor; marcarModificado(); }
+                    if (prod) {
+                        prod.proveedorSeleccionado = nuevoProveedor;
+                        marcarModificado();
+                    }
 
                     const idx = parseInt(row.dataset.virtualIndex, 10);
                     if (!isNaN(idx)) {
                         const it = VIRTUAL[tipo].items[idx];
-                        if (it && mismoCodigo(it.prod.codigo, codigo)) it.resolved = resolverProveedor(prod, it.opciones);
+                        if (it && mismoCodigo(it.prod.codigo, codigo)) it.resolved = resolverProveedor(prod);
                     }
 
                     actualizarFila(row, tipo);
@@ -2666,29 +2610,22 @@
                         return;
                     }
 
-                    const filtroProv = filtroDespues;
-                    const filtroEspecifico = filtroProv !== 'todos' && filtroProv !== 'FALTANTES';
-
-                    if (filtroEspecifico && nuevoProveedor !== filtroProv) {
-                        const state = VIRTUAL[tipo];
-                        const pos = state.items.findIndex(x => mismoCodigo(x.prod.codigo, codigo));
-
-                        if (pos !== -1) {
-                            state.items.splice(pos, 1);
-
-                            actualizarTotal(tipo);
-
-                            if (state.items.length === 0) {
-                                tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:50px 20px;color:var(--texto-secundario);"><span class="material-icons" style="font-size:32px;display:block;margin-bottom:12px;color:var(--acento);">filter_alt_off</span><strong>No hay productos de "${escapeHtml(filtroProv)}" en el ${cfg.label}.</strong></td></tr>`;
+                    if (filtroDespues === 'FALTANTES') {
+                        const nuevaResolved = resolverProveedor(prod);
+                        if (!nuevaResolved.esFDC && !nuevaResolved.esFaltante) {
+                            const state = VIRTUAL[tipo];
+                            const pos = state.items.findIndex(x => mismoCodigo(x.prod.codigo, codigo));
+                            if (pos !== -1) {
+                                state.items.splice(pos, 1);
                                 state.start = -1;
                                 state.end = -1;
-                            } else {
-                                state.start = -1;
-                                state.end = -1;
-                                pintarVirtual(tipo, false);
+                                if (state.items.length === 0) {
+                                    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:50px 20px;color:var(--texto-secundario);"><span class="material-icons" style="font-size:32px;display:block;margin-bottom:12px;color:var(--acento);">filter_alt_off</span><strong>No hay productos FALTANTES en el ${cfg.label}.</strong></td></tr>`;
+                                } else {
+                                    pintarVirtual(tipo, false);
+                                }
+                                actualizarTotal(tipo);
                             }
-
-                            showToast(`De ${nuevoProveedor}: a "${filtroProv}"`, 'info');
                         }
                     }
                 });
@@ -2723,26 +2660,25 @@
                         const primero = entradas[0];
                         const prod = primero.prod;
                         if (prod.codigo.toLowerCase().includes(query) || prod.descripcion.toLowerCase().includes(query)) {
-                            
-                            // --- OBTENER EL PROVEEDOR CON EL MEJOR PRECIO ---
-                            const opciones = obtenerOpcionesProducto(codigo, true);
-                            let mejorProveedor = primero.proveedor;
-                            let mejorPrecio = primero.prod.precio;
-                            let mejorExistencia = primero.prod.existencia;
-                            
-                            if (opciones.length > 0) {
-                                const resolved = resolverProveedor(prod, opciones);
-                                mejorProveedor = resolved.proveedorMostrar;
-                                mejorPrecio = resolved.provObj.precio;
-                                mejorExistencia = resolved.provObj.existencia;
+                            const resolved = resolverProveedor(prod);
+                            let mejorProveedor = 'FALTANTE';
+                            let mejorPrecio = 0;
+                            let mejorExistencia = 0;
+                            let sinStock = true;
+                            if (resolved.sorted.length > 0) {
+                                const conStock = resolved.sorted.filter(cumpleStockMinimo);
+                                const mejor = conStock[0] || resolved.sorted[0];
+                                mejorProveedor = mejor.proveedor;
+                                mejorPrecio = mejor.precio;
+                                mejorExistencia = mejor.existencia;
+                                sinStock = !cumpleStockMinimo(mejor);
                             }
-                            // ------------------------------------------------------------
-
                             encontrados.push({
-                                ...prod, 
+                                ...prod,
                                 proveedor: mejorProveedor,
                                 precio: mejorPrecio,
                                 existencia: mejorExistencia,
+                                sinStock,
                                 enMatriz: productosMatriz.some(p => mismoCodigo(p.codigo, codigo)),
                                 enSucursal: productosSucursal.some(p => mismoCodigo(p.codigo, codigo))
                             });
@@ -2756,9 +2692,11 @@
                             let etiqueta = '';
                             if (tipo === 'matriz' && r.enMatriz) etiqueta = '<span class="badge badge-success" style="margin-top:4px;">En pedido Matriz</span>';
                             else if (tipo === 'sucursal' && r.enSucursal) etiqueta = '<span class="badge badge-success" style="margin-top:4px;">En pedido Sucursal</span>';
+                            const stockTag = r.sinStock ? ' <span class="badge badge-warning">sin stock suficiente</span>' : '';
+                            const precioStr = r.sinStock ? '-' : formatCurrency(r.precio);
                             return `<div class="search-result-item" data-codigo="${escapeAttr(r.codigo)}" data-desc="${escapeAttr(r.descripcion)}">
                                 <div style="flex:1; cursor:pointer;"><strong>${escapeHtml(r.codigo)}</strong> - ${escapeHtml(r.descripcion)}<br>
-                                <small>${escapeHtml(r.proveedor)} | ${formatCurrency(r.precio)} | Existencia: ${r.existencia}</small>${etiqueta ? '<br>' + etiqueta : ''}</div>
+                                <small>${escapeHtml(r.proveedor)} | ${precioStr} | Existencia: ${r.existencia}${stockTag}</small>${etiqueta ? '<br>' + etiqueta : ''}</div>
                                 <div>${!((tipo === 'matriz' && r.enMatriz) || (tipo === 'sucursal' && r.enSucursal)) ? `<button class="btn-search-agregar" data-codigo="${escapeAttr(r.codigo)}" data-desc="${escapeAttr(r.descripcion)}" title="Agregar al pedido">+</button>` : ''}</div>
                             </div>`;
                         }).join('');
@@ -3057,127 +2995,13 @@
                 }
             }
 
-            /* =========================================================
-               PDF "PEDIDO COMPLETO" — VERTICAL (PORTRAIT)
-               4 columnas: Código | Descripción | Proveedor 1ra Opción | Segunda Opción
-               Usa TODOS los productos del pedido (ignora el filtro de proveedor)
-               ========================================================= */
-            async function generarPDFPedidoCompleto(tipo) {
-                try {
-                    const ok = await asegurarJsPDF();
-                    if (!ok) {
-                        showToast('No se pudo cargar la librería de PDF (jspdf). Verifique vendor/ o conexión a internet.', 'danger');
-                        return;
-                    }
-                    const { jsPDF } = window.jspdf;
-                    const cfg = CONFIG_TIPO[tipo];
-                    const productos = cfg.productos || [];
-
-                    if (productos.length === 0) {
-                        showToast(`No hay productos cargados en el ${cfg.label}`, 'warning');
-                        return;
-                    }
-
-                    // Orientación vertical (portrait A4) — 210 x 297 mm
-                    const doc = new jsPDF({ orientation: 'portrait' });
-                    const pageWidth = doc.internal.pageSize.getWidth();
-                    const margin = 14;
-                    // Ancho disponible: 210 - 28 = 182mm
-
-                    // ---------- Encabezado ----------
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(16);
-                    doc.setTextColor(...PDF_COLORS.DARK);
-                    doc.text(`PEDIDO COMPLETO`, margin, 14);
-
-                    doc.setFontSize(12);
-                    doc.setTextColor(...PDF_COLORS.PRIMARY);
-                    doc.text(cfg.label.toUpperCase(), margin, 20);
-
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
-                    doc.setTextColor(...PDF_COLORS.MUTED);
-                    doc.text(`Total de productos: ${productos.length}`, margin, 25);
-
-                    doc.setDrawColor(...PDF_COLORS.PRIMARY);
-                    doc.setLineWidth(0.6);
-                    doc.line(margin, 28, pageWidth - margin, 28);
-
-                    // ---------- Filas ----------
-                    const rows = productos.map(prod => {
-                        const opciones = obtenerOpcionesProducto(prod.codigo, true);
-                        let prim = 'FDC — Sin proveedor';
-                        let seg  = 'N/A';
-
-                        if (opciones.length > 0) {
-                            const sorted = ordenarPorPrecioLuegoPrioridad(opciones);
-                            const first = sorted[0];
-                            prim = `${first.proveedor}  —  ${formatCurrency(first.precio)}`;
-                            if (sorted.length > 1) {
-                                const second = sorted[1];
-                                seg = `${second.proveedor}  —  ${formatCurrency(second.precio)}`;
-                            }
-                        }
-
-                        return [
-                            prod.codigo || '',
-                            prod.descripcion || 'Sin descripción',
-                            prim,
-                            seg
-                        ];
-                    });
-
-                    doc.autoTable({
-                        startY: 32,
-                        head: [['Código', 'Descripción', '1ra Opción (con precio)', '2da Opción (con precio)']],
-                        body: rows,
-                        margin: { left: margin, right: margin },
-                        styles: {
-                            font: 'helvetica', fontSize: 7.5,
-                            cellPadding: { top: 2, bottom: 2, left: 3, right: 2.5 },
-                            textColor: PDF_COLORS.DARK, lineColor: PDF_COLORS.BORDER, lineWidth: 0.2,
-                            overflow: 'linebreak', halign: 'left'
-                        },
-                        headStyles: {
-                            fillColor: PDF_COLORS.PRIMARY, textColor: PDF_COLORS.WHITE, fontStyle: 'bold',
-                            fontSize: 8, halign: 'left',
-                            cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 2.5 }
-                        },
-                        alternateRowStyles: { fillColor: PDF_COLORS.LIGHT_BG },
-                        columnStyles: {
-                            0: { cellWidth: 26,  fontStyle: 'bold', halign: 'left' },
-                            1: { cellWidth: 70,  overflow: 'ellipsis', halign: 'left' },
-                            2: { cellWidth: 42,  halign: 'left' },
-                            3: { cellWidth: 42,  halign: 'left' }
-                        }
-                    });
-
-                    // ---------- Pie de página ----------
-                    dibujarPieDePagina(doc, margin);
-
-                    // ---------- Guardar ----------
-                    const nombreArchivo = `${cfg.label.replace(/\s+/g, '_')}_Completo_${new Date().toISOString().slice(0, 10)}.pdf`;
-                    const resultado = await guardarPDFConSelector(doc, nombreArchivo);
-                    if (resultado && resultado.cancelado) { showToast('Guardado cancelado', 'warning'); return; }
-                    showToast(`PDF "Pedido Completo" generado (${productos.length} productos)`, 'success');
-                } catch (err) {
-                    console.error('Error al generar PDF Pedido Completo:', err);
-                    showToast('Error al generar PDF: ' + (err && err.message ? err.message : err), 'danger');
-                }
-            }
-
             document.getElementById('btnPDFMatriz').addEventListener('click', () => generarPDF('matriz'));
             document.getElementById('btnPDFSucursal').addEventListener('click', () => generarPDF('sucursal'));
             document.getElementById('btnPDFCombinadoMatriz').addEventListener('click', generarPDFCombinado);
             document.getElementById('btnPDFCombinadoSucursal').addEventListener('click', generarPDFCombinado);
-            document.getElementById('btnPedidoCompletoMatriz').addEventListener('click', () => generarPDFPedidoCompleto('matriz'));
-            document.getElementById('btnPedidoCompletoSucursal').addEventListener('click', () => generarPDFPedidoCompleto('sucursal'));
 
             document.getElementById('btnActualizar').addEventListener('click', limpiarPedidos);
 
-            /* ============================================================
-               ENVIAR PEDIDO
-               ============================================================ */
             window.cerrarModalEnviar = function () {
                 document.getElementById('modalEnviarPedido').classList.remove('show');
                 actualizarListaProveedores();
