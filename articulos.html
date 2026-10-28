@@ -90,7 +90,7 @@
         }
 
         .layout {
-            flex: 1; display: grid; grid-template-columns: 380px 1fr; gap: 16px; min-height: 0;
+            flex: 1; display: grid; grid-template-columns: 1fr; gap: 16px; min-height: 0;
         }
 
         .panel {
@@ -181,12 +181,8 @@
             font-size: 15px; font-weight: 700; color: var(--acento-texto);
             letter-spacing: 0; background: var(--acento-suave);
             padding: 3px 10px; border-radius: 6px;
-            cursor: pointer; transition: var(--transicion);
             display: inline-flex; align-items: center; gap: 6px;
-            touch-action: manipulation;
         }
-        .detail-code:hover { background: var(--acento-borde); }
-        .detail-code .material-icons { font-size: 14px; opacity: 0.7; }
         .detail-desc {
             font-size: 20px; font-weight: 600; color: var(--texto-principal);
             line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 10px;
@@ -369,7 +365,54 @@
         .toast.danger  { background: var(--peligro-texto); }
         @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+        /* ===== LISTA PRINCIPAL EN COLUMNAS ===== */
+        .list-head, .result-item {
+            display: grid; grid-template-columns: 170px minmax(0,1fr) 130px 130px 110px;
+            gap: 16px; align-items: center;
+        }
+        .list-head {
+            flex: 0 0 auto; padding: 8px 20px; background: var(--fondo-suave);
+            border-bottom: 1px solid var(--borde-suave);
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .result-item .col { min-width: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .result-item .col-code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 600; color: var(--acento-texto); }
+        .result-item .col-desc { font-weight: 500; }
+        .result-item .col-sub { font-size: 12.5px; }
+        .result-item .result-badges { width: 110px; }
+
+        /* ===== VENTANA EMERGENTE DE DETALLE ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center;
+            padding: 24px; background: rgba(0,0,0,0.38);
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+        }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.18s ease; }
+        .modal {
+            position: relative; width: 100%; max-width: 760px; max-height: calc(100dvh - 48px);
+            background: var(--tarjeta); border-radius: var(--radio-medio); outline: none;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden;
+            animation: popIn 0.22s cubic-bezier(0.25,0.1,0.25,1);
+        }
+        .modal-close { position: absolute; top: 12px; right: 12px; z-index: 2; background: var(--fondo-suave); }
+        .modal .detail-header { padding-right: 64px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+
         @media (max-width: 900px) {
+            .list-head { display: none; }
+            .result-item {
+                grid-template-columns: auto auto 1fr;
+                grid-template-areas: "code code badges" "desc desc desc" "linea marca .";
+                gap: 3px 12px;
+            }
+            .result-item .col-code { grid-area: code; }
+            .result-item .col-desc { grid-area: desc; }
+            .result-item .col-linea { grid-area: linea; }
+            .result-item .col-marca { grid-area: marca; }
+            .result-item .result-badges { grid-area: badges; flex-direction: row; width: auto; justify-self: end; }
+            .modal-overlay { padding: 0; align-items: flex-end; }
+            .modal { max-width: none; max-height: 92dvh; border-radius: 18px 18px 0 0; }
             :root { --header-h: 52px; }
             .brand { display: none; }
             .top-bar { padding: 0 10px; gap: 6px; }
@@ -385,7 +428,7 @@
             .main-content { padding: 12px; gap: 10px; }
             .layout {
                 grid-template-columns: 1fr;
-                grid-template-rows: minmax(160px, 36%) 1fr;
+                grid-template-rows: 1fr;
                 gap: 10px;
             }
             .panel { border-radius: var(--radio-suave); }
@@ -402,8 +445,9 @@
             .prov-item { grid-template-columns: 30px 1fr auto; gap: 8px; padding: 10px 12px; }
             .prov-exist { grid-column: 2 / 4; align-items: flex-start; min-width: 0; flex-direction: row; gap: 8px; margin-top: 4px; }
             .prov-price { font-size: 15px; }
-            .md-pedido-ok-section { grid-template-columns: 1fr; }
-            .md-pedido-ok-num { font-size: 28px; }
+            /* Pedido Matriz y Pedido Sucursal siempre en la misma fila */
+            .md-pedido-ok-section { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .md-pedido-ok-num { font-size: 26px; }
 
             .toast-container { bottom: 12px; right: 12px; left: 12px; }
             .toast { max-width: none; }
@@ -411,7 +455,7 @@
 
         @media (max-width: 480px) {
             .main-content { padding: 8px; gap: 8px; }
-            .layout { gap: 8px; grid-template-rows: minmax(150px, 34%) 1fr; }
+            .layout { gap: 8px; grid-template-rows: 1fr; }
             .panel-header { padding: 8px 12px; }
             .result-item { padding: 10px 12px; }
             .result-item.active { padding-left: 9px; }
@@ -422,6 +466,11 @@
             .stat-value { font-size: 18px; }
             .result-desc { font-size: 12.5px; }
             .result-code { font-size: 12px; }
+            /* Ajustes para que las dos tarjetas de pedido quepan bien en pantallas chicas */
+            .md-pedido-ok-section { gap: 8px; }
+            .md-pedido-ok-card { padding: 12px 10px; }
+            .md-pedido-ok-num { font-size: 22px; }
+            .md-pedido-ok-explicacion { font-size: 11px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -449,28 +498,31 @@
 
 <main class="main-content">
     <div class="layout">
-        <aside class="panel">
+        <section class="panel">
             <div class="panel-header">
                 <span class="panel-title">
-                    <span class="material-icons">inventory_2</span>Artículos
+                    <span class="material-icons">inventory_2</span>Medicamentos
                 </span>
                 <span class="panel-count" id="resultsCount">0</span>
+            </div>
+            <div class="list-head">
+                <span>Código de barras</span><span>Descripción</span><span>Línea</span><span>Marca</span><span></span>
             </div>
             <div class="results-list" id="resultsList">
                 <div class="loading-state"><div class="spinner"></div>Cargando datos...</div>
             </div>
-        </aside>
-        <section class="panel">
-            <div class="detail-content" id="detailContent">
-                <div class="detail-empty">
-                    <span class="material-icons">manage_search</span>
-                    <h3>Busca un producto</h3>
-                    <p>Ingresa un código de barras o descripción para consultar existencias, ventas, pedido y las opciones de proveedor disponibles.</p>
-                </div>
-            </div>
         </section>
     </div>
 </main>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Detalle del medicamento" tabindex="-1">
+        <button class="btn-icon modal-close" id="modalClose" aria-label="Cerrar">
+            <span class="material-icons">close</span>
+        </button>
+        <div class="detail-content" id="detailContent"></div>
+    </div>
+</div>
 
 <div class="toast-container" id="toastContainer"></div>
 
@@ -952,21 +1004,16 @@ function renderLista(items) {
             badges += `<span class="badge badge-danger">Sin stock</span>`;
         }
 
-        // Abreviaturas aplicadas aquí
         const lineaAbv = item.linea ? abrevLinea(item.linea) : '';
         const marcaAbv = item.marca ? abrevMarca(item.marca) : '';
-        const linea = lineaAbv ? `<span>${escapeHtml(lineaAbv)}</span>` : '';
-        const marca = marcaAbv ? `<span>${escapeHtml(marcaAbv)}</span>` : '';
-        const ubic = !item.existeEnBinario ? '<span>solo proveedor</span>' : '';
 
         const isActive = seleccionActual === String(item.codigo);
         return `
             <div class="result-item ${isActive ? 'active' : ''}" data-codigo="${escapeAttr(item.codigo)}">
-                <div class="result-main">
-                    <div class="result-code">${escapeHtml(item.codigo)}</div>
-                    <div class="result-desc">${escapeHtml(item.articulo || 'Sin descripción')}</div>
-                    ${(linea || marca || ubic) ? `<div class="result-meta">${linea}${marca}${ubic}</div>` : ''}
-                </div>
+                <div class="col col-code">${escapeHtml(item.codigo)}</div>
+                <div class="col col-desc" title="${escapeAttr(item.articulo)}">${escapeHtml(item.articulo || 'Sin descripción')}</div>
+                <div class="col col-sub col-linea">${escapeHtml(lineaAbv)}</div>
+                <div class="col col-sub col-marca">${escapeHtml(marcaAbv)}</div>
                 <div class="result-badges">${badges}</div>
             </div>`;
     }).join('');
@@ -993,7 +1040,22 @@ function seleccionar(item) {
         el.classList.toggle('active', el.dataset.codigo === seleccionActual);
     });
     renderDetalle(item);
+    abrirModal();
 }
+
+const modalOverlay = document.getElementById('modalOverlay');
+function modalAbierto() { return modalOverlay.classList.contains('open'); }
+function abrirModal() {
+    modalOverlay.classList.add('open');
+    document.getElementById('detailContent').scrollTop = 0;
+    modalOverlay.querySelector('.modal').focus({ preventScroll: true });
+}
+function cerrarModal() { modalOverlay.classList.remove('open'); }
+modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) cerrarModal(); });
+document.getElementById('modalClose').addEventListener('click', cerrarModal);
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalAbierto()) { e.stopPropagation(); cerrarModal(); }
+}, true);
 
 function renderPedidoCard(resultado, titulo, iconName) {
     const isOk = resultado.esPositivo;
@@ -1117,10 +1179,7 @@ function renderDetalle(item) {
     detailEl.innerHTML = `
         <div class="detail-header">
             <div class="detail-code-row">
-                <div class="detail-code" id="copyCode" title="Clic para copiar código">
-                    ${escapeHtml(item.codigo)}
-                    <span class="material-icons">content_copy</span>
-                </div>
+                <div class="detail-code">${escapeHtml(item.codigo)}</div>
                 ${esFDC ? '<span class="badge badge-warning">FDC</span>' : ''}
                 ${soloProveedor ? '<span class="badge badge-info">Solo prov.</span>' : ''}
             </div>
@@ -1153,20 +1212,6 @@ function renderDetalle(item) {
             ${proveedoresHTML}
         </div>
     `;
-
-    const copyEl = document.getElementById('copyCode');
-    if (copyEl) {
-        copyEl.addEventListener('click', () => {
-            const code = String(item.codigo);
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(code)
-                    .then(() => showToast('Código copiado: ' + code, 'success'))
-                    .catch(() => showToast('No se pudo copiar', 'danger'));
-            } else {
-                showToast('Código: ' + code, 'info');
-            }
-        });
-    }
 }
 
 function renderProveedores(opciones, mejor) {
@@ -1233,13 +1278,6 @@ const handleSearch = debounce(() => {
 
     const results = buscar(q);
     renderLista(results);
-
-    if (results.length > 0) {
-        const yaEstaEnResultados = results.some(r => String(r.codigo) === seleccionActual);
-        if (!yaEstaEnResultados) {
-            seleccionar(results[0]);
-        }
-    }
 }, 180);
 
 searchInput.addEventListener('input', handleSearch);
@@ -1248,6 +1286,9 @@ searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         searchInput.value = '';
         handleSearch();
+    } else if (e.key === 'Enter') {
+        const results = buscar(searchInput.value.trim());
+        if (results.length > 0) seleccionar(results[0]);
     }
 });
 
@@ -1295,7 +1336,6 @@ async function recargarDatos() {
     if (q) {
         const results = buscar(q);
         renderLista(results);
-        if (results.length > 0) seleccionar(results[0]);
     } else {
         renderLista(productosUnificados.slice(0, 50));
     }
@@ -1315,7 +1355,7 @@ document.addEventListener('visibilitychange', () => {
             if (q) {
                 const results = buscar(q);
                 renderLista(results);
-                if (seleccionActual) {
+                if (seleccionActual && modalAbierto()) {
                     const found = productosUnificados.find(p => String(p.codigo) === seleccionActual);
                     if (found) renderDetalle(found);
                 }
