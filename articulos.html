@@ -2,14 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CONSULTA</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="db.js"></script>
     <style>
         :root {
             --fondo: #FBFBFD; --fondo-suave: #F5F5F7; --tarjeta: #FFFFFF; --tarjeta-suave: #FAFAFC;
-            --texto-principal: #1D1D1F; --texto-secundario: #6E6E73; --texto-terciario: #86868B;
+            --texto-principal: #1D1D1F;
+            --texto-secundario: #1D1D1F;
+            --texto-terciario: #1D1D1F;
             --acento: #0071E3; --acento-hover: #0077ED; --acento-suave: #EAF3FE; --acento-borde: #CFE2FA;
             --acento-texto: #0A4B9E; --acento-anillo: rgba(0,113,227,0.22);
             --borde: #E5E5EA; --borde-suave: #F0F0F3;
@@ -25,12 +27,13 @@
             --transicion: all 0.25s cubic-bezier(0.25,0.1,0.25,1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 17px; -webkit-tap-highlight-color: transparent; }
+        html { font-size: 17px; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: var(--fondo); color: var(--texto-principal); line-height: 1.47;
             font-weight: 400; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-            height: 100vh; overflow: hidden; display: flex; flex-direction: column; letter-spacing: -0.01em;
+            height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
+            letter-spacing: -0.01em;
         }
 
         .top-bar {
@@ -53,7 +56,7 @@
             font-size: 15px; font-family: inherit; color: var(--texto-principal);
             transition: var(--transicion); -webkit-appearance: none;
         }
-        .search-hero input::placeholder { color: var(--texto-terciario); }
+        .search-hero input::placeholder { color: #8E8E93; }
         .search-hero input:focus {
             outline: none; border-color: var(--acento);
             box-shadow: 0 0 0 4px var(--acento-anillo);
@@ -67,6 +70,7 @@
             width: 28px; height: 28px; border-radius: 50%; background: transparent;
             border: none; cursor: pointer; color: var(--texto-terciario);
             display: none; align-items: center; justify-content: center;
+            touch-action: manipulation;
         }
         .search-hero .clear-btn:hover { background: var(--fondo-suave); color: var(--texto-principal); }
         .search-hero .clear-btn.visible { display: flex; }
@@ -75,6 +79,7 @@
             width: 36px; height: 36px; border-radius: 50%; border: none; background: transparent;
             cursor: pointer; color: var(--texto-secundario); display: inline-flex;
             align-items: center; justify-content: center; transition: var(--transicion); flex-shrink: 0;
+            touch-action: manipulation;
         }
         .btn-icon:hover { background: var(--fondo-suave); color: var(--texto-principal); }
         .btn-icon .material-icons { font-size: 20px; }
@@ -108,6 +113,7 @@
         }
 
         .results-list, .detail-content { flex: 1; overflow-y: auto; min-height: 0; }
+        .results-list, .detail-content { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .results-list::-webkit-scrollbar, .detail-content::-webkit-scrollbar { width: 10px; }
         .results-list::-webkit-scrollbar-thumb, .detail-content::-webkit-scrollbar-thumb {
             background: var(--borde); border-radius: 5px; border: 3px solid var(--tarjeta);
@@ -117,6 +123,7 @@
             padding: 14px 20px; border-bottom: 1px solid var(--borde-suave);
             cursor: pointer; transition: background 0.15s; display: flex;
             align-items: center; justify-content: space-between; gap: 12px;
+            touch-action: manipulation;
         }
         .result-item:hover { background: var(--fondo-suave); }
         .result-item.active {
@@ -151,7 +158,6 @@
         .badge-warning { background: var(--alerta-suave);  color: var(--alerta-texto);  border: 1px solid var(--alerta-borde); }
         .badge-danger  { background: var(--peligro-suave); color: var(--peligro-texto); border: 1px solid var(--peligro-borde); }
 
-        /* ========== DETAIL ========== */
         .detail-empty {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100%; padding: 40px; text-align: center; color: var(--texto-secundario);
@@ -177,6 +183,7 @@
             padding: 3px 10px; border-radius: 6px;
             cursor: pointer; transition: var(--transicion);
             display: inline-flex; align-items: center; gap: 6px;
+            touch-action: manipulation;
         }
         .detail-code:hover { background: var(--acento-borde); }
         .detail-code .material-icons { font-size: 14px; opacity: 0.7; }
@@ -220,7 +227,6 @@
             letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.1;
         }
 
-        /* ========== PEDIDO OK CARDS ========== */
         .md-pedido-ok-section { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .md-pedido-ok-card {
             padding: 16px; border-radius: var(--radio-suave);
@@ -277,7 +283,6 @@
         .md-motivos li.sin-motivos { font-style: italic; opacity: 0.7; }
         .md-motivos li.sin-motivos .material-icons { color: var(--texto-terciario); }
 
-        /* Providers list */
         .prov-list { display: flex; flex-direction: column; gap: 8px; }
         .prov-item {
             display: grid; grid-template-columns: 36px 1fr auto auto;
@@ -365,22 +370,58 @@
         @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         @media (max-width: 900px) {
+            :root { --header-h: 52px; }
             .brand { display: none; }
-            .main-content { padding: 14px; }
-            .layout { grid-template-columns: 1fr; grid-template-rows: minmax(180px, 38%) 1fr; gap: 12px; }
-            .panel-header { padding: 12px 16px; }
-            .result-item { padding: 12px 16px; }
-            .detail-header { padding: 18px 20px 14px; }
+            .top-bar { padding: 0 10px; gap: 6px; }
+            .search-hero input {
+                height: 40px;
+                font-size: 16px;
+                padding: 0 40px 0 40px;
+            }
+            .search-hero .material-icons.search-icon { left: 12px; font-size: 18px; }
+            .search-hero .clear-btn { right: 6px; }
+            .btn-icon { width: 36px; height: 36px; }
+
+            .main-content { padding: 12px; gap: 10px; }
+            .layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: minmax(160px, 36%) 1fr;
+                gap: 10px;
+            }
+            .panel { border-radius: var(--radio-suave); }
+            .panel-header { padding: 10px 14px; }
+            .result-item { padding: 12px 14px; }
+            .result-item.active { padding-left: 11px; }
+            .result-code { font-size: 13px; }
+            .result-desc { font-size: 13px; }
+            .detail-header { padding: 16px 16px 12px; }
+            .detail-code { font-size: 14px; }
             .detail-desc { font-size: 17px; }
-            .detail-section { padding: 16px 20px; }
+            .detail-section { padding: 14px 16px; }
             .stat-value { font-size: 20px; }
-            .prov-item { grid-template-columns: 30px 1fr auto; gap: 10px; padding: 10px 12px; }
+            .prov-item { grid-template-columns: 30px 1fr auto; gap: 8px; padding: 10px 12px; }
             .prov-exist { grid-column: 2 / 4; align-items: flex-start; min-width: 0; flex-direction: row; gap: 8px; margin-top: 4px; }
             .prov-price { font-size: 15px; }
             .md-pedido-ok-section { grid-template-columns: 1fr; }
             .md-pedido-ok-num { font-size: 28px; }
 
-            .toast-container { bottom: 24px; right: 14px; }
+            .toast-container { bottom: 12px; right: 12px; left: 12px; }
+            .toast { max-width: none; }
+        }
+
+        @media (max-width: 480px) {
+            .main-content { padding: 8px; gap: 8px; }
+            .layout { gap: 8px; grid-template-rows: minmax(150px, 34%) 1fr; }
+            .panel-header { padding: 8px 12px; }
+            .result-item { padding: 10px 12px; }
+            .result-item.active { padding-left: 9px; }
+            .detail-header { padding: 14px 14px 10px; }
+            .detail-section { padding: 12px 14px; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
+            .stat-card { padding: 10px 12px; }
+            .stat-value { font-size: 18px; }
+            .result-desc { font-size: 12.5px; }
+            .result-code { font-size: 12px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -396,7 +437,7 @@
     <span class="brand"><span class="material-icons"></span></span>
     <div class="search-hero">
         <span class="material-icons search-icon"></span>
-        <input type="text" id="searchInput" placeholder="Buscar por código de barras o descripción..." autocomplete="off" autofocus>
+        <input type="text" id="searchInput" placeholder="Buscar por código de barras o descripción..." autocomplete="off">
         <button class="clear-btn" id="clearSearch" aria-label="Limpiar">
             <span class="material-icons">close</span>
         </button>
@@ -461,6 +502,61 @@ function debounce(fn, ms) {
     };
 }
 
+// ========== ABREVIATURAS DE MARCA / LÍNEA ==========
+const MARCA_ABREV = {
+    'MEDICAMENTO GRUPO SSA IV': 'GRUPO IV',
+    'MEDICAMENTO OTC LIBRE VENTA': 'GRUPO VI',
+    'PRODUCTOS DE CURACION EN GENERAL': 'CURA',
+    'PRODUCTOS DE REBOTICA': 'REBOTICA',
+    'PRODUCTOS EN GENERAL DE ABARROTERAS': 'ABARROTES'
+};
+const LINEA_ABREV = {
+    'ABARROTES EN GENERAL': 'ABARROTES',
+    'BEBE': 'BEBE',
+    'BIBERONES': 'BIBERON',
+    'COMESTIBLES': 'COMESTIBLE',
+    'CREMAS': 'CREMA',
+    'CURA': 'CURA',
+    'DES CABALLERO': 'DESOD',
+    'DES DAMA': 'DESOD',
+    'ENJUAGUES BUCALES': 'BUCAL',
+    'ESTETICA': 'ESTETICA',
+    'FARMACIA': 'FARMACIA',
+    'HIG': 'HIG',
+    'HUMEDAS': 'HUMEDAS',
+    'LECHES': 'LECHES',
+    'MAMP': 'MAMP',
+    'MANT': 'MANT',
+    'MCRM': 'MCRM',
+    'MEDJABON': 'MJBN',
+    'MGOT': 'MGOT',
+    'MSUPO': 'MSUPO',
+    'MSUSP': 'MSUSP',
+    'MTAB': 'MTAB',
+    'PAÑALES': 'PAÑAL',
+    'REBOTICA': 'REBOTICA',
+    'REFRESCOS': 'REFRES',
+    'REFRIGERADOS': 'REFRIG',
+    'SANITARIAS': 'SANITARIA',
+    'SHAMPOO': 'SHAMPOO',
+    'TOCADOR': 'TOCADOR',
+    'TRATAMIENTO CAPILAR': 'ESTETICA',
+    'MED ENCARGO': 'ENCARGO'
+};
+
+function abrevMarca(marca) {
+    const raw = String(marca ?? '').trim();
+    if (!raw) return '';
+    const k = raw.toUpperCase();
+    return MARCA_ABREV[k] || raw;
+}
+function abrevLinea(linea) {
+    const raw = String(linea ?? '').trim();
+    if (!raw) return '';
+    const k = raw.toUpperCase();
+    return LINEA_ABREV[k] || raw;
+}
+
 // ========== CONSTANTES PEDIDO OK ==========
 const PEDIDO_MATRIZ_OK_MARCAS = new Set([
     'MEDICAMENTO GRUPO SSA IV', 'MEDICAMENTO OTC LIBRE VENTA', 'PRODUCTOS DE CURACION EN GENERAL',
@@ -470,7 +566,7 @@ const PEDIDO_MATRIZ_OK_LINEAS = new Set([
     'ABARROTES EN GENERAL','BEBE','BIBERONES','COMESTIBLES','CREMAS','CURA','DES CABALLERO','DES DAMA',
     'ENJUAGUES BUCALES','ESTETICA','FARMACIA','HIG','HUMEDAS','LECHES','MAMP','MANT','MCRM','MEDJABON',
     'MGOT','MSUPO','MSUSP','MTAB','PAÑALES','REBOTICA','REFRESCOS','REFRIGERADOS','SANITARIAS','SHAMPOO',
-    'TOCADOR','TRATAMIENTO CAPILAR'
+    'TOCADOR','TRATAMIENTO CAPILAR','MED ENCARGO'
 ]);
 
 // ========== DATOS GLOBALES ==========
@@ -482,9 +578,9 @@ let proveedoresOrden = new Map();
 let productosUnificados = [];
 let seleccionActual = null;
 let stockLineaGlobal = {};
-let costosMatriz = new Map(); // codigo -> { costo, precio, impuesto, impuestoTipo }
+let costosMatriz = new Map();
 
-// ========== COSTOS MATRIZ (Supabase, tabla costos_matriz) ==========
+// ========== COSTOS MATRIZ ==========
 async function cargarCostos() {
     const obj = await DB.costos.cargar();
     return new Map(Object.entries(obj));
@@ -493,7 +589,7 @@ function conIVA(monto, impuestoPct) {
     return (Number(monto) || 0) * (1 + (Number(impuestoPct) || 0) / 100);
 }
 
-// ========== CARGA GENERAL (Supabase) ==========
+// ========== CARGA GENERAL ==========
 async function cargarTodo(soloInventario) {
     const [prod, sl, prov, costos] = await Promise.all([
         DB.articulos.cargar().catch(e => { console.warn('Error leyendo productos:', e); return []; }),
@@ -706,7 +802,7 @@ function analizarPedido(item, ubicacion) {
         const candidatos = [];
         if (inv === mayor && inv > 0) candidatos.push('inventario calculado por ventas (' + inv + ' pzas)');
         if (ind === mayor && ind > 0) candidatos.push('stock capturado del artículo (' + ind + ' pzas)');
-        if (stockLineaVal === mayor && stockLineaVal > 0) candidatos.push('stock asignado a la línea "' + item.linea + '" (' + stockLineaVal + ' pzas)');
+        if (stockLineaVal === mayor && stockLineaVal > 0) candidatos.push('stock asignado a la línea "' + abrevLinea(item.linea) + '" (' + stockLineaVal + ' pzas)');
         if (rango === mayor && rango > 0) candidatos.push('rango de ventas (' + rango + ')');
 
         if (candidatos.length === 0) {
@@ -781,11 +877,11 @@ function analizarPedido(item, ubicacion) {
     }
     const marca = (item.marca || '').trim();
     if (!PEDIDO_MATRIZ_OK_MARCAS.has(marca.toUpperCase())) {
-        resultado.motivos.push({ icono: 'verified', texto: 'Marca "' + (marca || '(vacía)') + '" no elegible para pedido.' });
+        resultado.motivos.push({ icono: 'verified', texto: 'Marca "' + (abrevMarca(marca) || '(vacía)') + '" no elegible para pedido.' });
     }
     const linea = (item.linea || '').trim();
     if (!PEDIDO_MATRIZ_OK_LINEAS.has(linea.toUpperCase())) {
-        resultado.motivos.push({ icono: 'category', texto: 'Línea "' + (linea || '(vacía)') + '" no elegible para pedido.' });
+        resultado.motivos.push({ icono: 'category', texto: 'Línea "' + (abrevLinea(linea) || '(vacía)') + '" no elegible para pedido.' });
     }
 
     return resultado;
@@ -856,8 +952,11 @@ function renderLista(items) {
             badges += `<span class="badge badge-danger">Sin stock</span>`;
         }
 
-        const linea = item.linea ? `<span>${escapeHtml(item.linea)}</span>` : '';
-        const marca = item.marca ? `<span>${escapeHtml(item.marca)}</span>` : '';
+        // Abreviaturas aplicadas aquí
+        const lineaAbv = item.linea ? abrevLinea(item.linea) : '';
+        const marcaAbv = item.marca ? abrevMarca(item.marca) : '';
+        const linea = lineaAbv ? `<span>${escapeHtml(lineaAbv)}</span>` : '';
+        const marca = marcaAbv ? `<span>${escapeHtml(marcaAbv)}</span>` : '';
         const ubic = !item.existeEnBinario ? '<span>solo proveedor</span>' : '';
 
         const isActive = seleccionActual === String(item.codigo);
@@ -938,8 +1037,8 @@ function renderDetalle(item) {
     const soloProveedor = !item.existeEnBinario;
 
     const metaChips = [];
-    if (item.linea) metaChips.push(`<span class="meta-chip"><span class="material-icons">category</span>${escapeHtml(item.linea)}</span>`);
-    if (item.marca) metaChips.push(`<span class="meta-chip"><span class="material-icons">local_offer</span>${escapeHtml(item.marca)}</span>`);
+    if (item.linea) metaChips.push(`<span class="meta-chip"><span class="material-icons">category</span>${escapeHtml(abrevLinea(item.linea))}</span>`);
+    if (item.marca) metaChips.push(`<span class="meta-chip"><span class="material-icons">local_offer</span>${escapeHtml(abrevMarca(item.marca))}</span>`);
     if (item.ubicacion) metaChips.push(`<span class="meta-chip"><span class="material-icons">place</span>${escapeHtml(item.ubicacion)}</span>`);
     if (item.fabricante && item.fabricante !== 'SYS') metaChips.push(`<span class="meta-chip"><span class="material-icons">factory</span>${escapeHtml(item.fabricante)}</span>`);
     if (soloProveedor) metaChips.push(`<span class="meta-chip" style="background:var(--acento-suave);color:var(--acento-texto);border-color:var(--acento-borde);"><span class="material-icons">store</span>Solo en proveedores</span>`);
@@ -963,25 +1062,17 @@ function renderDetalle(item) {
 
     const cm = costosMatriz.get(String(item.codigo));
     const costosHTML = cm
-        ? `<div class="stats-grid">
-               <div class="stat-card">
-                   <div class="stat-label"><span class="material-icons">payments</span>Costo</div>
-                   <div class="stat-value">${formatCurrency(cm.costo)}</div>
-               </div>
+        ? `<div class="stats-grid cols-2">
                <div class="stat-card">
                    <div class="stat-label"><span class="material-icons">receipt_long</span>Costo + IVA</div>
                    <div class="stat-value">${formatCurrency(conIVA(cm.costo, cm.impuesto))}</div>
-               </div>
-               <div class="stat-card">
-                   <div class="stat-label"><span class="material-icons">sell</span>Precio</div>
-                   <div class="stat-value">${formatCurrency(cm.precio)}</div>
                </div>
                <div class="stat-card">
                    <div class="stat-label"><span class="material-icons">price_check</span>Precio + IVA</div>
                    <div class="stat-value">${formatCurrency(conIVA(cm.precio, cm.impuesto))}</div>
                </div>
            </div>
-           <div style="margin-top:10px;font-size:12px;color:var(--texto-terciario);">Impuesto: ${escapeHtml(cm.impuestoTipo || '—')} (${cm.impuesto}%)</div>`
+           <div style="margin-top:10px;font-size:12px;">Impuesto: ${escapeHtml(cm.impuestoTipo || '—')} (${cm.impuesto}%)</div>`
         : `<div class="alert alert-warning" style="background: var(--alerta-suave);">
                <span class="material-icons">info</span>
                <div>Este código no tiene costo ni precio registrado en costos matriz.</div>
@@ -1210,7 +1301,12 @@ async function recargarDatos() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', recargarDatos);
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.matchMedia('(min-width: 901px) and (pointer: fine)').matches) {
+        try { searchInput.focus({ preventScroll: true }); } catch (e) { searchInput.focus(); }
+    }
+    recargarDatos();
+});
 
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
