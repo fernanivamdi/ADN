@@ -1126,11 +1126,11 @@ function renderDetalle(item) {
     const costosHTML = cm
         ? `<div class="stats-grid cols-2">
                <div class="stat-card">
-                   <div class="stat-label"><span class="material-icons">receipt_long</span>Costo + IVA</div>
+                   <div class="stat-label"><span class="material-icons">receipt_long</span>ULTIMO COSTO</div>
                    <div class="stat-value">${formatCurrency(conIVA(cm.costo, cm.impuesto))}</div>
                </div>
                <div class="stat-card">
-                   <div class="stat-label"><span class="material-icons">price_check</span>Precio + IVA</div>
+                   <div class="stat-label"><span class="material-icons">price_check</span>PRECIO VENTA</div>
                    <div class="stat-value">${formatCurrency(conIVA(cm.precio, cm.impuesto))}</div>
                </div>
            </div>
@@ -1190,8 +1190,7 @@ function renderDetalle(item) {
         ${pedidoOkSection}
 
         <div class="detail-section">
-            <div class="section-title"><span class="material-icons">attach_money</span>Costos y precios (Matriz)</div>
-            ${costosHTML}
+              ${costosHTML}
         </div>
 
         <div class="detail-section">
@@ -1200,7 +1199,7 @@ function renderDetalle(item) {
         </div>
 
         <div class="detail-section">
-            <div class="section-title"><span class="material-icons">trending_up</span>Ventas (últimos 180 días)</div>
+            <div class="section-title"><span class="material-icons">trending_up</span>Ventas</div>
             ${ventasHTML}
         </div>
 
