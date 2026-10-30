@@ -21,56 +21,51 @@
 
     <!-- ========== PROTECCIÓN CONTRA INSPECCIÓN (disuasión) ========== -->
     <script>
-        // Bloquear menú contextual (clic derecho)
         document.addEventListener('contextmenu', e => e.preventDefault());
-
-        // Bloquear atajos comunes de inspección
         document.addEventListener('keydown', e => {
-            // F12
             if (e.key === 'F12') return e.preventDefault();
-            // Ctrl+Shift+I / J / C
-            if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
-                return e.preventDefault();
-            }
-            // Ctrl+U (ver código fuente)
+            if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) return e.preventDefault();
             if (e.ctrlKey && e.key.toUpperCase() === 'U') return e.preventDefault();
-            // Ctrl+S (guardar página)
             if (e.ctrlKey && e.key.toUpperCase() === 'S') return e.preventDefault();
         });
     </script>
 
     <style>
-        /* =====================================================
-           VARIABLES GLOBALES — ESTILO APPLE (TONOS CLAROS)
-           ===================================================== */
         :root {
             --fondo: #F5F5F7;
+            --fondo-oscuro: #000000;
             --tarjeta: #FFFFFF;
+            --tarjeta-oscuro: #1D1D1F;
             --texto-principal: #1D1D1F;
+            --texto-claro: #FFFFFF;
             --texto-secundario: #6E6E73;
+            --texto-sec-oscuro: #86868B;
             --acento: #0071E3;
             --acento-hover: #0077ED;
             --borde: #D2D2D7;
+            --borde-oscuro: #424245;
 
             --danger: #FF3B30;
             --glow-acento: rgba(0, 113, 227, 0.18);
+            --glow-peligro: rgba(255, 59, 48, 0.18);
 
             --relleno-input: #FFFFFF;
             --cristal: rgba(255, 255, 255, 0.86);
             --cristal-borde: rgba(255, 255, 255, 0.70);
             --cristal-sombra: 0 4px 20px rgba(31, 60, 110, 0.14), 0 30px 70px rgba(31, 60, 110, 0.28);
 
+            --fondo-claro: #70ABFF;
+
             --radio-suave: 12px;
+            --radio-medio: 18px;
             --radio-tarjeta: 28px;
             --radio-boton: 980px;
+            --ancho-contenido: 980px;
 
             --transicion: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
             --curva-apple: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* =====================================================
-           BASE GENERAL
-           ===================================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
 
@@ -100,7 +95,6 @@
             justify-content: center;
             padding: 24px;
             background-color: #70ABFF;
-            transition: opacity 0.5s var(--curva-apple), visibility 0.5s var(--curva-apple);
         }
         .login-overlay.hidden {
             opacity: 0;
@@ -272,67 +266,22 @@
         .login-field:focus-within .material-icons.lock { color: var(--acento); }
 
         /* =====================================================
-           RECORDAR CONTRASEÑA — CHECKBOX ESTILO APPLE
+           TIPO DE PEDIDO — PASTILLA DIARIO / GI
+           (reutiliza el look del segmented control)
            ===================================================== */
-        .login-remember {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin: 2px 0 6px;
-            padding: 4px 2px;
-            width: fit-content;
-            cursor: pointer;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .login-remember input {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
-            pointer-events: none;
-        }
-        .checkbox-box {
-            width: 20px;
-            height: 20px;
-            flex: 0 0 auto;
-            display: inline-flex;
-            align-items: center;
+        .tipo-pedido-field {
+            margin-bottom: 22px;
+            display: flex;
             justify-content: center;
-            border: 1.5px solid var(--borde);
-            border-radius: 6px;
-            background: #FFFFFF;
-            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .checkbox-box .material-icons {
-            font-size: 15px;
-            line-height: 1;
-            color: #FFFFFF;
-            opacity: 0;
-            transform: scale(0.6);
-            transition: opacity 0.2s var(--curva-apple), transform 0.2s var(--curva-apple);
-        }
-        .checkbox-text {
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: -0.005em;
-            color: var(--texto-secundario);
-            transition: color 0.2s ease;
-        }
-        .login-remember:hover .checkbox-text { color: var(--texto-principal); }
-        .login-remember:hover .checkbox-box { border-color: #A1A1A6; }
 
-        .login-remember input:checked + .checkbox-box {
-            background: var(--acento);
-            border-color: var(--acento);
+        .segmented-control.tipo-pedido-switch {
+            background: rgba(0, 113, 227, 0.08);
+            border-color: rgba(0, 113, 227, 0.20);
+            box-shadow: none;
         }
-        .login-remember input:checked + .checkbox-box .material-icons {
-            opacity: 1;
-            transform: scale(1);
-        }
-        .login-remember input:checked ~ .checkbox-text { color: var(--texto-principal); }
-        .login-remember input:focus-visible + .checkbox-box {
-            box-shadow: 0 0 0 3px var(--glow-acento);
+        .segmented-control.tipo-pedido-switch .mode-option {
+            min-width: 92px;
         }
 
         /* =====================================================
@@ -362,14 +311,14 @@
         .login-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
         /* =====================================================
-           CONTENEDOR PRINCIPAL (IFRAME)
+           CONTENEDOR PRINCIPAL (IFRAME + TOP BAR)
            ===================================================== */
         .app-container {
             position: fixed;
             inset: 0;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.5s var(--curva-apple) 0.1s, visibility 0.5s var(--curva-apple) 0.1s;
+            transition: opacity 0.5s var(--curva-apple) 0.15s, visibility 0.5s var(--curva-apple) 0.15s;
         }
         .app-container.visible { opacity: 1; visibility: visible; }
         .app-container iframe {
@@ -383,12 +332,120 @@
         }
 
         /* =====================================================
+           TOP BAR
+           ===================================================== */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .top-bar .top-bar-brand {
+            pointer-events: auto;
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .top-bar .top-bar-brand .material-icons {
+            font-size: 18px;
+            line-height: 1;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--acento);
+            flex: 0 0 auto;
+        }
+
+        /* =====================================================
+           SEGMENTED CONTROL
+           ===================================================== */
+        .segmented-control {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.82);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 980px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(31, 60, 110, 0.08);
+            height: 36px;
+        }
+
+        .segmented-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            bottom: 2px;
+            width: calc(50% - 2px);
+            background: var(--acento);
+            border-radius: 980px;
+            box-shadow: 0 1px 3px rgba(0, 113, 227, 0.35);
+            transition: transform 0.42s var(--curva-apple);
+            z-index: 1;
+            pointer-events: none;
+        }
+        #modeSwitch[data-mode="pedido"] .segmented-thumb,
+        #tipoPedidoSwitch[data-mode="gi"] .segmented-thumb {
+            transform: translateX(100%);
+        }
+
+        .mode-option {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            padding: 0 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            text-decoration: none;
+            white-space: nowrap;
+            color: #6E6E73;
+            background: transparent;
+            border: none;
+            border-radius: 980px;
+            transition: color 0.3s var(--curva-apple);
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .mode-option:hover { color: var(--texto-principal); }
+        .mode-option.active { color: #FFFFFF; }
+        .mode-option.active:hover { color: #FFFFFF; }
+        .mode-option:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
+
+        /* =====================================================
            RESPONSIVE
            ===================================================== */
         @media (max-width: 480px) {
             .login-card { padding: 40px 26px 36px; border-radius: 24px; }
             .logo-adn { transform: scale(0.86); transform-origin: center center; margin: -6px 0; }
             .login-title { font-size: 24px; margin-bottom: 28px; }
+            .top-bar { height: 52px; padding: 0 14px; }
+            .top-bar .top-bar-brand { gap: 6px; }
+            .mode-option { padding: 0 11px; font-size: 11.5px; letter-spacing: 0.02em; }
+            .segmented-control.tipo-pedido-switch .mode-option { min-width: 80px; }
         }
 
         /* =====================================================
@@ -443,11 +500,18 @@
                 </div>
             </div>
 
-            <label class="login-remember" id="rememberLabel">
-                <input type="checkbox" id="recordar">
-                <span class="checkbox-box"><span class="material-icons" aria-hidden="true">check</span></span>
-                <span class="checkbox-text">Recordar contraseña</span>
-            </label>
+            <!-- PASTILLA DIARIO / GI -->
+            <div class="tipo-pedido-field">
+                <div class="segmented-control tipo-pedido-switch"
+                     id="tipoPedidoSwitch"
+                     data-mode="diario"
+                     role="tablist"
+                     aria-label="Tipo de pedido">
+                    <span class="segmented-thumb" aria-hidden="true"></span>
+                    <button type="button" class="mode-option active" id="optDiario" role="tab" aria-selected="true">DIARIO</button>
+                    <button type="button" class="mode-option"        id="optGi"     role="tab" aria-selected="false">GI</button>
+                </div>
+            </div>
 
             <button class="login-btn" id="loginBtn" onclick="iniciarSesion()">
                 Iniciar Sesión
@@ -456,10 +520,21 @@
     </div>
 
     <!-- =====================================================
-         CONTENIDO PRINCIPAL: IFRAME
+         CONTENIDO PRINCIPAL: IFRAME + TOP BAR
          ===================================================== -->
     <div class="app-container" id="appContainer">
-        <iframe id="marco" name="marco" src="about:blank" title="Contenido principal"></iframe>
+
+        <div class="top-bar">
+            <div class="top-bar-brand" id="modeSwitch" data-mode="surtido" role="tablist" aria-label="Cambiar entre Surtido y Pedido">
+                    <div class="segmented-control">
+                    <span class="segmented-thumb" aria-hidden="true"></span>
+                    <a href="binario.html" class="mode-option active" id="optSurtido" role="tab" aria-selected="true" data-src="binario.html">SURTIDO</a>
+                    <a href="cotizacion.html" class="mode-option" id="optPedido" role="tab" aria-selected="false" data-src="cotizacion.html">PEDIDO</a>
+                </div>
+            </div>
+        </div>
+
+        <iframe id="marco" name="marco" src="binario.html" title="Contenido principal"></iframe>
     </div>
 
     <!-- =====================================================
@@ -471,32 +546,14 @@
            ============================================= */
         const CREDENCIALES = [
             { user: 'ivxn',   pass: '2705'  },
-            { user: 'c',   pass: '1'  },
             { user: 'jose',   pass: 'a2011' },
             { user: 'JOSE',   pass: 'A2011' },
-            { user: 'carlos', pass: 'c1'    },
-            { user: 'carlos', pass: 'C1'    }
+            { user: 'c', pass: '1'    },
+            { user: 'carlos', pass: 'c1'    }
         ];
-
-        /* =============================================
-           MÓDULO QUE SE ABRE AL INICIAR SESIÓN
-           ============================================= */
-        const MODULO_INICIAL = 'articulos.html';
-
-        /* =============================================
-           CLAVE DE ALMACENAMIENTO — "RECORDAR CONTRASEÑA"
-           ============================================= */
-        const CLAVE_RECUERDO = 'adn_recordar_sesion';
 
         const inputUsuario  = document.getElementById('usuario');
         const inputPassword = document.getElementById('password');
-        const chkRecordar   = document.getElementById('recordar');
-
-        const loginOverlay = document.getElementById('loginOverlay');
-        const appContainer = document.getElementById('appContainer');
-        const marco        = document.getElementById('marco');
-
-        let moduloActual = null;
 
         const ESTILO_ERROR = {
             borderColor: 'var(--danger)',
@@ -519,39 +576,37 @@
         }
 
         /* =============================================
-           RECUERDO DE CREDENCIALES
+           TIPO DE PEDIDO — PASTILLA DIARIO / GI
            ============================================= */
-        function leerRecuerdo() {
-            try {
-                const crudo = localStorage.getItem(CLAVE_RECUERDO);
-                if (!crudo) return null;
-                const datos = JSON.parse(crudo);
-                if (!datos || !datos.user) return null;
-                return datos;
-            } catch (e) {
-                return null;
-            }
+        const tipoPedidoSwitch = document.getElementById('tipoPedidoSwitch');
+        const optDiario        = document.getElementById('optDiario');
+        const optGi            = document.getElementById('optGi');
+
+        let tipoPedido = 'diario'; // 'diario' | 'gi'
+
+        function urlBinario() {
+            return tipoPedido === 'gi' ? 'binario.html' : 'binario.html';
+        }
+        function urlCotizacion() {
+            return tipoPedido === 'gi' ? 'cotizaciongi.html' : 'cotizacion.html';
         }
 
-        function guardarRecuerdo(user, pass) {
-            try {
-                localStorage.setItem(CLAVE_RECUERDO, JSON.stringify({ user, pass }));
-            } catch (e) { /* almacenamiento no disponible */ }
+        function cambiarTipoPedido(tipo) {
+            if (tipo === tipoPedido) return;
+            tipoPedido = tipo;
+
+            const esGi = tipo === 'gi';
+            tipoPedidoSwitch.dataset.mode = tipo;
+            optDiario.classList.toggle('active', !esGi);
+            optGi.classList.toggle('active', esGi);
+            optDiario.setAttribute('aria-selected', String(!esGi));
+            optGi.setAttribute('aria-selected', String(esGi));
+
+            actualizarDestinos();
         }
 
-        function borrarRecuerdo() {
-            try {
-                localStorage.removeItem(CLAVE_RECUERDO);
-            } catch (e) { /* almacenamiento no disponible */ }
-        }
-
-        function cargarRecuerdoEnFormulario() {
-            const datos = leerRecuerdo();
-            if (!datos) return;
-            inputUsuario.value  = datos.user;
-            inputPassword.value = datos.pass || '';
-            chkRecordar.checked = true;
-        }
+        optDiario.addEventListener('click', () => cambiarTipoPedido('diario'));
+        optGi.addEventListener('click',     () => cambiarTipoPedido('gi'));
 
         /* =============================================
            FUNCIÓN DE INICIO DE SESIÓN
@@ -569,7 +624,7 @@
 
             const usuarioNormalizado = usuario.toLowerCase();
             const esValido = CREDENCIALES.some(cred =>
-                cred.user.toLowerCase() === usuarioNormalizado && cred.pass === password
+                cred.user === usuarioNormalizado && cred.pass === password
             );
 
             if (!esValido) {
@@ -580,52 +635,12 @@
                 return;
             }
 
-            // Guardar o borrar el recuerdo según la casilla
-            if (chkRecordar.checked) {
-                guardarRecuerdo(usuario, password);
-            } else {
-                borrarRecuerdo();
-            }
+            actualizarDestinos();
 
-            // Sesión válida → abrir directamente el módulo de artículos
-            abrirModulo();
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('appContainer').classList.add('visible');
+            document.getElementById('marco').src = urlBinario();
         }
-
-        /* =============================================
-           ABRIR EL MÓDULO DIRECTAMENTE (SIN MENÚ NI TOP BAR)
-           ============================================= */
-        function abrirModulo() {
-            loginOverlay.classList.add('hidden');
-            appContainer.classList.add('visible');
-            moduloActual = MODULO_INICIAL;
-            marco.src = MODULO_INICIAL;
-        }
-
-        /* =============================================
-           CERRAR SESIÓN (disponible por si se necesita desde consola)
-           ============================================= */
-        function cerrarSesion() {
-            appContainer.classList.remove('visible');
-            marco.src = 'about:blank';
-            moduloActual = null;
-
-            loginOverlay.classList.remove('hidden');
-
-            // Restaurar los campos según lo que se haya recordado
-            const datos = leerRecuerdo();
-            if (datos) {
-                inputUsuario.value  = datos.user;
-                inputPassword.value = datos.pass || '';
-                chkRecordar.checked = true;
-                inputPassword.focus();
-            } else {
-                inputUsuario.value  = '';
-                inputPassword.value = '';
-                chkRecordar.checked = false;
-                inputUsuario.focus();
-            }
-        }
-        // Para usar: escribe  cerrarSesion()  en la consola del navegador.
 
         /* =============================================
            MOSTRAR/OCULTAR CONTRASEÑA
@@ -647,17 +662,62 @@
         });
 
         /* =============================================
-           SI SE DESMARCA "RECORDAR", BORRAR EL RECUERDO
+           INTERRUPTOR SURTIDO / PEDIDO (TOP BAR)
            ============================================= */
-        chkRecordar.addEventListener('change', function () {
-            if (!this.checked) borrarRecuerdo();
+        const modeSwitch = document.getElementById('modeSwitch');
+        const marco      = document.getElementById('marco');
+        const optSurtido = document.getElementById('optSurtido');
+        const optPedido  = document.getElementById('optPedido');
+
+        let modoActual = 'surtido';
+
+        function cambiarModo(modo) {
+            if (modo === modoActual) return;
+            modoActual = modo;
+
+            const esPedido = modo === 'pedido';
+
+            modeSwitch.dataset.mode = modo;
+            optSurtido.classList.toggle('active', !esPedido);
+            optPedido.classList.toggle('active', esPedido);
+            optSurtido.setAttribute('aria-selected', String(!esPedido));
+            optPedido.setAttribute('aria-selected', String(esPedido));
+
+            marco.src = esPedido ? urlCotizacion() : urlBinario();
+        }
+
+        optSurtido.addEventListener('click', function (e) {
+            e.preventDefault();
+            cambiarModo('surtido');
         });
+        optPedido.addEventListener('click', function (e) {
+            e.preventDefault();
+            cambiarModo('pedido');
+        });
+
+        /* =============================================
+           ACTUALIZA LOS DESTINOS DEL TOP BAR
+           SEGÚN EL TIPO DE PEDIDO (diario / gi)
+           ============================================= */
+        function actualizarDestinos() {
+            const destinoSurtido = urlBinario();
+            const destinoPedido  = urlCotizacion();
+
+            optSurtido.href = destinoSurtido;
+            optSurtido.dataset.src = destinoSurtido;
+            optPedido.href = destinoPedido;
+            optPedido.dataset.src = destinoPedido;
+
+            // Si ya se inició sesión, recarga el iframe con el destino correcto
+            if (document.getElementById('appContainer').classList.contains('visible')) {
+                marco.src = (modoActual === 'pedido') ? destinoPedido : destinoSurtido;
+            }
+        }
 
         /* =============================================
            INICIALIZACIÓN
            ============================================= */
-        cargarRecuerdoEnFormulario();
-        if (!inputUsuario.value) inputUsuario.focus();
+        actualizarDestinos();
     </script>
 </body>
 </html>
