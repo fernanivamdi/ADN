@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINARIO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --fondo: #F5F5F7;
+            --tarjeta: #FFFFFF;
+            --texto-principal: #1D1D1F;
+            --texto-secundario: #6E6E73;
+            --texto-terciario: #86868B;
+            --acento: #0071E3;
+            --acento-hover: #0077ED;
+            --acento-texto: #0066CC;
+            --acento-suave: rgba(0, 113, 227, 0.10);
+            --acento-anillo: rgba(0, 113, 227, 0.22);
+            --borde: #D2D2D7;
+            --borde-suave: #E8E8ED;
+            --relleno: rgba(118, 118, 128, 0.12);
+            --relleno-hover: rgba(118, 118, 128, 0.20);
+            --segmento: rgba(118, 118, 128, 0.12);
+            --segmento-activo: #FFFFFF;
+            --vidrio: rgba(255, 255, 255, 0.72);
+            --vidrio-linea: rgba(0, 0, 0, 0.08);
+            --exito: #248A3D;       --exito-fondo: rgba(52, 199, 89, 0.15);
+            --aviso: #B25000;       --aviso-fondo: rgba(255, 159, 10, 0.16);
+            --peligro: #D70015;     --peligro-fondo: rgba(255, 59, 48, 0.12);
+            --sombra-suave: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --sombra-tarjeta: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --sombra-flotante: 0 20px 60px rgba(0, 0, 0, 0.16);
+            --sombra-segmento: 0 1px 3px rgba(0, 0, 0, 0.14), 0 1px 1px rgba(0, 0, 0, 0.06);
+            --overlay: rgba(0, 0, 0, 0.40);
+            --radio-suave: 12px;
+            --radio-medio: 18px;
+            --radio-boton: 980px;
+            --transicion: 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --header-h: 56px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 17px; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--fondo); color: var(--texto-principal);
+            font-size: 17px; line-height: 1.47; font-weight: 400; letter-spacing: -0.022em;
+            padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        h1, h2, h3, .brand {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-weight: 600; line-height: 1.1; letter-spacing: -0.015em;
+        }
+        ::selection { background: var(--acento-anillo); }
+        :focus-visible { outline: none; }
+        button { font-family: inherit; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+            display: flex; align-items: center; gap: 20px; padding: 0 28px;
+            background: var(--vidrio);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--vidrio-linea); box-shadow: none;
+            z-index: 700; overflow-x: auto; overflow-y: hidden;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .top-bar::-webkit-scrollbar { display: none; }
+        .top-bar .divider { flex: 0 0 auto; width: 1px; height: 22px; background: var(--vidrio-linea); opacity: 1; }
+
+        .top-bar .top-bar-brand {
+            flex: 0 0 auto; font-size: 13px; font-weight: 600; color: #FFFFFF;
+            letter-spacing: -0.01em; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .top-bar .top-bar-brand .material-icons { font-size: 18px; color: var(--acento); }
+
+        .nav-views {
+            flex: 0 0 auto; display: flex; align-items: center; gap: 2px;
+            padding: 3px; background: var(--segmento); border-radius: var(--radio-boton);
+        }
+        .nav-btn {
+            height: 32px; padding: 0 16px; border-radius: var(--radio-boton);
+            background: transparent; border: none; color: var(--texto-secundario);
+            font-size: 13px; font-weight: 500; letter-spacing: -0.01em;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+            font-family: inherit; white-space: nowrap;
+            transition: background var(--transicion), color var(--transicion), box-shadow var(--transicion), transform 0.15s ease;
+        }
+        .nav-btn i { font-size: 12px; opacity: 0.85; }
+        .nav-btn:hover { background: transparent; color: var(--texto-principal); transform: none; }
+        .nav-btn:active { transform: scale(0.97); }
+        .nav-btn.active-item, .nav-btn.active-item:hover {
+            background: var(--segmento-activo); color: var(--texto-principal);
+            box-shadow: var(--sombra-segmento); font-weight: 600;
+        }
+        .nav-btn.active-item i { color: var(--acento-texto); opacity: 1; }
+
+        .upload-status { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }
+        .upload-status .label {
+            flex: 0 0 auto; font-weight: 500; font-size: 12px; color: var(--texto-secundario);
+            padding-right: 8px; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .upload-status .file-item {
+            flex: 0 0 auto; white-space: nowrap; display: inline-flex; align-items: center;
+            gap: 6px; font-size: 12px; font-weight: 500; padding: 5px 12px;
+            border-radius: var(--radio-boton); background: var(--relleno); color: var(--texto-secundario);
+        }
+        .upload-status .file-item.loaded { background: var(--exito-fondo); color: var(--exito); }
+        .upload-status .file-item.pending { background: var(--relleno); color: var(--texto-secundario); }
+        .upload-status .file-item .icon { font-size: 7px; display: inline-flex; }
+        .upload-status .file-item.loaded .icon { color: var(--exito); }
+        .upload-status .file-item.pending .icon { color: var(--aviso); }
+
+        .floating-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; margin-left: auto; }
+        .floating-actions button {
+            background: var(--relleno); border: none; color: var(--acento-texto);
+            height: 32px; padding: 0 16px; border-radius: var(--radio-boton);
+            cursor: pointer; font-size: 13px; font-weight: 500;
+            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+            transition: background var(--transicion), transform 0.15s ease;
+        }
+        .floating-actions button:hover { background: var(--relleno-hover); transform: scale(1.02); }
+        .floating-actions button:active { transform: scale(0.97); }
+        .floating-actions button.primary { background: var(--acento); color: #fff; }
+        .floating-actions button.primary:hover { background: var(--acento-hover); }
+
+        .main-content {
+            padding: calc(var(--header-h) + 48px) 32px 96px; max-width: 1600px; margin: 0 auto;
+            animation: aparecer 0.6s var(--transicion) both;
+        }
+
+        .table-wrapper, .linea-table-wrapper, .comparativa-table-wrapper {
+            background: var(--tarjeta); border-radius: var(--radio-medio);
+            box-shadow: var(--sombra-tarjeta); overflow: hidden; margin-bottom: 48px;
+            animation: aparecer 0.45s var(--transicion) both;
+        }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .table-header {
+            padding: 32px 32px 24px; border-bottom: 1px solid var(--borde-suave);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 20px; background: var(--tarjeta);
+        }
+        .table-header h2 {
+            font-size: 28px; font-weight: 600; display: flex; align-items: center; gap: 12px;
+            color: var(--texto-principal);
+        }
+        .table-header h2 i { color: var(--acento); font-size: 20px; }
+        .table-header h2 span {
+            background: var(--acento-suave); color: var(--acento-texto);
+            font-size: 12px; padding: 4px 12px; border-radius: var(--radio-boton); font-weight: 500;
+        }
+        .table-header h2 .item-count-badge {
+            background: var(--relleno); color: var(--texto-secundario); font-size: 12px; padding: 4px 12px;
+        }
+
+        .table-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .table-controls input[type="text"] {
+            height: 40px; padding: 0 16px 0 40px; border: 1px solid var(--borde);
+            border-radius: var(--radio-suave); font-size: 15px; min-width: 280px;
+            outline: none; background-color: var(--tarjeta); color: var(--texto-principal);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: 14px center; background-size: 16px;
+        }
+        .table-controls input[type="text"]:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-anillo); }
+
+        .btn-export-ped-mat {
+            border: none; color: var(--acento-texto); background: var(--acento-suave);
+            height: 40px; padding: 0 20px; border-radius: var(--radio-boton);
+            cursor: pointer; font-size: 13px; font-weight: 700;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
+            transition: background var(--transicion), color var(--transicion);
+        }
+        .btn-export-ped-mat:hover { background: var(--acento); color: #fff; }
+        #tablaArticulo .btn-export-ped-mat, #tablaLinea .btn-export-ped-mat { background: var(--acento); color: #fff; }
+        #tablaArticulo .btn-export-ped-mat:hover, #tablaLinea .btn-export-ped-mat:hover { background: var(--acento-hover); }
+
+        #tablaComparativa .table-header { display: grid; grid-template-columns: 1fr minmax(260px, 380px); gap: 20px; }
+        #tablaComparativa .table-controls { display: contents; }
+        #tablaComparativa .table-controls input[type="text"] { grid-column: 2 / 3; width: 100%; min-width: 0; }
+        #tablaComparativa .export-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+        
+        .btn-export-surt, .btn-export-alm-suc, .btn-export-mat-suc, .btn-export-rot-suc-mat, .btn-export-ped-suc {
+            border: none; color: var(--acento-texto); background: var(--acento-suave);
+            height: 40px; border-radius: var(--radio-boton); cursor: pointer; font-size: 13px; font-weight: 700;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
+        }
+        .btn-export-surt:hover, .btn-export-alm-suc:hover, .btn-export-mat-suc:hover, .btn-export-rot-suc-mat:hover, .btn-export-ped-suc:hover {
+            background: var(--acento); color: #fff;
+        }
+
+        .table-scroll { overflow-x: auto; }
+        .table-scroll::-webkit-scrollbar, .vs-container::-webkit-scrollbar { height: 12px; width: 12px; }
+        .table-scroll::-webkit-scrollbar-thumb, .vs-container::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 6px; border: 3px solid var(--tarjeta); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; font-variant-numeric: tabular-nums; }
+        thead th { padding: 16px 20px; text-align: left; font-weight: 600; color: var(--texto-secundario); font-size: 12px; white-space: nowrap; position: sticky; top: 0; background: var(--tarjeta); z-index: 10; box-shadow: inset 0 -1px 0 var(--borde-suave); }
+        thead th i { margin-right: 6px; font-size: 11px; opacity: 0.55; }
+        tbody tr { border-bottom: 1px solid var(--borde-suave); transition: background 0.2s ease; cursor: pointer; }
+        tbody tr:hover { background: var(--fondo); }
+        tbody td { padding: 14px 20px; color: var(--texto-principal); vertical-align: middle; }
+        tbody td .codigo { font-family: ui-monospace, monospace; font-size: 12px; color: var(--texto-secundario); background: var(--relleno); padding: 3px 9px; border-radius: 6px; display: inline-block; }
+        tbody td .articulo { font-weight: 500; color: var(--texto-principal); }
+        thead th:first-child, tbody td:first-child { padding-left: 32px; }
+        thead th:last-child, tbody td:last-child { padding-right: 32px; }
+
+        #tablaArticulo th:nth-child(n+3), #tablaArticulo td:nth-child(n+3),
+        #tablaLinea th:nth-child(n+2), #tablaLinea td:nth-child(n+2),
+        #tablaComparativa th:nth-child(n+8), #tablaComparativa td:nth-child(n+8) { text-align: center; }
+
+        .stock-input { width: 80px; height: 34px; padding: 0 8px; border: 1px solid var(--borde); border-radius: 10px; font-size: 14px; font-weight: 600; text-align: center; background: var(--tarjeta); color: var(--texto-principal); }
+        .stock-input:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-anillo); outline: none; }
+
+        .badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 32px; padding: 3px 12px; border-radius: var(--radio-boton); font-weight: 600; font-size: 12px; }
+        .badge.high { background: var(--exito-fondo); color: var(--exito); }
+        .badge.medium { background: var(--aviso-fondo); color: var(--aviso); }
+        .badge.low { background: var(--peligro-fondo); color: var(--peligro); }
+        .badge.zero { background: var(--relleno); color: var(--texto-secundario); }
+
+        .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 24px 32px; border-top: 1px solid var(--borde-suave); background: var(--tarjeta); }
+        .pagination-controls button { background: var(--relleno); border: none; color: var(--acento-texto); border-radius: var(--radio-boton); height: 34px; padding: 0 18px; cursor: pointer; font-size: 13px; font-weight: 500; }
+        .pagination-controls button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .vs-container { overflow-y: auto; position: relative; }
+        .vs-spacer td { padding: 0 !important; border: none !important; line-height: 0; font-size: 0; }
+        .vs-empty { text-align: center; padding: 80px 20px; color: var(--texto-secundario); }
+        .vs-empty i { font-size: 28px; display: block; margin-bottom: 14px; color: var(--texto-terciario); }
+        #comparativaBody tr:not(.vs-spacer) { height: 40px; }
+        #comparativaBody td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; padding-top: 0; padding-bottom: 0; }
+
+        /* ============================================================
+           MODALES
+           ============================================================ */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--overlay); z-index: 1000; justify-content: center; align-items: center;
+            -webkit-backdrop-filter: saturate(180%) blur(12px); backdrop-filter: saturate(180%) blur(12px);
+        }
+        .modal-overlay.active { display: flex; animation: overlay-in 0.3s ease both; }
+        @keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal {
+            background: var(--tarjeta); border-radius: 20px; padding: 40px;
+            max-width: 640px; width: 92%; max-height: 85vh; overflow-y: auto;
+            box-shadow: var(--sombra-flotante);
+        }
+        .modal-overlay.active .modal { animation: modal-in 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) both; }
+        @keyframes modal-in { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        
+        .modal h2 { font-size: 28px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+        .modal h2 i { color: var(--acento); font-size: 22px; }
+        .modal .subtitle { color: var(--texto-secundario); font-size: 15px; margin-bottom: 28px; }
+        .modal .drop-zone { border: 1.5px dashed var(--borde); border-radius: var(--radio-medio); padding: 44px 24px; text-align: center; margin-bottom: 28px; cursor: pointer; background: var(--fondo); }
+        .modal .drop-zone:hover { border-color: var(--acento); background: var(--acento-suave); }
+        .modal .drop-zone i { font-size: 40px; color: var(--acento); margin-bottom: 14px; }
+        .modal .file-list .file-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 4px; border-bottom: 1px solid var(--borde-suave); }
+        .modal .file-list .file-row:last-child { border-bottom: none; }
+        .modal .file-list .file-row .name { font-weight: 500; font-size: 15px; display: flex; align-items: center; gap: 12px; }
+        .modal .file-list .file-row .status { font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: var(--radio-boton); }
+        .modal .file-list .file-row .status.loaded { background: var(--exito-fondo); color: var(--exito); }
+        .modal .file-list .file-row .status.pending { background: var(--relleno); color: var(--texto-secundario); }
+        .modal .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; }
+        .modal .modal-actions button { height: 44px; padding: 0 28px; border: none; border-radius: var(--radio-boton); font-size: 17px; cursor: pointer; }
+        .modal .modal-actions button.cancel { background: var(--relleno); color: var(--acento-texto); }
+        .modal .modal-actions button.confirm { background: var(--acento); color: #fff; }
+        .modal .modal-actions button.confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ============================================================
+           MODAL DE DETALLE
+           ============================================================ */
+        .modal-detalle {
+            background: var(--tarjeta); border-radius: 24px; padding: 32px;
+            max-width: 660px; width: 92%; max-height: 90vh; overflow-y: auto;
+            box-shadow: var(--sombra-flotante); position: relative;
+        }
+        .modal-detalle::-webkit-scrollbar { width: 6px; }
+        .modal-detalle::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 10px; }
+        
+        .md-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .md-title { font-size: 22px; font-weight: 600; display: flex; align-items: flex-start; gap: 10px; color: var(--texto-principal); line-height: 1.2; padding-right: 20px; }
+        .md-title i { color: var(--acento); font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .md-close { background: var(--fondo); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--texto-secundario); transition: 0.2s; flex-shrink: 0; }
+        .md-close:hover { background: var(--relleno-hover); color: var(--texto-principal); }
+
+        .md-sub { color: var(--texto-secundario); font-size: 13px; margin-bottom: 22px; display: flex; gap: 14px; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px solid var(--borde-suave); }
+        .md-sub span { display: flex; align-items: center; gap: 6px; }
+        .md-sub i { font-size: 11px; opacity: 0.6; }
+        
+        /* Pedido OK Cards */
+        .md-pedido-ok-section { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .md-pedido-ok-card { padding: 16px; border-radius: 16px; background: var(--fondo); border: 1px solid var(--borde-suave); transition: background 0.2s; }
+        .md-pedido-ok-card.ok { background: var(--exito-fondo); border-color: rgba(52, 199, 89, 0.28); }
+        .md-pedido-ok-card.zero { background: var(--fondo); }
+        .md-pedido-ok-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--texto-secundario); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .md-pedido-ok-header i { font-size: 11px; opacity: 0.7; }
+        .md-pedido-ok-num { font-size: 34px; font-weight: 700; line-height: 1; margin-bottom: 10px; color: var(--texto-principal); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+        .md-pedido-ok-card.ok .md-pedido-ok-num { color: var(--exito); }
+        .md-pedido-ok-card.zero .md-pedido-ok-num { color: var(--texto-terciario); }
+        .md-pedido-ok-explicacion { font-size: 12px; line-height: 1.5; color: var(--texto-secundario); }
+
+        .md-motivo-principal { padding: 8px 10px; background: rgba(255,255,255,0.55); border-radius: 8px; font-size: 12px; color: var(--texto-principal); font-weight: 500; display: flex; gap: 6px; align-items: flex-start; margin-bottom: 8px; }
+        .md-motivo-principal i { color: var(--exito); font-size: 12px; margin-top: 1px; flex-shrink: 0; }
+
+        .md-desglose { display: flex; flex-wrap: wrap; gap: 5px; }
+        .md-desglose-chip { font-size: 10.5px; padding: 3px 9px; border-radius: 10px; background: rgba(255,255,255,0.7); color: var(--texto-secundario); font-variant-numeric: tabular-nums; font-weight: 500; }
+        .md-desglose-chip.ganador { background: var(--exito); color: #fff; font-weight: 700; }
+
+        .md-motivos { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+        .md-motivos li { padding: 0; display: flex; gap: 7px; align-items: flex-start; font-size: 12px; line-height: 1.45; color: var(--texto-secundario); }
+        .md-motivos li i { font-size: 11px; margin-top: 3px; color: var(--aviso); flex-shrink: 0; }
+        .md-motivos li.sin-motivos { font-style: italic; opacity: 0.7; }
+
+        /* Grids */
+        .md-grid-section { margin-bottom: 18px; }
+        .md-grid-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texto-terciario); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .md-grid-title i { font-size: 11px; opacity: 0.7; }
+        .md-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 16px; }
+        .md-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .md-grid-item { display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; background: var(--fondo); border-radius: 10px; }
+        .md-grid-label { font-size: 11px; color: var(--texto-secundario); display: flex; align-items: center; gap: 5px; }
+        .md-grid-label i { font-size: 10px; opacity: 0.65; }
+        .md-grid-value { font-size: 17px; font-weight: 600; color: var(--texto-principal); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+        .md-btn-entendido { width: 100%; height: 46px; border-radius: 12px; background: var(--acento); color: white; border: none; font-size: 15px; font-weight: 600; margin-top: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+        .md-btn-entendido:hover { background: var(--acento-hover); }
+
+        @media (max-width: 640px) {
+            .md-pedido-ok-section { grid-template-columns: 1fr; }
+            .md-grid { grid-template-columns: repeat(2, 1fr); }
+            .modal-detalle { padding: 22px; }
+            .md-title { font-size: 17px; }
+            .md-pedido-ok-num { font-size: 28px; }
+        }
+
+        .toast {
+            position: fixed; bottom: 32px; left: 50%;
+            background: rgba(255, 255, 255, 0.82); color: var(--texto-principal);
+            border: 1px solid var(--vidrio-linea); backdrop-filter: blur(20px);
+            padding: 14px 24px; border-radius: var(--radio-boton);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); font-size: 15px; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
+            transform: translate(-50%, 100px); opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.4s ease; z-index: 2000;
+        }
+        .toast.show { transform: translate(-50%, 0); opacity: 1; }
+        .toast i { font-size: 18px; color: var(--acento); }
+        
+        @media (max-width: 1050px) { .nav-btn .nav-text { display: none; } .nav-btn { padding: 0 14px; } }
+        @media (max-width: 768px) {
+            .top-bar { padding: 0 14px; gap: 12px; }
+            .main-content { padding: calc(var(--header-h) + 24px) 14px 64px; }
+            .table-header { flex-direction: column; align-items: stretch; padding: 20px; }
+            .table-controls input[type="text"] { min-width: 100%; }
+            #tablaComparativa .table-header { grid-template-columns: 1fr; }
+            #tablaComparativa .table-controls input[type="text"] { grid-column: 1 / -1; }
+            .export-grid { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <span class="top-bar-brand">
+        FARMACIAS ADN PEDIDOS +
+    </span>
+
+    <div class="divider"></div>
+
+    <div class="nav-views">
+        <button class="nav-btn active-item" data-view="articulo" onclick="navegarA('articulo')">
+            <i class="fas fa-box"></i><span class="nav-text">Stock por Artículo</span>
+        </button>
+        <button class="nav-btn" data-view="linea" onclick="navegarA('linea')">
+            <i class="fas fa-tags"></i><span class="nav-text">Stock por Línea</span>
+        </button>
+        <button class="nav-btn" data-view="comparativa" onclick="navegarA('comparativa')">
+            <i class="fas fa-code-compare"></i><span class="nav-text">Final</span>
+        </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="upload-status" id="uploadStatus">
+        <span class="label"><i class="fas fa-file-circle-check"></i> Archivos:</span>
+        <span class="file-item pending" id="status-matriz-existencia" title="EM"><span class="icon"><i class="fas fa-circle"></i></span><span class="chip-text">E.M</span></span>
+        <span class="file-item pending" id="status-almacen-existencia" title="EA"><span class="icon"><i class="fas fa-circle"></i></span><span class="chip-text">E.A</span></span>
+        <span class="file-item pending" id="status-sucursal-existencia" title="ES"><span class="icon"><i class="fas fa-circle"></i></span><span class="chip-text">E.S</span></span>
+        <span class="file-item pending" id="status-ubicacion-existencia" title="EU"><span class="icon"><i class="fas fa-circle"></i></span><span class="chip-text">E.U</span></span>
+        <span class="file-item pending" id="status-matriz-ventas" title="Vm"><span class="icon"><i class="fas fa-circle"></i></span><span class="chip-text">V.M</span></span>
+        <span class="file-item pending" id="status-sucursal-ventas" title="VS"><span class="icon"><i class="fas fa-circle"></i></span><span class="chip-text">V.S</span></span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="floating-actions">
+        <button onclick="abrirModalCarga()" class="primary" title="Cargar Archivos">
+            <i class="fas fa-upload"></i><span class="btn-text"></span>
+        </button>
+        <button onclick="actualizarDatos()" title="Actualizar">
+            <i class="fas fa-sync-alt"></i><span class="btn-text"></span>
+        </button>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <div class="table-wrapper" id="tablaArticulo">
+        <div class="table-header">
+            <h2><i class="fas fa-list"></i> Stock por Artículo <span>Editable</span> <span class="item-count-badge" id="articuloCount"></span></h2>
+            <div class="table-controls">
+                <input type="text" id="searchInputArticulo" placeholder="Buscar código o artículo..." oninput="filtrarArticulo()">
+                <button class="btn-export-ped-mat" onclick="document.getElementById('stockXArticuloInput').click()">
+                    <i class="fas fa-upload"></i> CARGAR STOCKXARTICULO.XLSX
+                </button>
+                <input type="file" id="stockXArticuloInput" accept=".xlsx,.xls" style="display:none;" onchange="procesarStockXArticulo(event)">
+            </div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr>
+                    <th><i class="fas fa-barcode"></i> Código</th>
+                    <th><i class="fas fa-tag"></i> Artículos</th>
+                    <th><i class="fas fa-warehouse"></i> ALMACEN</th>
+                    <th><i class="fas fa-building"></i> MATRIZ</th>
+                    <th><i class="fas fa-store"></i> SUCURSAL</th>
+                </tr></thead>
+                <tbody id="articuloBody">
+                    <tr><td colspan="5" class="vs-empty"><i class="fas fa-file-import"></i><strong>Carga los 6 archivos Excel</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-controls" id="paginationArticulo"></div>
+    </div>
+
+    <div class="linea-table-wrapper" id="tablaLinea" style="display:none;">
+        <div class="table-header">
+            <h2><i class="fas fa-tags"></i> Stock por Línea <span>Asignar stock</span> <span class="item-count-badge" id="lineaCount"></span></h2>
+            <div class="table-controls">
+                <input type="text" id="searchLinea" placeholder="Buscar línea..." oninput="filtrarLinea()">
+                <button class="btn-export-ped-mat" onclick="document.getElementById('stockXLineaInput').click()">
+                    <i class="fas fa-upload"></i> CARGAR STOCKXLINEA.XLSX
+                </button>
+                <input type="file" id="stockXLineaInput" accept=".xlsx,.xls" style="display:none;" onchange="procesarStockXLinea(event)">
+            </div>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr>
+                    <th><i class="fas fa-layer-group"></i> Línea</th>
+                    <th><i class="fas fa-warehouse"></i> ALMACEN</th>
+                    <th><i class="fas fa-building"></i> MATRIZ</th>
+                    <th><i class="fas fa-store"></i> SUCURSAL</th>
+                    <th><i class="fas fa-calculator"></i> Total</th>
+                    <th><i class="fas fa-box"></i> Productos</th>
+                </tr></thead>
+                <tbody id="lineaBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination-controls" id="paginationLinea"></div>
+    </div>
+
+    <div class="comparativa-table-wrapper" id="tablaComparativa" style="display:none;">
+        <div class="table-header">
+            <h2><i class="fas fa-code-compare"></i> Final <span>Resumen</span> <span class="item-count-badge" id="comparativaCount"></span></h2>
+            <div class="table-controls">
+                <input type="text" id="searchComparativa" placeholder="Buscar código o artículo..." oninput="filtrarComparativa()">
+                <div class="export-grid">
+                    <button class="btn-export-surt" onclick="exportarSurtAlmMat()"><i class="fas fa-file-pdf"></i>ALMACEN A MATRIZ</button>
+                    <button class="btn-export-alm-suc" onclick="exportarSurtAlmSuc()"><i class="fas fa-file-pdf"></i>ALMACEN A SUCURSAL</button>
+                    <button class="btn-export-mat-suc" onclick="exportarSurtMatSuc()"><i class="fas fa-file-pdf"></i>MATRIZ A SUCURSAL</button>
+                    <button class="btn-export-rot-suc-mat" onclick="exportarRotSucMat()"><i class="fas fa-file-pdf"></i>SUCURSAL A MATRIZ</button>
+                    <button class="btn-export-ped-mat" onclick="exportarPedidoMatriz()"><i class="fas fa-file-excel"></i> PEDIDO MATRIZ</button>
+                    <button class="btn-export-ped-suc" onclick="exportarPedidoSucursal()"><i class="fas fa-file-excel"></i> PEDIDO SUCURSAL</button>
+                </div>
+            </div>
+        </div>
+        <div class="vs-container" id="comparativaScrollContainer" style="max-height:65vh;">
+            <table>
+                <thead><tr>
+                    <th><i class="fas fa-barcode"></i> Código</th>
+                    <th><i class="fas fa-tag"></i> Artículo</th>
+                    <th><i class="fas fa-map-pin"></i> UBICACION</th>
+                    <th><i class="fas fa-layer-group"></i> Línea</th>
+                    <th><i class="fas fa-tag"></i> MARCA</th>
+                    <th><i class="fas fa-industry"></i> FABRICANTE MAT</th>
+                    <th><i class="fas fa-industry"></i> FABRICANTE SUC</th>
+                    <th><i class="fas fa-warehouse"></i> EXISTENCIA ALMACEN</th>
+                    <th><i class="fas fa-building"></i> EXISTENCIA MATRIZ</th>
+                    <th><i class="fas fa-store"></i> EXISTENCIA SUCURSAL</th>
+                    <th><i class="fas fa-building"></i> STOCK MATRIZ</th>
+                    <th><i class="fas fa-store"></i> STOCK SUCURSAL</th>
+                    <th><i class="fas fa-calendar-day"></i> INV MATRIZ</th>
+                    <th><i class="fas fa-calendar-day"></i> INV SUCURSAL</th>
+                    <th><i class="fas fa-chart-line"></i> RANGO MATRIZ</th>
+                    <th><i class="fas fa-chart-line"></i> RANGO SUCURSAL</th>
+                    <th><i class="fas fa-arrow-up"></i> MAYOR MATRIZ</th>
+                    <th><i class="fas fa-arrow-up"></i> MAYOR SUCURSAL</th>
+                    <th><i class="fas fa-cube"></i> PED ALMACEN</th>
+                    <th><i class="fas fa-cube"></i> PEDIDO MATRIZ</th>
+                    <th><i class="fas fa-cube"></i> PEDIDO SUCURSAL</th>
+                    <th><i class="fas fa-arrows-left-right"></i> SURT ALM→MAT</th>
+                    <th><i class="fas fa-arrow-right-arrow-left"></i> SURT ALM→SUC</th>
+                    <th><i class="fas fa-arrow-right-arrow-left"></i> SURT MAT→SUC</th>
+                    <th><i class="fas fa-arrow-right-arrow-left"></i> ROT SUC→MAT</th>
+                    <th><i class="fas fa-check-circle"></i> PEDIDO MATRIZ OK</th>
+                    <th><i class="fas fa-check-circle"></i> PEDIDO SUCURSAL OK</th>
+                </tr></thead>
+                <tbody id="comparativaBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMessage">OK</span></div>
+
+<!-- MODAL DE CARGA -->
+<div class="modal-overlay" id="modalCarga">
+    <div class="modal">
+        <h2><i class="fas fa-upload"></i> Cargar Archivos Excel</h2>
+        <p class="subtitle">Selecciona los <strong>6 archivos</strong>: Existencia (MATRIZ, ALMACEN, SUCURSAL, UBICACION) y Ventas (MATRIZ, SUCURSAL)</p>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p><strong>Haz clic o arrastra tus archivos aquí</strong></p>
+            <p class="file-types">Formatos: .xlsx, .xls</p>
+        </div>
+        <div class="file-list">
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia.MATRIZ</span><span class="status pending" id="modal-status-matriz-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia.ALMACEN</span><span class="status pending" id="modal-status-almacen-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia.SUCURSAL</span><span class="status pending" id="modal-status-sucursal-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Existencia.UBICACION</span><span class="status pending" id="modal-status-ubicacion-existencia">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Ventas.MATRIZ</span><span class="status pending" id="modal-status-matriz-ventas">Pendiente</span></div>
+            <div class="file-row"><span class="name"><i class="fas fa-file-excel"></i> Ventas.SUCURSAL</span><span class="status pending" id="modal-status-sucursal-ventas">Pendiente</span></div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" multiple style="display:none;" onchange="procesarArchivos(event)">
+        <div class="modal-actions">
+            <button class="cancel" onclick="cerrarModalCarga()">Cancelar</button>
+            <button class="confirm" id="btnConfirmarCarga" onclick="confirmarCarga()" disabled><i class="fas fa-check"></i> Cargar y Procesar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE DETALLE -->
+<div class="modal-overlay" id="modalDetalleArticulo" onclick="cerrarModalDetalle(event)">
+    <div class="modal-detalle" onclick="event.stopPropagation()">
+        <div class="md-header">
+            <div class="md-title"><i class="fas fa-info-circle"></i><span id="md-titulo-texto">Cargando...</span></div>
+            <button class="md-close" onclick="cerrarModalDetalle()"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="md-sub">
+            <span><i class="fas fa-barcode"></i> SKU: <strong id="md-codigo">-</strong></span>
+            <span><i class="fas fa-tag"></i> <span id="md-linea">-</span></span>
+            <span><i class="fas fa-certificate"></i> <span id="md-marca">-</span></span>
+            <span><i class="fas fa-map-pin"></i> <span id="md-ubicacion">-</span></span>
+        </div>
+
+        <!-- PEDIDO OK CON EXPLICACIÓN -->
+        <div class="md-pedido-ok-section">
+            <div class="md-pedido-ok-card" id="md-card-pedido-mat">
+                <div class="md-pedido-ok-header"><i class="fas fa-building"></i> Pedido Matriz OK</div>
+                <div class="md-pedido-ok-num" id="md-pedido-mat-ok">0</div>
+                <div class="md-pedido-ok-explicacion" id="md-explicacion-mat"></div>
+            </div>
+            <div class="md-pedido-ok-card" id="md-card-pedido-suc">
+                <div class="md-pedido-ok-header"><i class="fas fa-store"></i> Pedido Sucursal OK</div>
+                <div class="md-pedido-ok-num" id="md-pedido-suc-ok">0</div>
+                <div class="md-pedido-ok-explicacion" id="md-explicacion-suc"></div>
+            </div>
+        </div>
+
+        <!-- Existencias -->
+        <div class="md-grid-section">
+            <div class="md-grid-title"><i class="fas fa-cubes"></i> Existencias Reales</div>
+            <div class="md-grid">
+                <div class="md-grid-item">
+                    <span class="md-grid-label"><i class="fas fa-warehouse"></i> Almacén</span>
+                    <span class="md-grid-value" id="md-ex-alm">0</span>
+                </div>
+                <div class="md-grid-item">
+                    <span class="md-grid-label"><i class="fas fa-building"></i> Matriz</span>
+                    <span class="md-grid-value" id="md-ex-mat">0</span>
+                </div>
+                <div class="md-grid-item">
+                    <span class="md-grid-label"><i class="fas fa-store"></i> Sucursal</span>
+                    <span class="md-grid-value" id="md-ex-suc">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ventas -->
+        <div class="md-grid-section">
+            <div class="md-grid-title"><i class="fas fa-chart-line"></i> Ventas</div>
+            <div class="md-grid cols-2">
+                <div class="md-grid-item">
+                    <span class="md-grid-label"><i class="fas fa-building"></i> Ventas Matriz</span>
+                    <span class="md-grid-value" id="md-ventas-mat">0</span>
+                </div>
+                <div class="md-grid-item">
+                    <span class="md-grid-label"><i class="fas fa-store"></i> Ventas Sucursal</span>
+                    <span class="md-grid-value" id="md-ventas-suc">0</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="md-btn-entendido" onclick="cerrarModalDetalle()">
+            <i class="fas fa-check"></i> Entendido
+        </button>
+    </div>
+</div>
+
+<script src="db.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+// ============================================================
+//  CONFIGURACIÓN Y REGLAS
+// ============================================================
+const CFG = { PAGE_SIZE: 300, VS_ROW_HEIGHT: 40, VS_BUFFER: 25, DEBOUNCE_MS: 200 };
+
+const PEDIDO_MATRIZ_OK_MARCAS = new Set([
+    'MEDICAMENTO GRUPO SSA IV', 'MEDICAMENTO OTC LIBRE VENTA', 'PRODUCTOS DE CURACION EN GENERAL',
+    'PRODUCTOS DE REBOTICA', 'PRODUCTOS EN GENERAL DE ABARROTERAS'
+]);
+const PEDIDO_MATRIZ_OK_LINEAS = new Set([
+    'ABARROTES EN GENERAL','BEBE','BIBERONES','COMESTIBLES','CREMAS','CURA','DES CABALLERO','DES DAMA',
+    'ENJUAGUES BUCALES','ESTETICA','FARMACIA','HIG','HUMEDAS','LECHES','MAMP','MANT','MCRM','MEDJABON',
+    'MGOT','MSUPO','MSUSP','MTAB','PAÑALES','REBOTICA','REFRESCOS','REFRIGERADOS','SANITARIAS','SHAMPOO',
+    'TOCADOR','TRATAMIENTO CAPILAR'
+]);
+const MARCAS_ROT_SUC_MAT = new Set(['MEDICAMENTO OTC LIBRE VENTA', 'MEDICAMENTO GRUPO SSA IV']);
+
+function esPedidoMatrizOK(item) {
+    const fab = (item.fabricante || '').trim().toUpperCase();
+    if (fab !== 'SYS') return false;
+    const marca = (item.marca || '').trim().toUpperCase();
+    if (!PEDIDO_MATRIZ_OK_MARCAS.has(marca)) return false;
+    const linea = (item.linea || '').trim().toUpperCase();
+    if (!PEDIDO_MATRIZ_OK_LINEAS.has(linea)) return false;
+    return true;
+}
+
+function esPedidoSucursalOK(item) {
+    const fab = (item.fabricanteSucursal || '').trim().toUpperCase();
+    if (fab !== 'SYS') return false;
+    const marca = (item.marca || '').trim().toUpperCase();
+    if (!PEDIDO_MATRIZ_OK_MARCAS.has(marca)) return false;
+    const linea = (item.linea || '').trim().toUpperCase();
+    if (!PEDIDO_MATRIZ_OK_LINEAS.has(linea)) return false;
+    return true;
+}
+
+// ============================================================
+//  BASE DE DATOS (Supabase) — reemplaza localStorage
+// ============================================================
+const LS_KEYS = { DATOS: 'inv_datosCombinados', STOCK_EDITADO: 'inv_stockEditado', STOCK_LINEA: 'inv_stockLinea', VISTA: 'inv_vistaActual', NO_DISPONIBLE: 'inv_noDisponible' }; // solo para migrar datos viejos
+let _snapArt = new Map(), _snapLin = new Map(), _guardando = null, _timerGuardar = null;
+
+// Mismo nombre de siempre: ahora guarda (con debounce) solo lo que cambió en la nube
+function guardarEnLocalStorage() {
+    clearTimeout(_timerGuardar);
+    _timerGuardar = setTimeout(() => { _guardando = (_guardando || Promise.resolve()).then(sincronizarNube); }, 500);
+}
+async function sincronizarNube() {
+    try {
+        const cambios = [], codigos = new Set();
+        datosCombinados.forEach(item => {
+            const v = calcularValores(item);
+            const row = DB.articulos.rowDeItem({ ...item, pedidoMatrizOk: v.pedidoMatrizOk, pedidoSucursalOk: v.pedidoSucursalOk });
+            codigos.add(row.codigo);
+            const s = JSON.stringify(row);
+            if (_snapArt.get(row.codigo) !== s) cambios.push([row, s]);
+        });
+        if (cambios.length) { await DB.articulos.guardar(cambios.map(c => c[0])); cambios.forEach(([r, s]) => _snapArt.set(r.codigo, s)); }
+        const quitar = [..._snapArt.keys()].filter(c => !codigos.has(c));
+        if (quitar.length) { await DB.articulos.borrar(quitar); quitar.forEach(c => _snapArt.delete(c)); }
+
+        const lin = [];
+        Object.entries(stockLinea).forEach(([l, v]) => {
+            const row = { linea: l, almacen: +v.almacen || 0, matriz: +v.matriz || 0, sucursal: +v.sucursal || 0 };
+            const s = JSON.stringify(row);
+            if (_snapLin.get(l) !== s) lin.push([row, s]);
+        });
+        if (lin.length) { await DB.stockLinea.guardar(lin.map(c => c[0])); lin.forEach(([r, s]) => _snapLin.set(r.linea, s)); }
+        await DB.config.set('vista_actual', vistaActual);
+    } catch (e) { console.warn('Error al guardar en la nube:', e); mostrarToast('No se pudo guardar en la nube', false); }
+}
+
+function restaurarEstado(items, sl, vista) {
+    datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {}, costos: {} };
+    datosCombinados = items;
+    datosCombinados.forEach(item => {
+        if (item.noDisponibleMatriz === undefined) item.noDisponibleMatriz = false;
+        if (item.noDisponibleSucursal === undefined) item.noDisponibleSucursal = false;
+        if (item.fabricanteSucursal === undefined) item.fabricanteSucursal = '';
+        item._cache = null;
+        codigoIndex.set(item.codigo, item);
+        if (item.linea && item.linea !== 'Sin línea') lineasUnicas.add(item.linea);
+
+        datos.existenciaRaw.almacen[item.codigo] = item.existenciaAlmacen || 0;
+        datos.existenciaRaw.matriz[item.codigo] = item.existenciaMatriz || 0;
+        datos.existenciaRaw.sucursal[item.codigo] = item.existenciaSucursal || 0;
+
+        const baseMatriz = { articulo: item.articulo || 'Sin descripción', linea: item.linea || 'Sin línea', fabricante: item.fabricante || '', marca: item.marca || '' };
+        const baseSucursal = { articulo: item.articulo || 'Sin descripción', linea: item.linea || 'Sin línea', fabricante: item.fabricanteSucursal || '', marca: item.marca || '' };
+        datos.existencia.almacen[item.codigo] = { ...baseMatriz, existencia: item.almacen || 0 };
+        datos.existencia.matriz[item.codigo] = { ...baseMatriz, existencia: item.matriz || 0 };
+        datos.existencia.sucursal[item.codigo] = { ...baseSucursal, existencia: item.sucursal || 0 };
+        if (item.ubicacion) datos.ubicacion[item.codigo] = item.ubicacion;
+    });
+    if (sl) stockLinea = sl;
+    if (vista && ['articulo', 'linea', 'comparativa'].includes(vista)) vistaActual = vista;
+}
+
+// Datos que haya dejado la versión anterior en este navegador (para migrarlos una sola vez)
+function leerLegacyLS() {
+    try {
+        const raw = localStorage.getItem(LS_KEYS.DATOS);
+        if (!raw) return null;
+        const items = JSON.parse(raw);
+        const se = JSON.parse(localStorage.getItem(LS_KEYS.STOCK_EDITADO) || '{}');
+        const nd = JSON.parse(localStorage.getItem(LS_KEYS.NO_DISPONIBLE) || '{}');
+        items.forEach(it => {
+            if (se[it.codigo]) it.stockEditado = se[it.codigo];
+            const f = nd[it.codigo];
+            if (f) { it.noDisponibleMatriz = !!f.noDisponibleMatriz; it.noDisponibleSucursal = !!f.noDisponibleSucursal; }
+        });
+        return { items, sl: JSON.parse(localStorage.getItem(LS_KEYS.STOCK_LINEA) || '{}'), vista: localStorage.getItem(LS_KEYS.VISTA) };
+    } catch (e) { return null; }
+}
+
+async function cargarDeNube() {
+    try {
+        let [items, sl, vista] = await Promise.all([DB.articulos.cargar(), DB.stockLinea.cargar(), DB.config.get('vista_actual')]);
+        let migrar = false;
+        if (!items.length) {
+            const l = leerLegacyLS();
+            if (l && l.items.length) { items = l.items; sl = l.sl; vista = vista || l.vista; migrar = true; }
+        }
+        if (!items.length) return false;
+        restaurarEstado(items, sl, vista);
+        if (migrar) { mostrarToast('Migrando datos locales a la base de datos…'); guardarEnLocalStorage(); }
+        else {
+            items.forEach(it => { const r = DB.articulos.rowDeItem(it); _snapArt.set(r.codigo, JSON.stringify(r)); });
+            Object.entries(stockLinea).forEach(([l, v]) => _snapLin.set(l, JSON.stringify({ linea: l, almacen: +v.almacen || 0, matriz: +v.matriz || 0, sucursal: +v.sucursal || 0 })));
+        }
+        return datosCombinados.length > 0;
+    } catch (e) { console.warn('Error al cargar de la nube:', e); mostrarToast('No se pudo conectar con la base de datos', false); return false; }
+}
+
+// ============================================================
+//  UTILIDADES
+// ============================================================
+function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+function esFilaEncabezado(codigo) { const c = String(codigo).trim(); if (/\d/.test(c)) return false; return /^(c[óo]d|artic|descri|exist|venta|producto|linea|l[íi]nea|marca|fabric)/i.test(c); }
+
+let datos = { existencia: { matriz: {}, almacen: {}, sucursal: {} }, existenciaRaw: { matriz: {}, almacen: {}, sucursal: {} }, ventas: { matriz: {}, sucursal: {} }, ubicacion: {}, costos: {} };
+let datosCombinados = [];
+let codigoIndex = new Map();
+let lineasUnicas = new Set();
+let stockLinea = {};
+let vistaActual = 'articulo';
+let archivosCargados = { 'matriz-existencia': null, 'almacen-existencia': null, 'sucursal-existencia': null, 'ubicacion-existencia': null, 'matriz-ventas': null, 'sucursal-ventas': null };
+
+function tieneArchivosReales() { return Object.values(archivosCargados).every(v => v !== null && !v.placeholder); }
+
+let datosFiltrados = [];
+let vsLastStart = -1, vsLastEnd = -1;
+let pagination = { articulo:{page:1}, linea:{page:1} };
+let filteredSets = { articulo:[], linea:[] };
+const _timers = {};
+function debounce(key, fn) { clearTimeout(_timers[key]); _timers[key] = setTimeout(fn, CFG.DEBOUNCE_MS); }
+
+// ============================================================
+//  NAVEGACIÓN
+// ============================================================
+function navegarA(vista) {
+    if (vista !== 'articulo' && vista !== 'linea' && vista !== 'comparativa') return;
+    document.querySelectorAll('.nav-views .nav-btn').forEach(el => el.classList.toggle('active-item', el.dataset.view === vista));
+    cambiarVista(vista);
+}
+
+function cambiarVista(vista) {
+    vistaActual = vista;
+    document.getElementById('tablaArticulo').style.display = vista === 'articulo' ? 'block' : 'none';
+    document.getElementById('tablaLinea').style.display = vista === 'linea' ? 'block' : 'none';
+    document.getElementById('tablaComparativa').style.display = vista === 'comparativa' ? 'block' : 'none';
+    document.querySelectorAll('.nav-views .nav-btn').forEach(el => el.classList.toggle('active-item', el.dataset.view === vista));
+
+    if (vista === 'articulo') renderizarArticulo();
+    else if (vista === 'linea') renderizarLineas();
+    else if (vista === 'comparativa') renderizarComparativa();
+}
+function actualizarVista() { cambiarVista(vistaActual); }
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (document.getElementById('modalCarga').classList.contains('active')) cerrarModalCarga();
+        if (document.getElementById('modalDetalleArticulo').classList.contains('active')) cerrarModalDetalle();
+    }
+});
+
+// ============================================================
+//  TOAST Y MODAL CARGA
+// ============================================================
+function mostrarToast(mensaje, exito = true) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMessage').textContent = mensaje;
+    const icon = toast.querySelector('i');
+    icon.className = exito ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function abrirModalCarga() { document.getElementById('modalCarga').classList.add('active'); actualizarEstadoModal(); }
+function cerrarModalCarga() { document.getElementById('modalCarga').classList.remove('active'); }
+function actualizarEstadoModal() {
+    const ids = ['matriz-existencia','almacen-existencia','sucursal-existencia','ubicacion-existencia','matriz-ventas','sucursal-ventas'];
+    let ok = true;
+    ids.forEach(id => {
+        const el = document.getElementById('modal-status-' + id);
+        const arch = archivosCargados[id];
+        if (arch && !arch.placeholder) { el.textContent = 'Cargado'; el.className = 'status loaded'; }
+        else { el.textContent = 'Pendiente'; el.className = 'status pending'; ok = false; }
+    });
+    document.getElementById('btnConfirmarCarga').disabled = !ok;
+}
+
+function actualizarEstadoArchivos() {
+    const labels = { 'matriz-existencia': 'E.M', 'almacen-existencia': 'E.A', 'sucursal-existencia': 'E.S', 'ubicacion-existencia': 'E.U', 'matriz-ventas': 'V.M', 'sucursal-ventas': 'V.S' };
+    Object.entries(labels).forEach(([id, texto]) => {
+        const el = document.getElementById('status-' + id);
+        if (!el) return;
+        if (archivosCargados[id]) { el.className = 'file-item loaded'; el.innerHTML = '<span class="icon"><i class="fas fa-check-circle"></i></span><span class="chip-text">' + texto + '</span>'; }
+        else { el.className = 'file-item pending'; el.innerHTML = '<span class="icon"><i class="fas fa-circle"></i></span><span class="chip-text">' + texto + '</span>'; }
+    });
+}
+
+// ============================================================
+//  PROCESAMIENTO
+// ============================================================
+function procesarArchivos(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    const nombresMap = { 'existencia matriz':'matriz-existencia','existencia almacen':'almacen-existencia','existencia sucursal':'sucursal-existencia','existencia ubicacion':'ubicacion-existencia','ventas matriz':'matriz-ventas','ventas sucursal':'sucursal-ventas' };
+    let procesados = 0;
+    for (const file of files) {
+        const nl = file.name.toLowerCase();
+        let key = null;
+        for (const [nombre, clave] of Object.entries(nombresMap)) { if (nl.includes(nombre)) { key = clave; break; } }
+        if (key) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+                    archivosCargados[key] = { nombre: file.name, datos: json };
+                    procesados++;
+                    actualizarEstadoModal();
+                    actualizarEstadoArchivos();
+                    if (procesados === files.length && tieneArchivosReales()) mostrarToast('¡Todos los archivos listos!');
+                } catch (err) { mostrarToast('Error: "' + file.name + '"', false); }
+            };
+            reader.readAsArrayBuffer(file);
+        } else { mostrarToast('No identificado: "' + file.name + '"', false); }
+    }
+    event.target.value = '';
+}
+
+function confirmarCarga() {
+    if (!tieneArchivosReales()) return mostrarToast('Faltan archivos por cargar', false);
+    try {
+        procesarDatosCargados();
+        cerrarModalCarga();
+        mostrarToast('¡' + datosCombinados.length.toLocaleString() + ' artículos procesados!');
+        guardarEnLocalStorage();
+        guardarCostosMatriz();
+        actualizarVista();
+    } catch (err) { mostrarToast('Error al procesar', false); }
+}
+
+async function guardarCostosMatriz() {
+    try {
+        if (datos.costos && Object.keys(datos.costos).length) await DB.costos.guardar(datos.costos);
+    } catch (e) { console.error(e); mostrarToast('No se pudieron guardar los costos', false); }
+}
+
+function procesarDatosCargados() {
+    datos = { existencia:{ matriz:{}, almacen:{}, sucursal:{} }, existenciaRaw:{ matriz:{}, almacen:{}, sucursal:{} }, ventas:{ matriz:{}, sucursal:{} }, ubicacion:{}, costos:{} };
+    lineasUnicas = new Set();
+
+    const tiposEx = { 'matriz-existencia':'matriz', 'almacen-existencia':'almacen', 'sucursal-existencia':'sucursal' };
+    for (const [key, tipo] of Object.entries(tiposEx)) {
+        const arch = archivosCargados[key]; if (!arch) continue;
+        for (let r = 0; r < arch.datos.length; r++) {
+            const row = arch.datos[r];
+            const codigo = row[0] ? String(row[0]).trim() : null; if (!codigo || esFilaEncabezado(codigo)) continue;
+            const rawEx = row[8];
+            const existencia = (rawEx === undefined || rawEx === null || rawEx === '') ? 0 : parseFloat(rawEx);
+            if (isNaN(existencia)) continue;
+            const articulo = row[1] ? String(row[1]).trim() : 'Sin descripción';
+            let linea = row[3] ? String(row[3]).trim() : 'Sin línea';
+            let fabricante = '', marca = '';
+            if (tipo === 'matriz' || tipo === 'sucursal') fabricante = row[2] ? String(row[2]).trim() : '';
+            if (tipo === 'matriz') marca = row[4] ? String(row[4]).trim() : '';
+            if (!datos.existencia[tipo][codigo]) datos.existencia[tipo][codigo] = { articulo, linea, existencia: 0, fabricante, marca };
+            datos.existencia[tipo][codigo].existencia += existencia;
+            datos.existenciaRaw[tipo][codigo] = (datos.existenciaRaw[tipo][codigo] || 0) + existencia;
+            if (articulo !== 'Sin descripción' && articulo.length > datos.existencia[tipo][codigo].articulo.length) datos.existencia[tipo][codigo].articulo = articulo;
+            if (linea !== 'Sin línea') { datos.existencia[tipo][codigo].linea = linea; lineasUnicas.add(linea); }
+            if (fabricante) datos.existencia[tipo][codigo].fabricante = fabricante;
+            if (tipo === 'matriz') {   // columnas F, G, H = índices 5, 6, 7
+                const n = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
+                const tipoImp = row[7] === undefined || row[7] === null ? '' : String(row[7]).trim().toUpperCase();
+                const tasaImp = tipoImp === 'IVA' ? 16 : 0;   // IVA = 16 %, SYS (u otro) = 0 %
+                datos.costos[codigo] = { costo: n(row[5]), precio: n(row[6]), impuesto: tasaImp, impuestoTipo: tipoImp };
+            }
+            if (tipo === 'matriz' && marca) datos.existencia[tipo][codigo].marca = marca;
+        }
+    }
+
+    const archUbi = archivosCargados['ubicacion-existencia'];
+    if (archUbi) archUbi.datos.forEach(row => { const c = row[0] ? String(row[0]).trim() : null; if (c && row[4]) datos.ubicacion[c] = String(row[4]).trim(); });
+
+    const tiposVen = { 'matriz-ventas':'matriz', 'sucursal-ventas':'sucursal' };
+    for (const [key, tipo] of Object.entries(tiposVen)) {
+        const arch = archivosCargados[key]; if (!arch) continue;
+        arch.datos.forEach(row => {
+            const codigo = row[1] ? String(row[1]).trim() : null; if (!codigo || esFilaEncabezado(codigo)) return;
+            const rawV = row[7]; const ventas = (rawV === undefined || rawV === null || rawV === '') ? 0 : parseFloat(rawV);
+            if (isNaN(ventas)) return;
+            const articulo = row[2] ? String(row[2]).trim() : 'Sin descripción';
+            if (!datos.ventas[tipo][codigo]) datos.ventas[tipo][codigo] = { articulo, ventas: 0 };
+            datos.ventas[tipo][codigo].ventas += ventas;
+            if (articulo !== 'Sin descripción' && articulo.length > datos.ventas[tipo][codigo].articulo.length) datos.ventas[tipo][codigo].articulo = articulo;
+        });
+    }
+
+    const editadosMap = {};
+    datosCombinados.forEach(item => {
+        if (item.stockEditado) editadosMap[item.codigo] = { ...item.stockEditado };
+        if (item.noDisponibleMatriz || item.noDisponibleSucursal) {
+            if (!editadosMap[item.codigo]) editadosMap[item.codigo] = {};
+            editadosMap[item.codigo].noDisponibleMatriz = item.noDisponibleMatriz;
+            editadosMap[item.codigo].noDisponibleSucursal = item.noDisponibleSucursal;
+        }
+    });
+
+    combinarDatos();
+
+    Object.entries(editadosMap).forEach(([codigo, props]) => {
+        const item = codigoIndex.get(codigo);
+        if (item) {
+            if (props.almacen !== undefined || props.matriz !== undefined || props.sucursal !== undefined) item.stockEditado = { almacen: props.almacen || 0, matriz: props.matriz || 0, sucursal: props.sucursal || 0 };
+            if (props.noDisponibleMatriz !== undefined) item.noDisponibleMatriz = props.noDisponibleMatriz;
+            if (props.noDisponibleSucursal !== undefined) item.noDisponibleSucursal = props.noDisponibleSucursal;
+            invalidarCache(item);
+        }
+    });
+
+    lineasUnicas.forEach(l => { if (!stockLinea[l]) stockLinea[l] = { almacen: 0, matriz: 0, sucursal: 0 }; });
+    invalidarTodasCaches();
+}
+
+function combinarDatos() {
+    const codigos = new Set();
+    ['matriz','almacen','sucursal'].forEach(t => Object.keys(datos.existencia[t]).forEach(c => codigos.add(c)));
+    Object.keys(datos.ventas.matriz).forEach(c => codigos.add(c));
+    Object.keys(datos.ventas.sucursal).forEach(c => codigos.add(c));
+    Object.keys(datos.ubicacion).forEach(c => codigos.add(c));
+
+    datosCombinados = []; codigoIndex.clear();
+
+    codigos.forEach(codigo => {
+        let articulo = 'Sin descripción', linea = 'Sin línea', fabricante = '', fabricanteSucursal = '', marca = '';
+        const ubicacion = datos.ubicacion[codigo] || '';
+        const m = datos.existencia.matriz[codigo];
+        if (m) { if (m.articulo !== 'Sin descripción') articulo = m.articulo; if (m.linea !== 'Sin línea') linea = m.linea; if (m.fabricante) fabricante = m.fabricante; if (m.marca) marca = m.marca; }
+        const s = datos.existencia.sucursal[codigo];
+        if (s && s.fabricante) fabricanteSucursal = s.fabricante;
+
+        if (articulo === 'Sin descripción') {
+            for (const t of ['almacen','sucursal']) { const d = datos.existencia[t][codigo]; if (d && d.articulo !== 'Sin descripción') { articulo = d.articulo; break; } }
+            if (articulo === 'Sin descripción') {
+                const vm = datos.ventas.matriz[codigo]; if (vm && vm.articulo !== 'Sin descripción') articulo = vm.articulo;
+                else { const vs = datos.ventas.sucursal[codigo]; if (vs && vs.articulo !== 'Sin descripción') articulo = vs.articulo; }
+            }
+        }
+        if (linea === 'Sin línea') { for (const t of ['almacen','sucursal']) { const d = datos.existencia[t][codigo]; if (d && d.linea !== 'Sin línea') { linea = d.linea; break; } } }
+
+        const item = {
+            codigo, articulo, linea, fabricante, fabricanteSucursal, marca, ubicacion,
+            almacen: datos.existencia.almacen[codigo]?.existencia || 0,
+            matriz: datos.existencia.matriz[codigo]?.existencia || 0,
+            sucursal: datos.existencia.sucursal[codigo]?.existencia || 0,
+            existenciaAlmacen: datos.existenciaRaw.almacen[codigo] || 0,
+            existenciaMatriz: datos.existenciaRaw.matriz[codigo] || 0,
+            existenciaSucursal: datos.existenciaRaw.sucursal[codigo] || 0,
+            ventasMatriz: datos.ventas.matriz[codigo]?.ventas || 0,
+            ventasSucursal: datos.ventas.sucursal[codigo]?.ventas || 0,
+            stockEditado: { almacen: 0, matriz: 0, sucursal: 0 },
+            noDisponibleMatriz: false, noDisponibleSucursal: false, _cache: null
+        };
+        item.totalStock = item.almacen + item.matriz + item.sucursal;
+        item.totalVentas = item.ventasMatriz + item.ventasSucursal;
+        datosCombinados.push(item);
+        codigoIndex.set(codigo, item);
+    });
+    datosCombinados.sort((a, b) => a.codigo.localeCompare(b.codigo));
+}
+
+function actualizarDatos() {
+    if (!tieneArchivosReales()) return mostrarToast('Vuelve a cargar los archivos Excel para actualizar', false);
+    try {
+        procesarDatosCargados();
+        actualizarVista();
+        guardarEnLocalStorage();
+        guardarCostosMatriz();
+        mostrarToast('Datos actualizados');
+    } catch (err) { mostrarToast('Error al actualizar', false); }
+}
+
+// ============================================================
+//  CÁLCULOS
+// ============================================================
+function calcularValores(item) {
+    if (item._cache) return item._cache;
+    const indMatriz = item.stockEditado?.matriz || 0;
+    const indSucursal = item.stockEditado?.sucursal || 0;
+    const linea = item.linea || 'Sin línea';
+    const stockMatriz = Math.max(indMatriz, stockLinea[linea]?.matriz || 0);
+    const stockSucursal = Math.max(indSucursal, stockLinea[linea]?.sucursal || 0);
+    const ventasTotales = item.ventasMatriz + item.ventasSucursal;
+
+    let invMatriz = item.ventasMatriz > 0 ? Math.ceil((item.ventasMatriz / 180) * 7) : 0;
+    let invSucursal = item.ventasSucursal > 0 ? Math.ceil((item.ventasSucursal / 180) * 7) : 0;
+    let rangoMatriz = ventasTotales >= 91 ? 3 : ventasTotales >= 61 ? 2 : ventasTotales >= 7 ? 1 : 0;
+    let rangoSucursal = ventasTotales >= 91 ? 3 : ventasTotales >= 61 ? 2 : ventasTotales >= 21 ? 1 : 0;
+    const mayorMatriz = Math.max(invMatriz, stockMatriz, rangoMatriz);
+    const mayorSucursal = Math.max(invSucursal, stockSucursal, rangoSucursal);
+
+    const rawAlmacen = datos.existenciaRaw.almacen[item.codigo] || 0;
+    const rawMatriz = datos.existenciaRaw.matriz[item.codigo] || 0;
+    const rawSucursal = datos.existenciaRaw.sucursal[item.codigo] || 0;
+
+    let pedidoAlmacen = 0 - rawAlmacen;
+    let pedidoMatriz = mayorMatriz - rawMatriz;
+    let pedidoSucursal = mayorSucursal - rawSucursal;
+
+    if (item.noDisponibleMatriz) pedidoMatriz = 0;
+    if (item.noDisponibleSucursal) pedidoSucursal = 0;
+
+    let surtidoAlmacenAMatriz = 0, surtidoAlmacenASucursal = 0, surtidoMatrizASucursal = 0, surtidoSucursalAMatriz = 0;
+    if (pedidoAlmacen < 0 && pedidoMatriz > 0) { const abs = Math.abs(pedidoAlmacen); surtidoAlmacenAMatriz = pedidoMatriz <= abs ? pedidoMatriz : abs; }
+    if (pedidoAlmacen < 0 && pedidoSucursal > 0) { const neto = Math.abs(pedidoAlmacen) - surtidoAlmacenAMatriz; if (neto > 0) surtidoAlmacenASucursal = pedidoSucursal <= neto ? pedidoSucursal : neto; }
+    if (pedidoMatriz < 0 && pedidoSucursal > 0) { const nec = pedidoSucursal - surtidoAlmacenASucursal; if (nec > 0) surtidoMatrizASucursal = Math.min(Math.abs(pedidoMatriz), nec); }
+    if (pedidoSucursal < 0 && pedidoMatriz > 0) { const exc = Math.abs(pedidoSucursal); surtidoSucursalAMatriz = pedidoMatriz <= exc ? pedidoMatriz : exc; }
+
+    const sinSurtidos = surtidoAlmacenAMatriz === 0 && surtidoAlmacenASucursal === 0 && surtidoMatrizASucursal === 0 && surtidoSucursalAMatriz === 0;
+    let pedidoMatrizOk = 0, pedidoSucursalOk = 0;
+    if (esPedidoMatrizOK(item) && sinSurtidos && pedidoMatriz > 0) pedidoMatrizOk = pedidoMatriz;
+    if (esPedidoSucursalOK(item) && sinSurtidos && pedidoSucursal > 0) pedidoSucursalOk = pedidoSucursal;
+
+    item._cache = { stockMatriz, stockSucursal, invMatriz, invSucursal, rangoMatriz, rangoSucursal, mayorMatriz, mayorSucursal, pedidoAlmacen, pedidoMatriz, pedidoSucursal, surtidoAlmacenAMatriz, surtidoAlmacenASucursal, surtidoMatrizASucursal, surtidoSucursalAMatriz, pedidoMatrizOk, pedidoSucursalOk };
+    return item._cache;
+}
+function invalidarCache(item) { item._cache = null; }
+function invalidarTodasCaches() { for (let i = 0; i < datosCombinados.length; i++) datosCombinados[i]._cache = null; }
+
+// ============================================================
+//  ANÁLISIS DE PEDIDO OK (EXPLICACIÓN)
+// ============================================================
+function analizarPedido(item, ubicacion) {
+    const v = calcularValores(item);
+    const esMatriz = ubicacion === 'matriz';
+    const pedidoOk = esMatriz ? v.pedidoMatrizOk : v.pedidoSucursalOk;
+    const resultado = {
+        pedido: pedidoOk,
+        esPositivo: pedidoOk > 0,
+        motivoPrincipal: '',
+        desglose: [],
+        motivos: []
+    };
+
+    const ind = esMatriz ? (item.stockEditado?.matriz || 0) : (item.stockEditado?.sucursal || 0);
+    const stockLineaVal = stockLinea[item.linea]?.[ubicacion] || 0;
+    const inv = esMatriz ? v.invMatriz : v.invSucursal;
+    const rango = esMatriz ? v.rangoMatriz : v.rangoSucursal;
+    const mayor = esMatriz ? v.mayorMatriz : v.mayorSucursal;
+
+    resultado.desglose = [
+        { label: 'Inv. ventas', valor: inv },
+        { label: 'Stock art.', valor: ind },
+        { label: 'Stock línea', valor: stockLineaVal },
+        { label: 'Rango ventas', valor: rango }
+    ];
+
+    if (resultado.esPositivo) {
+        const candidatos = [];
+        if (inv === mayor && inv > 0) candidatos.push('inventario calculado por ventas (' + inv + ' pzas)');
+        if (ind === mayor && ind > 0) candidatos.push('stock capturado del artículo (' + ind + ' pzas)');
+        if (stockLineaVal === mayor && stockLineaVal > 0) candidatos.push('stock asignado a la línea "' + item.linea + '" (' + stockLineaVal + ' pzas)');
+        if (rango === mayor && rango > 0) candidatos.push('rango de ventas (' + rango + ')');
+
+        if (candidatos.length === 0) {
+            resultado.motivoPrincipal = 'Se pide para cubrir el requerimiento calculado (' + mayor + ' pzas).';
+        } else if (candidatos.length === 1) {
+            resultado.motivoPrincipal = 'Se pide por ' + candidatos[0] + '.';
+        } else {
+            resultado.motivoPrincipal = 'Se pide por el mayor de: ' + candidatos.join(' / ') + '.';
+        }
+        return resultado;
+    }
+
+    const noDisp = esMatriz ? item.noDisponibleMatriz : item.noDisponibleSucursal;
+    if (noDisp) {
+        resultado.motivos.push({ icono: 'ban', texto: 'Artículo marcado como NO DISPONIBLE.' });
+    }
+
+    const pedidoBase = esMatriz ? v.pedidoMatriz : v.pedidoSucursal;
+    const existencia = esMatriz ? item.existenciaMatriz : item.existenciaSucursal;
+
+    if (pedidoBase <= 0) {
+        resultado.motivos.push({
+            icono: 'check-circle',
+            texto: 'No necesita pedido: la existencia en ' + (esMatriz ? 'matriz' : 'sucursal') + ' (' + existencia + ') ya cubre el requerimiento (' + mayor + ').'
+        });
+        return resultado;
+    }
+
+    if (esMatriz) {
+        if (v.surtidoAlmacenAMatriz > 0) {
+            const total = v.surtidoAlmacenAMatriz;
+            const parcial = total < v.pedidoMatriz ? ' (parcial: ' + total + ' de ' + v.pedidoMatriz + ' pzas)' : ' (cubre total)';
+            resultado.motivos.push({ icono: 'truck', texto: 'Cubierto por surtido del ALMACÉN (ALM→MAT: ' + total + ' pzas)' + parcial + '.' });
+        }
+        if (v.surtidoSucursalAMatriz > 0) {
+            const total = v.surtidoSucursalAMatriz;
+            const parcial = total < v.pedidoMatriz ? ' (parcial: ' + total + ' de ' + v.pedidoMatriz + ' pzas)' : ' (cubre total)';
+            resultado.motivos.push({ icono: 'truck', texto: 'Cubierto por surtido de SUCURSAL (SUC→MAT: ' + total + ' pzas)' + parcial + '.' });
+        }
+        if (v.surtidoAlmacenAMatriz === 0 && v.surtidoSucursalAMatriz === 0) {
+            const extras = [];
+            if (v.surtidoAlmacenASucursal > 0) extras.push('ALM→SUC: ' + v.surtidoAlmacenASucursal);
+            if (v.surtidoMatrizASucursal > 0) extras.push('MAT→SUC: ' + v.surtidoMatrizASucursal);
+            if (extras.length > 0) {
+                resultado.motivos.push({ icono: 'truck', texto: 'Existe surtido activo en la red (' + extras.join(', ') + '); el sistema no genera pedido OK si hay cualquier surtido pendiente.' });
+            }
+        }
+    } else {
+        if (v.surtidoAlmacenASucursal > 0) {
+            const total = v.surtidoAlmacenASucursal;
+            const parcial = total < v.pedidoSucursal ? ' (parcial: ' + total + ' de ' + v.pedidoSucursal + ' pzas)' : ' (cubre total)';
+            resultado.motivos.push({ icono: 'truck', texto: 'Cubierto por surtido del ALMACÉN (ALM→SUC: ' + total + ' pzas)' + parcial + '.' });
+        }
+        if (v.surtidoMatrizASucursal > 0) {
+            const total = v.surtidoMatrizASucursal;
+            const parcial = total < v.pedidoSucursal ? ' (parcial: ' + total + ' de ' + v.pedidoSucursal + ' pzas)' : ' (cubre total)';
+            resultado.motivos.push({ icono: 'truck', texto: 'Cubierto por surtido de MATRIZ (MAT→SUC: ' + total + ' pzas)' + parcial + '.' });
+        }
+        if (v.surtidoAlmacenASucursal === 0 && v.surtidoMatrizASucursal === 0) {
+            const extras = [];
+            if (v.surtidoAlmacenAMatriz > 0) extras.push('ALM→MAT: ' + v.surtidoAlmacenAMatriz);
+            if (v.surtidoSucursalAMatriz > 0) extras.push('SUC→MAT: ' + v.surtidoSucursalAMatriz);
+            if (extras.length > 0) {
+                resultado.motivos.push({ icono: 'truck', texto: 'Existe surtido activo en la red (' + extras.join(', ') + '); el sistema no genera pedido OK si hay cualquier surtido pendiente.' });
+            }
+        }
+    }
+
+    const fab = esMatriz ? (item.fabricante || '') : (item.fabricanteSucursal || '');
+    if (fab.trim().toUpperCase() !== 'SYS') {
+        resultado.motivos.push({ icono: 'industry', texto: 'Fabricante "' + (fab.trim() || '(vacío)') + '" no elegible (solo SYS genera pedido).' });
+    }
+    const marca = (item.marca || '').trim();
+    if (!PEDIDO_MATRIZ_OK_MARCAS.has(marca.toUpperCase())) {
+        resultado.motivos.push({ icono: 'certificate', texto: 'Marca "' + (marca || '(vacía)') + '" no elegible para pedido.' });
+    }
+    const linea = (item.linea || '').trim();
+    if (!PEDIDO_MATRIZ_OK_LINEAS.has(linea.toUpperCase())) {
+        resultado.motivos.push({ icono: 'layer-group', texto: 'Línea "' + (linea || '(vacía)') + '" no elegible para pedido.' });
+    }
+
+    return resultado;
+}
+
+function renderPedidoOkCard(cardId, resultado) {
+    const card = document.getElementById(cardId);
+    const num = card.querySelector('.md-pedido-ok-num');
+    const expl = card.querySelector('.md-pedido-ok-explicacion');
+
+    num.textContent = resultado.pedido;
+    card.classList.toggle('ok', resultado.esPositivo);
+    card.classList.toggle('zero', !resultado.esPositivo);
+
+    if (resultado.esPositivo) {
+        let html = '<div class="md-motivo-principal"><i class="fas fa-check-circle"></i><span>' + escapeHtml(resultado.motivoPrincipal) + '</span></div>';
+        html += '<div class="md-desglose">';
+        const ganadorValor = Math.max.apply(null, resultado.desglose.map(d => d.valor));
+        resultado.desglose.forEach(d => {
+            const cls = (d.valor === ganadorValor && d.valor > 0) ? 'ganador' : '';
+            html += '<span class="md-desglose-chip ' + cls + '">' + d.label + ': ' + d.valor + '</span>';
+        });
+        html += '</div>';
+        expl.innerHTML = html;
+    } else {
+        if (resultado.motivos.length === 0) {
+            expl.innerHTML = '<ul class="md-motivos"><li class="sin-motivos"><i class="fas fa-info-circle"></i><span>Sin motivo específico.</span></li></ul>';
+        } else {
+            let html = '<ul class="md-motivos">';
+            resultado.motivos.forEach(m => {
+                html += '<li><i class="fas fa-' + m.icono + '"></i><span>' + escapeHtml(m.texto) + '</span></li>';
+            });
+            html += '</ul>';
+            expl.innerHTML = html;
+        }
+    }
+}
+
+// ============================================================
+//  RENDERIZADO DE TABLAS
+// ============================================================
+function renderPaginacion(tablaId, totalItems) {
+    const p = pagination[tablaId]; if (!p) return;
+    const totalPages = Math.max(1, Math.ceil(totalItems / CFG.PAGE_SIZE));
+    if (p.page > totalPages) p.page = totalPages;
+    const start = (p.page - 1) * CFG.PAGE_SIZE + 1;
+    const end = Math.min(p.page * CFG.PAGE_SIZE, totalItems);
+    const el = document.getElementById('pagination' + tablaId.charAt(0).toUpperCase() + tablaId.slice(1));
+    if (!el) return;
+    if (totalItems === 0) { el.innerHTML = ''; return; }
+    el.innerHTML = '<button onclick="cambiarPagina(\'' + tablaId + '\',-1)" ' + (p.page <= 1 ? 'disabled' : '') + '><i class="fas fa-chevron-left"></i> Anterior</button>' +
+        '<span class="page-info">' + start.toLocaleString() + ' – ' + end.toLocaleString() + ' de ' + totalItems.toLocaleString() + '</span>' +
+        '<button onclick="cambiarPagina(\'' + tablaId + '\',1)" ' + (p.page >= totalPages ? 'disabled' : '') + '>Siguiente <i class="fas fa-chevron-right"></i></button>';
+}
+function cambiarPagina(tablaId, delta) {
+    if (!pagination[tablaId]) return;
+    pagination[tablaId].page += delta;
+    if (tablaId === 'articulo') renderizarArticulo(); else if (tablaId === 'linea') renderizarLineas();
+}
+
+function renderizarArticulo() {
+    const tbody = document.getElementById('articuloBody');
+    const search = document.getElementById('searchInputArticulo').value.toLowerCase();
+    filteredSets.articulo = search ? datosCombinados.filter(i => i.codigo.toLowerCase().includes(search) || i.articulo.toLowerCase().includes(search)) : datosCombinados;
+    const total = filteredSets.articulo.length;
+    document.getElementById('articuloCount').textContent = total.toLocaleString() + ' items';
+    renderPaginacion('articulo', total);
+    if (total === 0) { tbody.innerHTML = '<tr><td colspan="5" class="vs-empty"><i class="fas fa-search"></i>Sin resultados</td></tr>'; return; }
+
+    const p = pagination.articulo;
+    const start = (p.page - 1) * CFG.PAGE_SIZE;
+    const end = Math.min(start + CFG.PAGE_SIZE, total);
+    const slice = filteredSets.articulo.slice(start, end);
+    const parts = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+        const item = slice[i];
+        const a = item.stockEditado?.almacen || 0, m = item.stockEditado?.matriz || 0, s = item.stockEditado?.sucursal || 0;
+        const esc = escapeHtml(item.codigo);
+        parts[i] = '<tr onclick="abrirModalDetalle(\'' + esc + '\')">' +
+            '<td><span class="codigo">' + esc + '</span></td>' +
+            '<td><span class="articulo">' + escapeHtml(item.articulo) + '</span></td>' +
+            '<td><input type="number" class="stock-input" value="' + a + '" min="0" data-codigo="' + esc + '" data-ubi="almacen" onclick="event.stopPropagation()" onchange="onStockInput(this)" onfocus="this.select()"></td>' +
+            '<td><input type="number" class="stock-input" value="' + m + '" min="0" data-codigo="' + esc + '" data-ubi="matriz" onclick="event.stopPropagation()" onchange="onStockInput(this)" onfocus="this.select()"></td>' +
+            '<td><input type="number" class="stock-input" value="' + s + '" min="0" data-codigo="' + esc + '" data-ubi="sucursal" onclick="event.stopPropagation()" onchange="onStockInput(this)" onfocus="this.select()"></td>' +
+            '</tr>';
+    }
+    tbody.innerHTML = parts.join('');
+}
+
+function onStockInput(el) {
+    const item = codigoIndex.get(el.dataset.codigo);
+    if (!item) return;
+    const n = parseInt(el.value) || 0;
+    if (n < 0) return;
+    if (!item.stockEditado) item.stockEditado = { almacen: 0, matriz: 0, sucursal: 0 };
+    item.stockEditado[el.dataset.ubi] = n;
+    invalidarCache(item);
+    guardarEnLocalStorage();
+}
+function filtrarArticulo() { debounce('articulo', () => { pagination.articulo.page = 1; renderizarArticulo(); }); }
+
+function procesarStockXArticulo(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+            const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+            let actualizados = 0;
+            json.forEach(row => {
+                if (!row || row.length < 5) return;
+                const codigo = row[0] ? String(row[0]).trim() : '';
+                const item = codigoIndex.get(codigo);
+                if (item) {
+                    if (!item.stockEditado) item.stockEditado = { almacen: 0, matriz: 0, sucursal: 0 };
+                    item.stockEditado.almacen = parseFloat(row[2]) || 0;
+                    item.stockEditado.matriz = parseFloat(row[3]) || 0;
+                    item.stockEditado.sucursal = parseFloat(row[4]) || 0;
+                    invalidarCache(item); actualizados++;
+                }
+            });
+            guardarEnLocalStorage(); renderizarArticulo(); mostrarToast('Se actualizaron ' + actualizados + ' artículos');
+        } catch (err) { mostrarToast('Error al procesar el archivo', false); }
+    };
+    reader.readAsArrayBuffer(file); event.target.value = '';
+}
+
+function renderizarLineas() {
+    const tbody = document.getElementById('lineaBody');
+    const search = document.getElementById('searchLinea').value.toLowerCase();
+    const productosPorLinea = {};
+    datosCombinados.forEach(i => { const l = i.linea || 'Sin línea'; productosPorLinea[l] = (productosPorLinea[l] || 0) + 1; });
+    let lineasArr = Array.from(lineasUnicas);
+    if (search) lineasArr = lineasArr.filter(l => l.toLowerCase().includes(search));
+    lineasArr.sort((a, b) => a.localeCompare(b));
+    const total = lineasArr.length;
+    document.getElementById('lineaCount').textContent = total + ' líneas';
+    renderPaginacion('linea', total);
+    if (total === 0) { tbody.innerHTML = '<tr><td colspan="6" class="vs-empty"><i class="fas fa-search"></i>Sin líneas</td></tr>'; return; }
+
+    const p = pagination.linea;
+    const slice = lineasArr.slice((p.page - 1) * CFG.PAGE_SIZE, Math.min(p.page * CFG.PAGE_SIZE, total));
+    const parts = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+        const linea = slice[i], stock = stockLinea[linea] || { almacen: 0, matriz: 0, sucursal: 0 };
+        const esc = escapeHtml(linea);
+        parts[i] = '<tr>' +
+            '<td><strong>' + esc + '</strong></td>' +
+            '<td><input type="number" class="stock-input" value="' + stock.almacen + '" min="0" data-linea="' + esc + '" data-ubi="almacen" onchange="onLineaInput(this)" onfocus="this.select()"></td>' +
+            '<td><input type="number" class="stock-input" value="' + stock.matriz + '" min="0" data-linea="' + esc + '" data-ubi="matriz" onchange="onLineaInput(this)" onfocus="this.select()"></td>' +
+            '<td><input type="number" class="stock-input" value="' + stock.sucursal + '" min="0" data-linea="' + esc + '" data-ubi="sucursal" onchange="onLineaInput(this)" onfocus="this.select()"></td>' +
+            '<td><strong>' + (stock.almacen + stock.matriz + stock.sucursal) + '</strong></td>' +
+            '<td>' + (productosPorLinea[linea] || 0) + '</td></tr>';
+    }
+    tbody.innerHTML = parts.join('');
+}
+function onLineaInput(el) {
+    const n = parseInt(el.value) || 0; if (n < 0) return;
+    if (!stockLinea[el.dataset.linea]) stockLinea[el.dataset.linea] = { almacen: 0, matriz: 0, sucursal: 0 };
+    stockLinea[el.dataset.linea][el.dataset.ubi] = n;
+    invalidarTodasCaches(); renderizarLineas(); guardarEnLocalStorage();
+}
+function filtrarLinea() { debounce('linea', () => { pagination.linea.page = 1; renderizarLineas(); }); }
+
+function procesarStockXLinea(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+            const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+            let actualizados = 0;
+            json.forEach(row => {
+                if (!row || row.length < 4) return;
+                const linea = row[0] ? String(row[0]).trim() : '';
+                if (!linea) return;
+                if (!stockLinea[linea]) stockLinea[linea] = { almacen: 0, matriz: 0, sucursal: 0 };
+                stockLinea[linea].almacen = parseFloat(row[1]) || 0;
+                stockLinea[linea].matriz = parseFloat(row[2]) || 0;
+                stockLinea[linea].sucursal = parseFloat(row[3]) || 0;
+                actualizados++;
+            });
+            invalidarTodasCaches(); guardarEnLocalStorage(); renderizarLineas(); mostrarToast('Se actualizaron ' + actualizados + ' líneas');
+        } catch (err) { mostrarToast('Error al procesar el archivo', false); }
+    };
+    reader.readAsArrayBuffer(file); event.target.value = '';
+}
+
+function renderizarComparativa() {
+    const search = document.getElementById('searchComparativa').value.toLowerCase();
+    datosFiltrados = search ? datosCombinados.filter(item => item.codigo.toLowerCase().includes(search) || item.articulo.toLowerCase().includes(search)) : datosCombinados.slice();
+    vsLastStart = -1; vsLastEnd = -1;
+    const container = document.getElementById('comparativaScrollContainer');
+    if (container) container.scrollTop = 0;
+    document.getElementById('comparativaCount').textContent = datosFiltrados.length.toLocaleString() + ' de ' + datosCombinados.length.toLocaleString();
+    onVSscroll();
+}
+
+function onVSscroll() {
+    const container = document.getElementById('comparativaScrollContainer');
+    if (!container || vistaActual !== 'comparativa') return;
+    requestAnimationFrame(() => {
+        const scrollTop = container.scrollTop, viewH = container.clientHeight, headH = container.querySelector('thead')?.offsetHeight || 0;
+        const effScroll = Math.max(0, scrollTop - headH);
+        const startIdx = Math.max(0, Math.floor(effScroll / CFG.VS_ROW_HEIGHT) - CFG.VS_BUFFER);
+        const endIdx = Math.min(datosFiltrados.length, Math.ceil((effScroll + viewH) / CFG.VS_ROW_HEIGHT) + CFG.VS_BUFFER);
+        if (startIdx === vsLastStart && endIdx === vsLastEnd) return;
+        vsLastStart = startIdx; vsLastEnd = endIdx;
+        renderVSrows(startIdx, endIdx);
+    });
+}
+
+function renderVSrows(startIdx, endIdx) {
+    const tbody = document.getElementById('comparativaBody');
+    const total = datosFiltrados.length;
+    if (total === 0) { tbody.innerHTML = '<tr><td colspan="27" class="vs-empty"><i class="fas fa-search"></i>No se encontraron resultados</td></tr>'; return; }
+    const topH = startIdx * CFG.VS_ROW_HEIGHT, botH = Math.max(0, (total - endIdx) * CFG.VS_ROW_HEIGHT);
+    const parts = [];
+    if (topH > 0) parts.push('<tr class="vs-spacer" style="height:' + topH + 'px"><td colspan="27"></td></tr>');
+    for (let i = startIdx; i < endIdx && i < total; i++) {
+        const item = datosFiltrados[i]; const v = calcularValores(item);
+        const rM = v.rangoMatriz === 0 ? 'zero' : v.rangoMatriz === 1 ? 'medium' : v.rangoMatriz === 2 ? 'high' : 'low';
+        const rS = v.rangoSucursal === 0 ? 'zero' : v.rangoSucursal === 1 ? 'medium' : v.rangoSucursal === 2 ? 'high' : 'low';
+        parts.push('<tr onclick="abrirModalDetalle(\'' + escapeHtml(item.codigo) + '\')">' +
+            '<td><span class="codigo">' + escapeHtml(item.codigo) + '</span></td>' +
+            '<td><span class="articulo">' + escapeHtml(item.articulo) + '</span></td>' +
+            '<td>' + escapeHtml(item.ubicacion || '') + '</td>' +
+            '<td><span class="badge medium">' + escapeHtml(item.linea) + '</span></td>' +
+            '<td>' + escapeHtml(item.marca || '') + '</td>' +
+            '<td>' + escapeHtml(item.fabricante || '') + '</td>' +
+            '<td>' + escapeHtml(item.fabricanteSucursal || '') + '</td>' +
+            '<td>' + item.existenciaAlmacen + '</td>' +
+            '<td>' + item.existenciaMatriz + '</td>' +
+            '<td>' + item.existenciaSucursal + '</td>' +
+            '<td>' + v.stockMatriz + '</td>' +
+            '<td>' + v.stockSucursal + '</td>' +
+            '<td>' + v.invMatriz + '</td>' +
+            '<td>' + v.invSucursal + '</td>' +
+            '<td><span class="badge ' + rM + '">' + v.rangoMatriz + '</span></td>' +
+            '<td><span class="badge ' + rS + '">' + v.rangoSucursal + '</span></td>' +
+            '<td><strong>' + v.mayorMatriz + '</strong></td>' +
+            '<td><strong>' + v.mayorSucursal + '</strong></td>' +
+            '<td>' + v.pedidoAlmacen + '</td>' +
+            '<td>' + v.pedidoMatriz + '</td>' +
+            '<td>' + v.pedidoSucursal + '</td>' +
+            '<td>' + v.surtidoAlmacenAMatriz + '</td>' +
+            '<td>' + v.surtidoAlmacenASucursal + '</td>' +
+            '<td>' + v.surtidoMatrizASucursal + '</td>' +
+            '<td>' + v.surtidoSucursalAMatriz + '</td>' +
+            '<td><strong>' + v.pedidoMatrizOk + '</strong></td>' +
+            '<td><strong>' + v.pedidoSucursalOk + '</strong></td></tr>');
+    }
+    if (botH > 0) parts.push('<tr class="vs-spacer" style="height:' + botH + 'px"><td colspan="27"></td></tr>');
+    tbody.innerHTML = parts.join('');
+}
+function filtrarComparativa() { debounce('comparativa', renderizarComparativa); }
+
+// ============================================================
+//  MODAL DE DETALLE
+// ============================================================
+function abrirModalDetalle(codigo) {
+    const item = codigoIndex.get(codigo);
+    if (!item) return;
+
+    document.getElementById('md-titulo-texto').textContent = item.articulo;
+    document.getElementById('md-codigo').textContent = item.codigo;
+    document.getElementById('md-linea').textContent = item.linea;
+    document.getElementById('md-marca').textContent = item.marca || 'Sin marca';
+    document.getElementById('md-ubicacion').textContent = item.ubicacion || 'Sin ubicación';
+
+    // Pedidos OK con explicación
+    renderPedidoOkCard('md-card-pedido-mat', analizarPedido(item, 'matriz'));
+    renderPedidoOkCard('md-card-pedido-suc', analizarPedido(item, 'sucursal'));
+
+    // Existencias
+    document.getElementById('md-ex-alm').textContent = item.existenciaAlmacen;
+    document.getElementById('md-ex-mat').textContent = item.existenciaMatriz;
+    document.getElementById('md-ex-suc').textContent = item.existenciaSucursal;
+
+    // Ventas
+    document.getElementById('md-ventas-mat').textContent = item.ventasMatriz;
+    document.getElementById('md-ventas-suc').textContent = item.ventasSucursal;
+
+    document.getElementById('modalDetalleArticulo').classList.add('active');
+}
+
+function cerrarModalDetalle(event) {
+    if (event && event.target !== event.currentTarget) return;
+    document.getElementById('modalDetalleArticulo').classList.remove('active');
+}
+
+// ============================================================
+//  EXPORTACIONES
+// ============================================================
+function descargarExcel(data, filename) {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Datos');
+    XLSX.writeFile(wb, filename);
+}
+
+function timestampNombre() {
+    const d = new Date(); const p = n => String(n).padStart(2, '0');
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes());
+}
+
+function truncarConPuntos(doc, texto, anchoMax) {
+    if (!texto) return '';
+    if (doc.getTextWidth(texto) <= anchoMax) return texto;
+    const puntos = '...'; const anchoPuntos = doc.getTextWidth(puntos); let recortado = texto;
+    while (recortado.length > 0 && (doc.getTextWidth(recortado) + anchoPuntos) > anchoMax) { recortado = recortado.slice(0, -1); }
+    return recortado + puntos;
+}
+
+function exportarPDF(nombreArchivo, titulo, headers, rows) {
+    if (!window.jspdf || !window.jspdf.jsPDF) return mostrarToast('Librería PDF no disponible', false);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+    const pageW = doc.internal.pageSize.getWidth(); const pageH = doc.internal.pageSize.getHeight();
+    const ANCHOS_PT = [72, 288, 52, 49, 49, 42]; const DESC_COL = 1;
+    const anchoDesc = (ANCHOS_PT[DESC_COL] !== undefined ? ANCHOS_PT[DESC_COL] : 60) - 5;
+    
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    rows = rows.map(row => {
+        const copia = row.slice();
+        const val = copia[DESC_COL];
+        if (val !== undefined && val !== null && val !== '') copia[DESC_COL] = truncarConPuntos(doc, String(val), anchoDesc);
+        return copia;
+    });
+
+    const columnStyles = {};
+    for (let c = 0; c < headers.length; c++) {
+        columnStyles[c] = { halign: 'left', cellWidth: (ANCHOS_PT[c] || 60), font: 'helvetica', fontStyle: (c === 0 || c === headers.length - 1) ? 'bold' : 'normal', overflow: c === DESC_COL ? 'hidden' : 'linebreak' };
+    }
+
+    const d = new Date(); const p = n => String(n).padStart(2, '0');
+    const fecha = p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear();
+    const headRow1 = [ { content: fecha, colSpan: 1, styles: { halign: 'left', fontStyle: 'bold' } }, { content: titulo, colSpan: 1, styles: { halign: 'left', fontStyle: 'bold' } }, { content: '', colSpan: 1 }, { content: 'EXISTENCIA', colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } }, { content: '', colSpan: 1 } ];
+    const headRow2 = headers.map((h, i) => i === headers.length - 1 ? 'SURTIDO' : h);
+
+    doc.autoTable({
+        head: [headRow1, headRow2], body: rows, startY: 30, margin: { left: 30, right: 30, top: 30, bottom: 42 }, theme: 'grid', tableWidth: 552,
+        styles: { font: 'helvetica', fontSize: 8, cellPadding: 2, overflow: 'linebreak', textColor: [0, 0, 0], fillColor: [255, 255, 255], lineColor: [0, 0, 0], lineWidth: 0.4, valign: 'middle', halign: 'left' },
+        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontStyle: 'bold', fontSize: 8, halign: 'left', lineColor: [0, 0, 0], lineWidth: 2.0 },
+        bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], halign: 'left' },
+        alternateRowStyles: { fillColor: [255, 255, 255] }, columnStyles: columnStyles
+    });
+
+    const pageCount = doc.internal.getNumberOfPages(); const totalArticulos = rows.length.toLocaleString();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(0, 0, 0);
+        doc.text('FARMACIAS ADN', 30, pageH - 18);
+        doc.text('PÁGINA ' + i + ' de ' + pageCount, pageW / 2, pageH - 18, { align: 'center' });
+        doc.text('ARTICULOS: ' + totalArticulos, pageW - 30, pageH - 18, { align: 'right' });
+    }
+    doc.save(nombreArchivo + '_' + timestampNombre() + '.pdf');
+}
+
+function compararArticuloUbicacion(a, b) {
+    const ubiA = String(a.ubicacion || '').trim().toUpperCase(); const ubiB = String(b.ubicacion || '').trim().toUpperCase();
+    if (!ubiA && ubiB) return 1; if (ubiA && !ubiB) return -1;
+    const cmpUbi = ubiA.localeCompare(ubiB, 'es', { sensitivity: 'base', numeric: true }); if (cmpUbi !== 0) return cmpUbi;
+    const cmpArt = String(a.articulo || '').trim().toUpperCase().localeCompare(String(b.articulo || '').trim().toUpperCase(), 'es', { sensitivity: 'base', numeric: true }); if (cmpArt !== 0) return cmpArt;
+    return String(a.codigo || '').trim().toUpperCase().localeCompare(String(b.codigo || '').trim().toUpperCase(), 'es', { sensitivity: 'base', numeric: true });
+}
+
+function exportarFiltradoPDF(nombre, titulo, filtroFn, mapFn, headers) {
+    const filtrados = datosCombinados.filter(filtroFn);
+    if (filtrados.length === 0) return mostrarToast('Sin datos para ' + nombre, false);
+    filtrados.sort(compararArticuloUbicacion);
+    mostrarToast('Generando PDF…');
+    setTimeout(() => {
+        try {
+            const rows = filtrados.map(mapFn);
+            exportarPDF(nombre, titulo, headers, rows);
+            mostrarToast('PDF generado: ' + rows.length.toLocaleString() + ' registros');
+        } catch (err) { mostrarToast('Error al generar PDF', false); }
+    }, 30);
+}
+
+function exportarSurtAlmMat() { exportarFiltradoPDF('SURT_ALM_MAT', 'SURTIDO ALMACEN A MATRIZ', item => calcularValores(item).surtidoAlmacenAMatriz > 0, item => [item.codigo, item.articulo, item.ubicacion, item.existenciaAlmacen, item.existenciaMatriz, calcularValores(item).surtidoAlmacenAMatriz], ['CODIGO', 'DESCRIPCION', 'UBICACION', 'ALMACEN', 'MATRIZ', 'SURTIDO']); }
+function exportarSurtAlmSuc() { exportarFiltradoPDF('SURT_ALM_SUC', 'SURTIDO ALMACEN A SUCURSAL', item => calcularValores(item).surtidoAlmacenASucursal > 0, item => [item.codigo, item.articulo, item.ubicacion, item.existenciaAlmacen, item.existenciaSucursal, calcularValores(item).surtidoAlmacenASucursal], ['CODIGO', 'DESCRIPCION', 'UBICACION', 'ALMACEN', 'SUCURSAL', 'SURTIDO']); }
+function exportarSurtMatSuc() { exportarFiltradoPDF('SURT_MAT_SUC', 'SURTIDO MATRIZ A SUCURSAL', item => calcularValores(item).surtidoMatrizASucursal > 0, item => [item.codigo, item.articulo, item.ubicacion, item.existenciaMatriz, item.existenciaSucursal, calcularValores(item).surtidoMatrizASucursal], ['CODIGO', 'DESCRIPCION', 'UBICACION', 'MAT', 'SUC', 'SURTIDO']); }
+function exportarRotSucMat() {
+    exportarFiltradoPDF('ROT_SUC_MAT', 'ROTACION SUCURSAL A MATRIZ', item => {
+        const v = calcularValores(item); if ((item.existenciaSucursal || 0) < 1) return false;
+        if (!(v.surtidoSucursalAMatriz > 0 || (item.ventasSucursal || 0) === 0)) return false;
+        if (!MARCAS_ROT_SUC_MAT.has((item.marca || '').trim().toUpperCase())) return false;
+        if ((item.existenciaAlmacen || 0) !== 0) return false;
+        return true;
+    }, item => [item.codigo, item.articulo, item.ubicacion, item.existenciaSucursal, item.existenciaMatriz, calcularValores(item).surtidoSucursalAMatriz], ['CODIGO', 'DESCRIPCION', 'UBICACION', 'SUC', 'MAT', 'SURTIDO']);
+}
+
+function exportarPedidoMatriz() {
+    const filtrados = datosCombinados.filter(item => calcularValores(item).pedidoMatrizOk > 0);
+    if (filtrados.length === 0) return mostrarToast('Sin datos para PEDIDO_MATRIZ', false);
+    descargarExcel([['CODIGO', 'DESCRIPCION', 'PEDIDO MATRIZ'], ...filtrados.map(item => [item.codigo, item.articulo, calcularValores(item).pedidoMatrizOk])], 'PEDIDO_MATRIZ.xlsx');
+}
+function exportarPedidoSucursal() {
+    const filtrados = datosCombinados.filter(item => calcularValores(item).pedidoSucursalOk > 0);
+    if (filtrados.length === 0) return mostrarToast('Sin datos para PEDIDO_SUCURSAL', false);
+    descargarExcel([['CODIGO', 'DESCRIPCION', 'fab', 'PEDIDO SUCURSAL'], ...filtrados.map(item => [item.codigo, item.articulo, item.fabricante, calcularValores(item).pedidoSucursalOk])], 'PEDIDO_SUCURSAL.xlsx');
+}
+
+// ============================================================
+//  DRAG & DROP E INICIALIZACIÓN
+// ============================================================
+function inicializarDragDrop() {
+    const dz = document.getElementById('dropZone'); if (!dz) return;
+    ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); }));
+    dz.addEventListener('dragleave', e => { e.preventDefault(); dz.classList.remove('dragover'); });
+    dz.addEventListener('drop', e => {
+        e.preventDefault(); dz.classList.remove('dragover');
+        if (!e.dataTransfer || !e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
+        const input = document.getElementById('fileInput');
+        try { input.files = e.dataTransfer.files; input.dispatchEvent(new Event('change')); }
+        catch (err) { procesarArchivos({ target: { files: e.dataTransfer.files, value: '' } }); }
+    });
+    ['dragover', 'drop'].forEach(ev => window.addEventListener(ev, e => e.preventDefault()));
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    const vsContainer = document.getElementById('comparativaScrollContainer');
+    if (vsContainer) vsContainer.addEventListener('scroll', onVSscroll, { passive: true });
+
+    inicializarDragDrop();
+
+    if (await cargarDeNube()) {
+        actualizarEstadoArchivos();
+        if (datosCombinados.length > 0) {
+            Object.keys(archivosCargados).forEach(k => { if (!archivosCargados[k]) archivosCargados[k] = { nombre: '(previo)', datos: [], placeholder: true }; });
+            actualizarEstadoArchivos();
+        }
+    }
+
+    document.querySelectorAll('.nav-views .nav-btn').forEach(el => el.classList.toggle('active-item', el.dataset.view === vistaActual));
+    actualizarVista();
+});
+</script>
+
+</body>
+</html>
