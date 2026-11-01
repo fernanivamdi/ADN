@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<!-- Tipo de documento: HTML5 -->
+<html lang="es">
+<!-- Idioma del contenido: Español -->
+
+<head>
+    <!-- ========== METADATOS ========== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FARMACIAS ADN</title>
+
+    <!-- ========== FAVICON ========== -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- ========== RECURSOS EXTERNOS ========== -->
+    <script src="db.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- ========== PROTECCIÓN CONTRA INSPECCIÓN (disuasión) ========== -->
+    <script>
+        // Bloquear menú contextual (clic derecho)
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Bloquear atajos comunes de inspección
+        document.addEventListener('keydown', e => {
+            // F12
+            if (e.key === 'F12') return e.preventDefault();
+            // Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+                return e.preventDefault();
+            }
+            // Ctrl+U (ver código fuente)
+            if (e.ctrlKey && e.key.toUpperCase() === 'U') return e.preventDefault();
+            // Ctrl+S (guardar página)
+            if (e.ctrlKey && e.key.toUpperCase() === 'S') return e.preventDefault();
+        });
+    </script>
+
+    <style>
+        /* =====================================================
+           VARIABLES GLOBALES
+           ===================================================== */
+        :root {
+            --fondo: #F5F5F7;
+            --tarjeta: #FFFFFF;
+            --texto-principal: #1D1D1F;
+            --texto-secundario: #6E6E73;
+            --acento: #0071E3;
+            --acento-hover: #0077ED;
+            --borde: #D2D2D7;
+
+            --danger: #FF3B30;
+            --glow-acento: rgba(0, 113, 227, 0.18);
+
+            --relleno-input: #FFFFFF;
+            --cristal: rgba(255, 255, 255, 0.86);
+            --cristal-borde: rgba(255, 255, 255, 0.70);
+            --cristal-sombra: 0 4px 20px rgba(31, 60, 110, 0.14), 0 30px 70px rgba(31, 60, 110, 0.28);
+
+            --radio-suave: 12px;
+            --radio-tarjeta: 28px;
+            --radio-boton: 980px;
+
+            --transicion: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --curva-apple: cubic-bezier(0.16, 1, 0.3, 1);
+
+            --fuente-menu: 'Manrope', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* =====================================================
+           BASE GENERAL
+           ===================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                         "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--fondo);
+            color: var(--texto-principal);
+            line-height: 1.47;
+            font-weight: 400;
+            min-height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* =====================================================
+           PANTALLA DE INICIO DE SESIÓN — FONDO #70ABFF
+           ===================================================== */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background-color: #70ABFF;
+        }
+        .login-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .login-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(120% 90% at 50% 15%, rgba(255, 255, 255, 0.70) 0%, rgba(112, 171, 255, 0.55) 65%, rgba(112, 171, 255, 0.85) 100%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(112, 171, 255, 0.40) 100%);
+            z-index: 1;
+        }
+
+        /* =====================================================
+           TARJETA DE LOGIN — VIDRIO ESMERILADO CLARO
+           ===================================================== */
+        .login-card {
+            --cristal: rgba(255, 255, 255, 0.88);
+            --cristal-borde: rgba(255, 255, 255, 0.75);
+            --cristal-sombra: 0 4px 20px rgba(31, 60, 110, 0.16), 0 30px 70px rgba(31, 60, 110, 0.30);
+
+            position: relative;
+            z-index: 2;
+            width: 420px;
+            max-width: 92vw;
+            background: var(--cristal);
+            -webkit-backdrop-filter: saturate(180%) blur(30px);
+            backdrop-filter: saturate(180%) blur(30px);
+            border: 1px solid var(--cristal-borde);
+            border-radius: var(--radio-tarjeta);
+            padding: 48px 40px 44px;
+            box-shadow: var(--cristal-sombra);
+            animation: loginSlideUp 0.75s var(--curva-apple) forwards;
+            opacity: 0;
+            transform: translateY(26px) scale(0.98);
+        }
+
+        @keyframes loginSlideUp {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* =====================================================
+           LOGO — SOLO TIPOGRAFÍA
+           ===================================================== */
+        .login-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 26px;
+        }
+        .logo-adn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: fit-content;
+            color: var(--texto-principal);
+            user-select: none;
+            line-height: 1;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                         "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .logo-adn-top {
+            width: 112%;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 0 1px 6px;
+            border-bottom: 3.5px solid currentColor;
+        }
+        .logo-adn-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-size: 88px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 0.88;
+            margin-top: 6px;
+            padding: 0 1px;
+            -webkit-text-stroke: 3px currentColor;
+            paint-order: stroke fill;
+            transform: scaleX(1.12);
+            transform-origin: center center;
+        }
+
+        /* =====================================================
+           TÍTULOS Y TEXTOS DEL LOGIN
+           ===================================================== */
+        .login-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+            color: var(--texto-principal);
+            margin-bottom: 34px;
+            font-family: inherit;
+        }
+
+        /* =====================================================
+           CAMPOS DE ENTRADA DEL LOGIN
+           ===================================================== */
+        .login-field {
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .login-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--texto-secundario);
+            margin-bottom: 8px;
+            letter-spacing: 0.01em;
+            text-transform: none;
+        }
+
+        .login-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .login-input-wrapper .material-icons {
+            position: absolute;
+            font-size: 20px;
+            color: var(--texto-secundario);
+            pointer-events: none;
+            transition: color 0.25s var(--transicion);
+            z-index: 1;
+        }
+        .login-input-wrapper .material-icons.person { left: 15px; }
+        .login-input-wrapper .material-icons.lock   { left: 15px; }
+        .login-input-wrapper .material-icons.eye {
+            right: 15px;
+            cursor: pointer;
+            pointer-events: auto;
+            color: var(--texto-secundario);
+            user-select: none;
+            transition: color 0.2s ease, opacity 0.2s ease;
+        }
+        .login-input-wrapper .material-icons.eye:hover { color: var(--texto-principal); }
+
+        .login-field input {
+            width: 100%;
+            padding: 14px 46px 14px 46px;
+            border: 1px solid var(--borde);
+            border-radius: var(--radio-suave);
+            font-size: 17px;
+            font-family: inherit;
+            color: var(--texto-principal);
+            background: var(--relleno-input);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .login-field input::placeholder {
+            color: var(--texto-secundario);
+            opacity: 0.75;
+        }
+        .login-field input:focus {
+            border-color: var(--acento);
+            box-shadow: 0 0 0 3px var(--glow-acento);
+        }
+        .login-field:focus-within .material-icons.person,
+        .login-field:focus-within .material-icons.lock { color: var(--acento); }
+
+        /* =====================================================
+           BOTÓN DE INICIAR SESIÓN
+           ===================================================== */
+        .login-btn {
+            width: 100%;
+            padding: 14px 22px;
+            background: var(--acento);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radio-boton);
+            font-size: 17px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 0;
+            text-transform: none;
+            transition: var(--transicion);
+            margin-top: 12px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .login-btn:hover { background: var(--acento-hover); transform: scale(1.01); }
+        .login-btn:active { transform: scale(0.985); opacity: 0.92; }
+        .login-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
+        .login-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+        /* =====================================================
+           MENÚ PRINCIPAL — PANEL DE MÓDULOS
+           ===================================================== */
+        .menu-screen {
+            --tinta: #0B1B2B;
+            --papel: #F2F5F9;
+            --linea: #DCE3EC;
+            --texto: #0F1F30;
+            --suave: #5B6B7D;
+            --claro: #9FB0C2;
+
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            display: flex;
+            background: var(--papel);
+            font-family: var(--fuente-menu);
+            color: var(--texto);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s var(--curva-apple), visibility 0.5s var(--curva-apple);
+        }
+        .menu-screen.visible { opacity: 1; visibility: visible; }
+
+        /* ---------- Panel de marca (izquierda) ---------- */
+        .menu-left {
+            flex: 0 0 340px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+            padding: 56px 40px 36px 44px;
+            background-color: var(--tinta);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.3px);
+            background-size: 4px 4px;
+            color: #FFFFFF;
+        }
+        .menu-logo {
+         display: block; 
+         height: 120px; 
+         width: auto; 
+         max-width: 170px; 
+         margin-bottom: 30px; 
+         margin-left: auto;   /* Centra el bloque a la izquierda */
+         margin-right: auto;  /* Centra el bloque a la derecha */
+         object-fit: contain;
+
+        }
+        .menu-left .logo-adn { color: #FFFFFF; margin-left: 8px; }
+        .menu-left .logo-adn-top { font-size: 17px; }
+        .menu-left .logo-adn-bottom { font-size: 66px; }
+        .menu-subtitulo {
+            margin-top: 22px;
+            max-width: 230px;
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.45;
+            color: var(--claro);
+        }
+
+        .menu-sesion { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+        .menu-usuario-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
+        .menu-avatar {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--acento);
+            font-size: 16px;
+            font-weight: 800;
+        }
+        .menu-usuario-datos { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+        .menu-usuario { font-size: 14px; font-weight: 700; letter-spacing: 0.02em; }
+        .menu-rol { font-size: 12.5px; font-weight: 500; color: var(--claro); }
+
+        /* ---------- Zona de módulos (derecha) ---------- */
+        .menu-main {
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow-y: auto;
+            padding: 56px clamp(28px, 5vw, 72px) 48px;
+        }
+        .menu-seccion { margin-bottom: 38px; }
+        .menu-seccion-titulo {
+            margin-bottom: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--suave);
+        }
+        .menu-destacados {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 18px;
+        }
+        .menu-secundarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        /* ---------- Mosaico base ---------- */
+        .tile {
+            position: relative;
+            font-family: inherit;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+            background: #FFFFFF;
+            border: 1px solid var(--linea);
+            transition: transform 0.28s var(--curva-apple), box-shadow 0.28s var(--curva-apple), border-color 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tile:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+        .tile-icono { display: grid; place-items: center; flex: none; }
+        .tile-etiqueta { font-weight: 700; line-height: 1.25; }
+
+        /* Módulos disponibles */
+        .tile-grande {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-areas: "icono ir" "texto texto";
+            align-items: start;
+            row-gap: 26px;
+            min-height: 178px;
+            padding: 26px;
+            border-radius: 20px;
+        }
+        .tile-grande .tile-icono {
+            grid-area: icono;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--tono);
+            color: #FFFFFF;
+        }
+        .tile-grande .tile-icono .material-icons { font-size: 30px; }
+        .tile-grande .tile-texto { grid-area: texto; }
+        .tile-grande .tile-etiqueta { display: block; font-size: 22px; letter-spacing: -0.01em; }
+        .tile-detalle { display: block; margin-top: 4px; font-size: 14.5px; font-weight: 500; color: var(--suave); }
+        .tile-ir {
+            grid-area: ir;
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #EDF2F8;
+            color: var(--suave);
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .tile-ir .material-icons { font-size: 22px; }
+        .tile-grande:hover {
+            transform: translateY(-3px);
+            border-color: var(--tono);
+            box-shadow: 0 16px 34px rgba(15, 31, 48, 0.10);
+        }
+        .tile-grande:hover .tile-ir { background: var(--tono); color: #FFFFFF; }
+        .tile-grande:active { transform: translateY(-1px); }
+
+        .tile-compras       { --tono: #5C9A1E; }
+        .tile-inventario    { --tono: #1C8DA3; }
+        .tile-articulos     { --tono: #7B5CE0; }
+        .tile-configuracion { --tono: #5A6B7D; }
+        .tile-programacion  { --tono: #E0821E; }
+        .tile-surtidos      { --tono: #D6336C; }
+
+        /* Módulos próximos */
+        .tile-chico {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-radius: 14px;
+            border-style: dashed;
+            background: rgba(255, 255, 255, 0.55);
+        }
+        .tile-chico .tile-icono {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #E6ECF4;
+            color: #4A6180;
+        }
+        .tile-chico .tile-icono .material-icons { font-size: 23px; }
+        .tile-chico .tile-etiqueta { font-size: 15px; font-weight: 600; }
+        .tile-chico:hover { background: #FFFFFF; border-color: #AEBBCB; }
+
+        /* Entrada escalonada al abrir el menú */
+        @keyframes tileEntra {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: none; }
+        }
+        .menu-screen.visible .tile {
+            animation: tileEntra 0.5s var(--curva-apple) backwards;
+            animation-delay: calc(var(--i, 0) * 45ms + 120ms);
+        }
+
+        /* ---------- Aviso breve ---------- */
+        .aviso { border-radius: 12px; }
+
+        /* ---------- Aviso breve ---------- */
+        .aviso {
+            position: fixed;
+            left: 50%;
+            bottom: 34px;
+            transform: translate(-50%, 20px);
+            z-index: 2000;
+            padding: 12px 22px;
+            background: rgba(30, 30, 32, 0.95);
+            color: #FFFFFF;
+            font-family: var(--fuente-menu);
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s var(--curva-apple);
+        }
+        .aviso.visible { opacity: 1; transform: translate(-50%, 0); }
+
+        /* =====================================================
+           CONTENEDOR PRINCIPAL (IFRAME + TOP BAR)
+           ===================================================== */
+        .app-container {
+            position: fixed;
+            inset: 0;
+            z-index: 600;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s var(--curva-apple) 0.15s, visibility 0.5s var(--curva-apple) 0.15s;
+        }
+        .app-container.visible { opacity: 1; visibility: visible; }
+        .app-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--fondo);
+            display: block;
+            position: relative;
+            z-index: 0;
+        }
+
+        /* =====================================================
+           TOP BAR
+           ===================================================== */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            padding: 0 28px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        /* Botón volver al menú (único elemento de la barra) */
+        .btn-menu {
+            pointer-events: auto;
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 36px;
+            padding: 0 16px 0 10px;
+            background: rgba(255, 255, 255, 0.82);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 980px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(31, 60, 110, 0.08);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #6E6E73;
+            cursor: pointer;
+            transition: color 0.3s var(--curva-apple);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .btn-menu .material-icons { font-size: 20px; }
+        .btn-menu:hover { color: var(--texto-principal); }
+        .btn-menu:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--glow-acento); }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+        /* ---- Móvil: el panel lateral se convierte en una barra compacta ---- */
+        @media (max-width: 900px) {
+            .menu-screen { flex-direction: column; overflow-y: auto; }
+
+            /* Marca + sesión en una sola fila, en lugar de una columna alta */
+            .menu-left {
+                flex: 0 0 auto;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                padding: 10px 16px;
+            }
+
+            /* Marca: logo e isotipo "FARMACIAS / ADN" uno al lado del otro */
+            .menu-marca {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+            .menu-logo { height: 32px; max-width: 92px; margin: 0; }
+            .menu-left .logo-adn { margin-left: 0; }
+            .menu-left .logo-adn-top {
+                font-size: 10px;
+                letter-spacing: 0.08em;
+                padding: 0 1px 3px;
+                border-bottom-width: 2px;
+            }
+            .menu-left .logo-adn-bottom {
+                font-size: 28px;
+                margin-top: 3px;
+                transform: scaleX(1.06);
+                -webkit-text-stroke-width: 1.5px;
+            }
+            .menu-subtitulo { display: none; }
+
+            /* Sesión: chip de usuario pegado a la derecha */
+            .menu-sesion {
+                width: auto;
+                flex: 0 0 auto;
+                flex-direction: row;
+                align-items: center;
+                gap: 0;
+            }
+            .menu-usuario-chip { flex: 0 1 auto; padding: 5px 12px 5px 6px; gap: 8px; }
+            .menu-avatar { width: 28px; height: 28px; font-size: 13px; }
+            .menu-usuario {
+                font-size: 12.5px;
+                max-width: 130px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .menu-rol { font-size: 11px; }
+
+            .menu-main { flex: none; overflow: visible; padding: 22px 16px 40px; }
+            .menu-seccion { margin-bottom: 26px; }
+            .menu-destacados { grid-template-columns: 1fr; gap: 12px; }
+            .tile-grande {
+                grid-template-columns: auto 1fr auto;
+                grid-template-areas: "icono texto ir";
+                align-items: center;
+                column-gap: 14px;
+                min-height: 0;
+                padding: 16px;
+                row-gap: 0;
+            }
+            .tile-grande .tile-icono { width: 44px; height: 44px; border-radius: 13px; }
+            .tile-grande .tile-icono .material-icons { font-size: 24px; }
+            .tile-grande .tile-etiqueta { font-size: 17px; }
+            .tile-detalle { font-size: 13px; }
+            .tile-ir { width: 30px; height: 30px; }
+            .tile-ir .material-icons { font-size: 18px; }
+            .menu-secundarios { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+            .tile-chico { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .login-card { padding: 40px 26px 36px; border-radius: 24px; }
+            .logo-adn { transform: scale(0.86); transform-origin: center center; margin: -6px 0; }
+            .login-title { font-size: 24px; margin-bottom: 28px; }
+            .top-bar { height: 52px; padding: 0 14px; gap: 8px; }
+            .btn-menu { padding: 0 12px 0 8px; font-size: 11.5px; letter-spacing: 0.02em; }
+
+            /* Barra de marca aún más baja en pantallas pequeñas */
+            .menu-left { padding: 8px 12px; }
+            .menu-logo { height: 27px; max-width: 74px; }
+            .menu-marca { gap: 8px; }
+            .menu-left .logo-adn-top { font-size: 8.5px; letter-spacing: 0.04em; border-bottom-width: 1.5px; }
+            .menu-left .logo-adn-bottom { font-size: 23px; -webkit-text-stroke-width: 1px; }
+            .menu-avatar { width: 25px; height: 25px; font-size: 12px; }
+            .menu-usuario { font-size: 11.5px; max-width: 92px; }
+            .menu-rol { font-size: 10px; }
+            .menu-usuario-chip { padding: 4px 10px 4px 5px; gap: 6px; }
+            .menu-main { padding: 18px 12px 36px; }
+        }
+
+        /* Móvil en horizontal (poca altura): la barra se reduce al mínimo */
+        @media (max-height: 480px) and (max-width: 900px) {
+            .menu-left { padding: 6px 12px; }
+            .menu-logo { height: 24px; max-width: 64px; }
+            .menu-left .logo-adn-bottom { font-size: 21px; }
+        }
+
+        /* =====================================================
+           ACCESIBILIDAD — MOVIMIENTO REDUCIDO
+           ===================================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+            .login-card { opacity: 1; transform: none; }
+        }
+
+        /* ===== Ocultar módulos sin permiso ===== */
+        .tile.oculto,
+        .menu-seccion.oculto { display: none !important; }
+
+        .menu-vacio {
+            margin-top: 8px;
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--suave);
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px dashed var(--linea);
+            border-radius: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         PANTALLA DE INICIO DE SESIÓN
+         ===================================================== -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+
+            <div class="login-logo">
+                <div class="logo-adn" role="img" aria-label="Farmacias ADN">
+                    <div class="logo-adn-top">
+                        <span>F</span><span>A</span><span>R</span><span>M</span><span>A</span><span>C</span><span>I</span><span>A</span><span>S</span>
+                    </div>
+                    <div class="logo-adn-bottom">
+                        <span>A</span><span>D</span><span>N</span>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="login-title">INICIAR SESION</h1>
+
+            <div class="login-field">
+                <label for="usuario">Usuario</label>
+                <div class="login-input-wrapper">
+                    <input type="text" id="usuario" placeholder="Escribe tu usuario" autocomplete="username">
+                    <span class="material-icons person">person</span>
+                </div>
+            </div>
+
+            <div class="login-field">
+                <label for="password">Contraseña</label>
+                <div class="login-input-wrapper">
+                    <input type="password" id="password" placeholder="Escribe tu contraseña" autocomplete="current-password">
+                    <span class="material-icons lock">lock</span>
+                    <span class="material-icons eye" id="togglePassword">visibility</span>
+                </div>
+            </div>
+
+            <button class="login-btn" id="loginBtn" onclick="iniciarSesion()">
+                Iniciar Sesión
+            </button>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MENÚ PRINCIPAL
+         ===================================================== -->
+    <main class="menu-screen" id="menuScreen">
+
+        <section class="menu-left">
+            <div class="menu-marca">
+                <img class="menu-logo"
+                     src="https://i.postimg.cc/JhFSb6Jb/logo.png"
+                     alt="Farmacias ADN">
+
+                <div class="logo-adn" role="img" aria-label="Farmacias ADN">
+                    <div class="logo-adn-top">
+                        <span>F</span><span>A</span><span>R</span><span>M</span><span>A</span><span>C</span><span>I</span><span>A</span><span>S</span>
+                    </div>
+                    <div class="logo-adn-bottom">
+                        <span>A</span><span>D</span><span>N</span>
+                    </div>
+                </div>
+
+                <p class="menu-subtitulo">Salud al alcance de todos</p>
+            </div>
+
+            <div class="menu-sesion">
+                <div class="menu-usuario-chip">
+                    <span class="menu-avatar" id="menuAvatar" aria-hidden="true"></span>
+                    <span class="menu-usuario-datos">
+                        <span class="menu-usuario" id="menuUsuario"></span>
+                        <span class="menu-rol" id="menuRol"></span>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <div class="menu-main">
+            <nav aria-label="Módulos">
+
+                <section class="menu-seccion" aria-labelledby="tituloDisponibles">
+                    <h2 class="menu-seccion-titulo" id="tituloDisponibles">Disponibles</h2>
+                    <div class="menu-destacados">
+            <button class="tile tile-grande tile-compras" type="button" data-modulo="compras" style="--i:0">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">add_shopping_cart</span></span>
+                <span class="tile-ir" aria-hidden="true"><span class="material-icons">chevron_right</span></span>
+                <span class="tile-texto">
+                    <span class="tile-etiqueta">Compras</span>
+                    <span class="tile-detalle">Cotizaciones y pedidos</span>
+                </span>
+            </button>
+            <button class="tile tile-grande tile-inventario" type="button" data-modulo="inventario" style="--i:1">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">inventory_2</span></span>
+                <span class="tile-ir" aria-hidden="true"><span class="material-icons">chevron_right</span></span>
+                <span class="tile-texto">
+                    <span class="tile-etiqueta">Inventario</span>
+                    <span class="tile-detalle">Surtido y existencias</span>
+                </span>
+            </button>
+            <button class="tile tile-grande tile-articulos" type="button" data-modulo="articulos" style="--i:2">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">medication</span></span>
+                <span class="tile-ir" aria-hidden="true"><span class="material-icons">chevron_right</span></span>
+                <span class="tile-texto">
+                    <span class="tile-etiqueta">Artículos</span>
+                    <span class="tile-detalle">Catálogo, costos y precios</span>
+                </span>
+            </button>
+            <button class="tile tile-grande tile-configuracion" type="button" data-modulo="configuracion" style="--i:3">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">settings</span></span>
+                <span class="tile-ir" aria-hidden="true"><span class="material-icons">chevron_right</span></span>
+                <span class="tile-texto">
+                    <span class="tile-etiqueta">Configuración</span>
+                    <span class="tile-detalle">Ajustes y preferencias</span>
+                </span>
+            </button>
+            <button class="tile tile-grande tile-programacion" type="button" data-modulo="programacion" style="--i:4">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">view_list</span></span>
+                <span class="tile-ir" aria-hidden="true"><span class="material-icons">chevron_right</span></span>
+                <span class="tile-texto">
+                    <span class="tile-etiqueta">Programación</span>
+                    <span class="tile-detalle">Tareas y calendario</span>
+                </span>
+            </button>
+            <button class="tile tile-grande tile-surtidos" type="button" data-modulo="surtidos" style="--i:5">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">local_shipping</span></span>
+                <span class="tile-ir" aria-hidden="true"><span class="material-icons">chevron_right</span></span>
+                <span class="tile-texto">
+                    <span class="tile-etiqueta">Surtidos</span>
+                    <span class="tile-detalle">Reparto y surtido de mercancía</span>
+                </span>
+            </button>
+                    </div>
+                </section>
+
+                <section class="menu-seccion" aria-labelledby="tituloProximos">
+                    <h2 class="menu-seccion-titulo" id="tituloProximos">Próximamente</h2>
+                    <div class="menu-secundarios">
+            <button class="tile tile-chico" type="button" data-modulo="ventas" style="--i:6">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">point_of_sale</span></span>
+                <span class="tile-etiqueta">Ventas</span>
+            </button>
+            <button class="tile tile-chico" type="button" data-modulo="PEDIDOS" style="--i:7">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">restaurant</span></span>
+                <span class="tile-etiqueta">Restaurante</span>
+            </button>
+            <button class="tile tile-chico" type="button" data-modulo="aire" style="--i:8">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">smartphone</span></span>
+                <span class="tile-etiqueta">Tiempo aire y pago de servicios</span>
+            </button>
+            <button class="tile tile-chico" type="button" data-modulo="facturacion" style="--i:9">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">receipt_long</span></span>
+                <span class="tile-etiqueta">Facturación electrónica</span>
+            </button>
+                    </div>
+                </section>
+
+            </nav>
+        </div>
+    </main>
+
+    <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL: IFRAME + TOP BAR
+         ===================================================== -->
+    <div class="app-container" id="appContainer">
+
+        <div class="top-bar">
+            <button class="btn-menu" type="button" id="btnMenu" aria-label="Volver al menú principal">
+                <span class="material-icons" aria-hidden="true">chevron_left</span>Menú
+            </button>
+        </div>
+
+        <iframe id="marco" name="marco" src="about:blank" title="Contenido principal"></iframe>
+    </div>
+
+    <!-- =====================================================
+         CÓDIGO JAVASCRIPT
+         ===================================================== -->
+    <script>
+        /* =============================================
+           ROLES DE USUARIO
+           ============================================= */
+        const ROLES = {
+            ADMIN:     'administrador',
+            USUARIO:   'usuario',
+            MOSTRADOR: 'mostrador'
+        };
+
+        /* =============================================
+           VALIDACIÓN DE USUARIOS
+           Se valida SOLO contra la base de datos de Supabase
+           (función rpc/validar_usuario). No hay credenciales
+           guardadas en este archivo.
+           ============================================= */
+
+        /* Devuelve {user, nombre, rol} · {inactivo:true} · null (credenciales incorrectas).
+           Lanza error si no hay conexión con la base de datos. */
+        async function validarEnBaseDeDatos(usuario, password) {
+            if (!window.DB || !DB.usuarios) throw new Error('db.js no cargó');
+            const fila = await DB.usuarios.validar(usuario, password);
+            if (!fila) return null;
+            if (fila.activo === false) return { inactivo: true };
+            return {
+                user:   fila.usuario,
+                nombre: fila.nombre || fila.usuario,
+                rol:    String(fila.rol || ROLES.USUARIO).toLowerCase()
+            };
+        }
+
+        /* Usuario autenticado actual (se llena al iniciar sesión) */
+        let usuarioActual = null;
+
+        /* =============================================
+           MÓDULOS DEL MENÚ
+           Cada mosaico abre UNA sola página (sin interruptor).
+           Para agregar otro módulo: pon la clave en data-modulo
+           del botón y agrégala aquí con su página.
+           Los que no estén aquí muestran "Próximamente".
+           ============================================= */
+        const MODULOS = {
+            compras:       { pagina: 'cotizacion.html',     etiqueta: 'Compras',       icono: 'add_shopping_cart' },
+            inventario:    { pagina: 'binario.html',        etiqueta: 'Inventario',    icono: 'inventory_2' },
+            articulos:     { pagina: 'articulos.html',      etiqueta: 'Artículos',     icono: 'medication' },
+            configuracion: { pagina: 'configuracion.html',  etiqueta: 'Configuración', icono: 'settings' },
+            programacion:  { pagina: 'programacion.html',   etiqueta: 'Programación',  icono: 'view_list' },
+            surtidos:      { pagina: 'surtidos.html',       etiqueta: 'Surtidos',      icono: 'local_shipping' }
+        };
+
+        /* =============================================
+           PERMISOS POR ROL
+           Cada rol ve SOLO los módulos listados aquí.
+           Se pueden editar desde Configuración → Permisos.
+           ============================================= */
+        const PERMISOS_DEFAULT = {
+            administrador: ['compras','inventario','articulos','configuracion',
+                            'programacion','surtidos','ventas','PEDIDOS','aire','facturacion'],
+            usuario:       ['compras','inventario','articulos','programacion','surtidos'],
+            mostrador:     ['ventas']
+        };
+        const CLAVE_PERMISOS = 'adn_permisos_v1';
+
+        function leerPermisos() {
+            try {
+                const raw = localStorage.getItem(CLAVE_PERMISOS);
+                const obj = raw ? JSON.parse(raw) : {};
+                // Fusiona con los predeterminados por si falta alguna clave nueva
+                const resultado = { ...PERMISOS_DEFAULT, ...obj };
+                // El admin nunca puede perder "configuracion"
+                resultado.administrador = Array.from(
+                    new Set([...(resultado.administrador || []), 'configuracion'])
+                );
+                return resultado;
+            } catch (e) {
+                return { ...PERMISOS_DEFAULT };
+            }
+        }
+
+        function aplicarPermisos(rol) {
+            const permitidos = leerPermisos()[rol] || [];
+
+            // 1. Mostrar/ocultar cada tile
+            document.querySelectorAll('.tile').forEach(tile => {
+                const clave = tile.dataset.modulo;
+                tile.classList.toggle('oculto', !permitidos.includes(clave));
+            });
+
+            // 2. Ocultar secciones que quedaron vacías
+            document.querySelectorAll('.menu-seccion').forEach(sec => {
+                const hay = sec.querySelectorAll('.tile:not(.oculto)').length > 0;
+                sec.classList.toggle('oculto', !hay);
+            });
+
+            // 3. Mensaje si el rol no tiene ningún módulo
+            const nav = document.querySelector('.menu-main nav');
+            let vacio = document.getElementById('menuVacio');
+            if (permitidos.length === 0) {
+                if (!vacio) {
+                    vacio = document.createElement('p');
+                    vacio.id = 'menuVacio';
+                    vacio.className = 'menu-vacio';
+                    vacio.textContent = 'No hay módulos disponibles para tu rol. Contacta al administrador.';
+                    nav.appendChild(vacio);
+                }
+            } else if (vacio) {
+                vacio.remove();
+            }
+        }
+
+        const inputUsuario  = document.getElementById('usuario');
+        const inputPassword = document.getElementById('password');
+
+        const ESTILO_ERROR = {
+            borderColor: 'var(--danger)',
+            boxShadow: '0 0 0 4px rgba(255, 59, 48, 0.15)'
+        };
+
+        function marcarError(el) {
+            el.style.borderColor = ESTILO_ERROR.borderColor;
+            el.style.boxShadow   = ESTILO_ERROR.boxShadow;
+        }
+        function limpiarError(el) {
+            el.style.borderColor = '';
+            el.style.boxShadow   = '';
+        }
+        function limpiarErroresDiferidos() {
+            setTimeout(() => {
+                limpiarError(inputUsuario);
+                limpiarError(inputPassword);
+            }, 2000);
+        }
+
+        function capitalizar(texto) {
+            return texto.charAt(0).toUpperCase() + texto.slice(1);
+        }
+
+        /* =============================================
+           FUNCIÓN DE INICIO DE SESIÓN
+           ============================================= */
+        function rechazarLogin(mensaje) {
+            alert(mensaje);
+            marcarError(inputUsuario);
+            marcarError(inputPassword);
+            limpiarErroresDiferidos();
+        }
+
+        async function iniciarSesion() {
+            const usuario  = inputUsuario.value.trim();
+            const password = inputPassword.value.trim();
+
+            let hayError = false;
+
+            if (!usuario)  { marcarError(inputUsuario);  hayError = true; } else limpiarError(inputUsuario);
+            if (!password) { marcarError(inputPassword); hayError = true; } else limpiarError(inputPassword);
+
+            if (hayError) { limpiarErroresDiferidos(); return; }
+
+            const boton = document.getElementById('loginBtn');
+            const textoOriginal = boton.textContent;
+            boton.disabled = true;
+            boton.textContent = 'Verificando…';
+
+            let sesion = null;
+            let bdDisponible = true;
+
+            try {
+                sesion = await validarEnBaseDeDatos(usuario, password);
+            } catch (e) {
+                bdDisponible = false;
+                console.warn('No se pudo consultar la base de datos:', e && e.message);
+            }
+
+            if (sesion && sesion.inactivo) {
+                boton.disabled = false;
+                boton.textContent = textoOriginal;
+                rechazarLogin('Este usuario está inactivo. Comunícate con el administrador.');
+                return;
+            }
+
+            boton.disabled = false;
+            boton.textContent = textoOriginal;
+
+            if (!sesion) {
+                rechazarLogin(bdDisponible
+                    ? 'Usuario o contraseña incorrectos. Intenta de nuevo.'
+                    : 'No se pudo conectar con la base de datos. Revisa tu conexión e intenta de nuevo.');
+                return;
+            }
+
+            /* Guardamos el usuario autenticado junto con su rol */
+            usuarioActual = { user: sesion.user, nombre: sesion.nombre, rol: sesion.rol };
+            aplicarPermisos(sesion.rol);   // <-- nueva línea
+
+            document.getElementById('menuUsuario').textContent = String(sesion.user).toUpperCase();
+            document.getElementById('menuRol').textContent     = capitalizar(sesion.rol);
+            document.getElementById('menuAvatar').textContent  = String(sesion.user).charAt(0).toUpperCase();
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('menuScreen').classList.add('visible');
+        }
+
+        /* =============================================
+           MOSTRAR/OCULTAR CONTRASEÑA
+           ============================================= */
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const tipo = inputPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            inputPassword.setAttribute('type', tipo);
+            this.textContent = tipo === 'password' ? 'visibility' : 'visibility_off';
+        });
+
+        /* =============================================
+           LOGIN CON TECLA ENTER
+           ============================================= */
+        inputPassword.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') iniciarSesion();
+        });
+        inputUsuario.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') inputPassword.focus();
+        });
+
+        /* =============================================
+           AVISO BREVE
+           ============================================= */
+        const aviso = document.getElementById('aviso');
+        let temporizadorAviso;
+
+        function mostrarAviso(texto) {
+            aviso.textContent = texto;
+            aviso.classList.add('visible');
+            clearTimeout(temporizadorAviso);
+            temporizadorAviso = setTimeout(() => aviso.classList.remove('visible'), 2200);
+        }
+
+        /* =============================================
+           NAVEGACIÓN: MENÚ <-> PÁGINAS
+           ============================================= */
+        const menuScreen   = document.getElementById('menuScreen');
+        const appContainer = document.getElementById('appContainer');
+        const marco        = document.getElementById('marco');
+
+        /* Abre la página de un módulo: una sola página, sin cambio de modo */
+        function abrirModulo(clave) {
+            const modulo = MODULOS[clave];
+            if (!modulo) {
+                mostrarAviso('Este módulo estará disponible próximamente.');
+                return;
+            }
+            marco.src = modulo.pagina;
+            marco.title = modulo.etiqueta;
+            menuScreen.classList.remove('visible');
+            appContainer.classList.add('visible');
+        }
+
+        function volverAlMenu() {
+            appContainer.classList.remove('visible');
+            menuScreen.classList.add('visible');
+            marco.src = 'about:blank';
+            marco.title = 'Contenido principal';
+            if (usuarioActual) aplicarPermisos(usuarioActual.rol);   // <-- nueva línea
+        }
+
+        document.querySelectorAll('.tile').forEach(tile => {
+            tile.addEventListener('click', () => abrirModulo(tile.dataset.modulo));
+        });
+
+        document.getElementById('btnMenu').addEventListener('click', volverAlMenu);
+    </script>
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- Idioma del contenido: Español -->
+<head>
+
+    <!-- ========== METADATOS ========== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F5F5F7">
+    <title>Surtidos · Farmacias ADN</title>
+
+    <!-- ========== RECURSOS EXTERNOS ========== -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* =====================================================
+           VARIABLES GLOBALES — PALETA APPLE
+           ===================================================== */
+        :root {
+            --fondo: #F5F5F7;
+            --tarjeta: #FFFFFF;
+            --texto-principal: #1D1D1F;
+            --texto-secundario: #6E6E73;
+            --terciario: #A1A1A6;
+
+            --acento: #0071E3;
+            --acento-hover: #0077ED;
+            --glow-acento: rgba(0, 113, 227, 0.18);
+
+            --borde: #D2D2D7;
+            --separador: rgba(60, 60, 67, 0.12);
+            --presionado: rgba(0, 0, 0, 0.045);
+
+            --ok: #34C759;
+            --danger: #FF3B30;
+
+            --cristal: rgba(255, 255, 255, 0.82);
+            --cristal-borde: rgba(255, 255, 255, 0.60);
+            --cristal-sombra: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(31, 60, 110, 0.10);
+
+            --radio-tarjeta: 22px;
+            --radio-icono: 14px;
+            --radio-boton: 980px;
+
+            --curva-apple: cubic-bezier(0.16, 1, 0.3, 1);
+            --transicion: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+            --sombra-tarjeta: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 30px rgba(0, 0, 0, 0.06);
+
+            --fuente: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* =====================================================
+           BASE (MÓVIL PRIMERO)
+           ===================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--fondo);
+            color: var(--texto-principal);
+            font-family: var(--fuente);
+            font-weight: 400;
+            line-height: 1.47;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* Espacio reservado para la barra superior del contenedor (botón "Menú") */
+        .espacio-barra {
+            height: calc(56px + env(safe-area-inset-top));
+        }
+
+        /* =====================================================
+           CONTENEDOR
+           ===================================================== */
+        .app {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 4px 16px calc(40px + env(safe-area-inset-bottom));
+        }
+
+        /* =====================================================
+           CABECERA
+           ===================================================== */
+        .cabecera {
+            padding: 6px 8px 22px;
+        }
+        .cabecera-superior {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .insignia {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 46px;
+            height: 46px;
+            border-radius: var(--radio-icono);
+            background: linear-gradient(145deg, #0A84FF 0%, #0071E3 100%);
+            color: #FFFFFF;
+            box-shadow: 0 4px 14px rgba(0, 113, 227, 0.32);
+        }
+        .insignia .material-icons { font-size: 26px; }
+
+        .eyebrow {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--acento);
+        }
+
+        h1 {
+            font-size: clamp(30px, 8.6vw, 40px);
+            font-weight: 700;
+            line-height: 1.06;
+            letter-spacing: -0.028em;
+        }
+        .subtitulo {
+            margin-top: 8px;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--texto-secundario);
+            letter-spacing: -0.008em;
+        }
+
+        /* =====================================================
+           GRUPO + LISTA ESTILO iOS
+           ===================================================== */
+        .grupo { margin-bottom: 22px; }
+
+        .grupo-titulo {
+            padding: 0 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--texto-secundario);
+        }
+
+        .lista {
+            background: var(--tarjeta);
+            border-radius: var(--radio-tarjeta);
+            box-shadow: var(--sombra-tarjeta);
+            overflow: hidden;
+        }
+
+        .fila {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            min-height: 74px;
+            padding: 14px 16px;
+            background: transparent;
+            border: 0;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.18s ease, opacity 0.25s ease;
+        }
+        /* Separador fino alineado al texto (estilo ajustes iOS) */
+        .fila + .fila::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 16px;
+            right: 0;
+            height: 1px;
+            background: var(--separador);
+        }
+        .fila:active { background: var(--presionado); }
+        .fila:focus-visible {
+            outline: 3px solid var(--acento);
+            outline-offset: -3px;
+        }
+
+        .fila-icono {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 46px;
+            height: 46px;
+            border-radius: var(--radio-icono);
+            background: var(--tono);
+            color: #FFFFFF;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.10);
+            transition: transform 0.3s var(--curva-apple);
+        }
+        .fila-icono .material-icons { font-size: 25px; }
+        .fila:active .fila-icono { transform: scale(0.94); }
+
+        .fila-texto {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .fila-titulo {
+            display: block;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.012em;
+            color: var(--texto-principal);
+            line-height: 1.25;
+        }
+        .fila-detalle {
+            display: block;
+            margin-top: 3px;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--texto-secundario);
+            letter-spacing: -0.005em;
+        }
+
+        .fila-final {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 24px;
+            height: 24px;
+        }
+        .fila-final .material-icons {
+            font-size: 22px;
+            color: var(--terciario);
+        }
+
+        /* Estado ocupado de la lista */
+        .lista.ocupado .fila { opacity: 0.42; pointer-events: none; }
+        .lista.ocupado .fila.cargando { opacity: 1; pointer-events: auto; }
+
+        /* =====================================================
+           INDICADOR DE CARGA
+           ===================================================== */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2.5px solid rgba(0, 0, 0, 0.10);
+            border-top-color: var(--acento);
+            animation: girar 0.8s linear infinite;
+        }
+        @keyframes girar { to { transform: rotate(360deg); } }
+        .fila.cargando .spinner { display: block; }
+        .fila.cargando .flecha { display: none; }
+
+        /* =====================================================
+           NOTA INFERIOR
+           ===================================================== */
+        .nota {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.62);
+            border: 1px solid rgba(0, 0, 0, 0.045);
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--texto-secundario);
+        }
+        .nota .material-icons {
+            flex: none;
+            font-size: 19px;
+            color: var(--acento);
+            margin-top: 1px;
+        }
+
+        /* =====================================================
+           AVISO FLOTANTE (TOAST)
+           ===================================================== */
+        .aviso {
+            position: fixed;
+            left: 50%;
+            bottom: calc(24px + env(safe-area-inset-bottom));
+            transform: translate(-50%, 26px);
+            z-index: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: calc(100vw - 32px);
+            padding: 12px 20px;
+            border-radius: var(--radio-boton);
+            background: rgba(29, 29, 31, 0.94);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.24);
+            color: #FFFFFF;
+            font-family: var(--fuente);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s var(--curva-apple), transform 0.28s var(--curva-apple),
+                        background-color 0.28s ease;
+        }
+        .aviso.visible { opacity: 1; transform: translate(-50%, 0); }
+        .aviso.error { background: rgba(255, 59, 48, 0.96); }
+        .aviso.ok { background: rgba(52, 199, 89, 0.96); }
+
+        .aviso .spinner {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+            border-color: rgba(255, 255, 255, 0.30);
+            border-top-color: #FFFFFF;
+        }
+        .aviso.cargando .spinner { display: block; }
+        .aviso.cargando .aviso-icono { display: none; }
+        .aviso .aviso-icono { display: none; font-size: 18px; }
+        .aviso.error .aviso-icono,
+        .aviso.ok .aviso-icono { display: block; }
+
+        /* =====================================================
+           PANTALLAS GRANDES (a partir del móvil)
+           ===================================================== */
+        @media (min-width: 768px) {
+            .app { padding-top: 18px; }
+            .cabecera { padding: 10px 10px 26px; }
+            .fila { min-height: 80px; padding: 16px 20px; }
+            .fila + .fila::before { left: 20px; }
+            .fila-titulo { font-size: 18px; }
+        }
+
+        /* =====================================================
+           ACCESIBILIDAD — MOVIMIENTO REDUCIDO
+           ===================================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+            .spinner { border-top-color: var(--acento); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Espacio para la barra "Menú" del contenedor -->
+    <div class="espacio-barra" aria-hidden="true"></div>
+
+    <main class="app">
+
+        <!-- =====================================================
+             CABECERA
+             ===================================================== -->
+        <header class="cabecera">
+            <div class="cabecera-superior">
+                <span class="insignia" aria-hidden="true">
+                    <span class="material-icons">local_shipping</span>
+                </span>
+                <span class="eyebrow">Farmacias ADN</span>
+            </div>
+
+            <h1>Surtidos</h1>
+            <p class="subtitulo">Genera el PDF con los datos guardados en Supabase.</p>
+        </header>
+
+        <!-- =====================================================
+             LISTA DE REPORTES
+             ===================================================== -->
+        <section class="grupo" aria-labelledby="tituloReportes">
+            <h2 class="grupo-titulo" id="tituloReportes">Generar reporte</h2>
+
+            <div class="lista" id="lista">
+
+                <button class="fila" type="button" data-k="alm_mat" style="--tono:#1C8DA3">
+                    <span class="fila-icono" aria-hidden="true">
+                        <span class="material-icons">warehouse</span>
+                    </span>
+                    <span class="fila-texto">
+                        <span class="fila-titulo">Almacén a Matriz</span>
+                        <span class="fila-detalle">surtido_alm_mat</span>
+                    </span>
+                    <span class="fila-final">
+                        <span class="material-icons flecha" aria-hidden="true">chevron_right</span>
+                        <span class="spinner" aria-hidden="true"></span>
+                    </span>
+                </button>
+
+                <button class="fila" type="button" data-k="alm_suc" style="--tono:#5C9A1E">
+                    <span class="fila-icono" aria-hidden="true">
+                        <span class="material-icons">storefront</span>
+                    </span>
+                    <span class="fila-texto">
+                        <span class="fila-titulo">Almacén a Sucursal</span>
+                        <span class="fila-detalle">surtido_alm_suc</span>
+                    </span>
+                    <span class="fila-final">
+                        <span class="material-icons flecha" aria-hidden="true">chevron_right</span>
+                        <span class="spinner" aria-hidden="true"></span>
+                    </span>
+                </button>
+
+                <button class="fila" type="button" data-k="mat_suc" style="--tono:#7B5CE0">
+                    <span class="fila-icono" aria-hidden="true">
+                        <span class="material-icons">apartment</span>
+                    </span>
+                    <span class="fila-texto">
+                        <span class="fila-titulo">Matriz a Sucursal</span>
+                        <span class="fila-detalle">surtido_mat_suc</span>
+                    </span>
+                    <span class="fila-final">
+                        <span class="material-icons flecha" aria-hidden="true">chevron_right</span>
+                        <span class="spinner" aria-hidden="true"></span>
+                    </span>
+                </button>
+
+                <button class="fila" type="button" data-k="suc_mat" style="--tono:#E0821E">
+                    <span class="fila-icono" aria-hidden="true">
+                        <span class="material-icons">sync_alt</span>
+                    </span>
+                    <span class="fila-texto">
+                        <span class="fila-titulo">Sucursal a Matriz</span>
+                        <span class="fila-detalle">surtido_suc_mat</span>
+                    </span>
+                    <span class="fila-final">
+                        <span class="material-icons flecha" aria-hidden="true">chevron_right</span>
+                        <span class="spinner" aria-hidden="true"></span>
+                    </span>
+                </button>
+
+            </div>
+        </section>
+
+        <p class="nota">
+            <span class="material-icons" aria-hidden="true">info_outline</span>
+            <span>Solo se incluyen los artículos con surtido mayor a cero. El archivo se descarga automáticamente.</span>
+        </p>
+
+    </main>
+
+    <!-- =====================================================
+         AVISO FLOTANTE
+         ===================================================== -->
+    <div class="aviso" id="estado" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="material-icons aviso-icono" id="estadoIcono" aria-hidden="true"></span>
+        <span id="estadoTexto"></span>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+    /* =========================================================
+       CONFIGURACIÓN DE CADA REPORTE:
+       columna en Supabase, título, nombre de archivo y existencias
+       ========================================================= */
+    const CONFIG = {
+      alm_mat: { col: 'surtido_alm_mat', nombre: 'SURT_ALM_MAT', titulo: 'SURTIDO ALMACEN A MATRIZ',
+                 e1: 'existencia_almacen', e2: 'existencia_matriz', headers: ['CODIGO','DESCRIPCION','UBICACION','ALMACEN','MATRIZ','SURTIDO'] },
+      alm_suc: { col: 'surtido_alm_suc', nombre: 'SURT_ALM_SUC', titulo: 'SURTIDO ALMACEN A SUCURSAL',
+                 e1: 'existencia_almacen', e2: 'existencia_sucursal', headers: ['CODIGO','DESCRIPCION','UBICACION','ALMACEN','SUCURSAL','SURTIDO'] },
+      mat_suc: { col: 'surtido_mat_suc', nombre: 'SURT_MAT_SUC', titulo: 'SURTIDO MATRIZ A SUCURSAL',
+                 e1: 'existencia_matriz', e2: 'existencia_sucursal', headers: ['CODIGO','DESCRIPCION','UBICACION','MAT','SUC','SURTIDO'] },
+      suc_mat: { col: 'surtido_suc_mat', nombre: 'SURT_SUC_MAT', titulo: 'SURTIDO SUCURSAL A MATRIZ',
+                 e1: 'existencia_sucursal', e2: 'existencia_matriz', headers: ['CODIGO','DESCRIPCION','UBICACION','SUC','MAT','SURTIDO'] }
+    };
+
+    const $aviso   = document.getElementById('estado');
+    const $texto   = document.getElementById('estadoTexto');
+    const $icono   = document.getElementById('estadoIcono');
+    const $lista   = document.getElementById('lista');
+    const $filas   = Array.from(document.querySelectorAll('.fila'));
+
+    let temporizadorAviso;
+
+    /* Aviso flotante: tipo = '' | 'cargando' | 'ok' | 'error' */
+    function estado(msg, tipo) {
+      clearTimeout(temporizadorAviso);
+      $texto.textContent = msg || '';
+      $aviso.className = 'aviso' + (tipo ? ' ' + tipo : '');
+      $icono.textContent = tipo === 'ok' ? 'check_circle' : (tipo === 'error' ? 'error_outline' : '');
+      if (!msg) { $aviso.classList.remove('visible'); return; }
+      $aviso.classList.add('visible');
+      if (tipo !== 'cargando') {
+        temporizadorAviso = setTimeout(() => $aviso.classList.remove('visible'), 3200);
+      }
+    }
+
+    /* Descarga de Supabase solo los artículos con surtido > 0 (de 1000 en 1000) */
+    async function traerFilas(cfg) {
+      const sel = ['codigo', 'articulo', 'ubicacion', cfg.e1, cfg.e2, cfg.col].join(',');
+      const out = [], size = 1000;
+      for (let off = 0; ; off += size) {
+        const page = await DB.req('GET', 'articulos?select=' + sel + '&' + cfg.col + '=gt.0&order=codigo&limit=' + size + '&offset=' + off);
+        page.forEach(x => out.push(x));
+        if (page.length < size) break;
+      }
+      return out;
+    }
+
+    /* Mismo orden que binario.html: ubicación, luego artículo, luego código */
+    function compararArticuloUbicacion(a, b) {
+      const ubiA = String(a.ubicacion || '').trim().toUpperCase(), ubiB = String(b.ubicacion || '').trim().toUpperCase();
+      if (!ubiA && ubiB) return 1; if (ubiA && !ubiB) return -1;
+      const c1 = ubiA.localeCompare(ubiB, 'es', { sensitivity: 'base', numeric: true }); if (c1 !== 0) return c1;
+      const c2 = String(a.articulo || '').trim().toUpperCase().localeCompare(String(b.articulo || '').trim().toUpperCase(), 'es', { sensitivity: 'base', numeric: true }); if (c2 !== 0) return c2;
+      return String(a.codigo || '').trim().toUpperCase().localeCompare(String(b.codigo || '').trim().toUpperCase(), 'es', { sensitivity: 'base', numeric: true });
+    }
+
+    function timestampNombre() {
+      const d = new Date(), p = n => String(n).padStart(2, '0');
+      return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes());
+    }
+
+    function truncarConPuntos(doc, texto, anchoMax) {
+      if (!texto) return '';
+      if (doc.getTextWidth(texto) <= anchoMax) return texto;
+      const puntos = '...'; const anchoPuntos = doc.getTextWidth(puntos); let r = texto;
+      while (r.length > 0 && (doc.getTextWidth(r) + anchoPuntos) > anchoMax) r = r.slice(0, -1);
+      return r + puntos;
+    }
+
+    /* Misma tabla/PDF que exportarPDF de binario.html */
+    function exportarPDF(nombreArchivo, titulo, headers, rows) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+      const pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
+      const ANCHOS_PT = [72, 288, 52, 49, 49, 42], DESC_COL = 1;
+      const anchoDesc = ANCHOS_PT[DESC_COL] - 5;
+
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+      rows = rows.map(row => {
+        const copia = row.slice(), val = copia[DESC_COL];
+        if (val !== undefined && val !== null && val !== '') copia[DESC_COL] = truncarConPuntos(doc, String(val), anchoDesc);
+        return copia;
+      });
+
+      const columnStyles = {};
+      for (let c = 0; c < headers.length; c++) {
+        columnStyles[c] = { halign: 'left', cellWidth: (ANCHOS_PT[c] || 60), font: 'helvetica',
+          fontStyle: (c === 0 || c === headers.length - 1) ? 'bold' : 'normal', overflow: c === DESC_COL ? 'hidden' : 'linebreak' };
+      }
+
+      const d = new Date(), p = n => String(n).padStart(2, '0');
+      const fecha = p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear();
+      const headRow1 = [
+        { content: fecha, colSpan: 1, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: titulo, colSpan: 1, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: '', colSpan: 1 },
+        { content: 'EXISTENCIA', colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: '', colSpan: 1 }
+      ];
+      const headRow2 = headers.map((h, i) => i === headers.length - 1 ? 'SURTIDO' : h);
+
+      doc.autoTable({
+        head: [headRow1, headRow2], body: rows, startY: 30, margin: { left: 30, right: 30, top: 30, bottom: 42 }, theme: 'grid', tableWidth: 552,
+        styles: { font: 'helvetica', fontSize: 8, cellPadding: 2, overflow: 'linebreak', textColor: [0,0,0], fillColor: [255,255,255], lineColor: [0,0,0], lineWidth: 0.4, valign: 'middle', halign: 'left' },
+        headStyles: { fillColor: [255,255,255], textColor: [0,0,0], fontStyle: 'bold', fontSize: 8, halign: 'left', lineColor: [0,0,0], lineWidth: 2.0 },
+        bodyStyles: { fillColor: [255,255,255], textColor: [0,0,0], halign: 'left' },
+        alternateRowStyles: { fillColor: [255,255,255] }, columnStyles
+      });
+
+      const pageCount = doc.internal.getNumberOfPages(), totalArticulos = rows.length.toLocaleString();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(0, 0, 0);
+        doc.text('FARMACIAS ADN', 30, pageH - 18);
+        doc.text('PÁGINA ' + i + ' de ' + pageCount, pageW / 2, pageH - 18, { align: 'center' });
+        doc.text('ARTICULOS: ' + totalArticulos, pageW - 30, pageH - 18, { align: 'right' });
+      }
+      doc.save(nombreArchivo + '_' + timestampNombre() + '.pdf');
+    }
+
+    /* Generación del reporte con estados visuales por fila */
+    async function generar(k, fila) {
+      const cfg = CONFIG[k];
+      if (!window.jspdf || !window.jspdf.jsPDF) return estado('Librería PDF no disponible', 'error');
+
+      $lista.classList.add('ocupado');
+      fila.classList.add('cargando');
+      estado('Consultando Supabase…', 'cargando');
+
+      try {
+        const filas = await traerFilas(cfg);
+        if (!filas.length) {
+          estado('Sin datos para ' + cfg.col, 'error');
+          return;
+        }
+        filas.sort(compararArticuloUbicacion);
+        estado('Generando PDF…', 'cargando');
+        await new Promise(r => setTimeout(r, 30));
+        const rows = filas.map(f => [f.codigo, f.articulo, f.ubicacion, f[cfg.e1], f[cfg.e2], f[cfg.col]]);
+        exportarPDF(cfg.nombre, cfg.titulo, cfg.headers, rows);
+        estado('PDF generado · ' + rows.length.toLocaleString() + ' registros', 'ok');
+      } catch (e) {
+        console.error(e);
+        estado('Error: ' + (e.message || e), 'error');
+      } finally {
+        fila.classList.remove('cargando');
+        $lista.classList.remove('ocupado');
+      }
+    }
+
+    $filas.forEach(fila => {
+      fila.addEventListener('click', () => generar(fila.dataset.k, fila));
+    });
+    </script>
+</body>
+</html>

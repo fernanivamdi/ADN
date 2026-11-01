@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuración · Usuarios · Farmacias ADN</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fondo:#F5F5F7; --tarjeta:#FFFFFF; --texto:#1D1D1F; --secundario:#6E6E73;
+    --acento:#0071E3; --acento-hover:#0077ED; --borde:#D2D2D7;
+    --ok:#34C759; --warn:#FF9F0A; --danger:#FF3B30;
+    --glow:rgba(0,113,227,.18);
+    --radio:14px; --radio-tarjeta:22px; --radio-boton:980px;
+    --curva:cubic-bezier(.16,1,.3,1);
+    --sombra:0 1px 3px rgba(0,0,0,.06),0 8px 28px rgba(31,60,110,.10);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Inter,sans-serif;
+    background:var(--fondo); color:var(--texto); line-height:1.47;
+    -webkit-font-smoothing:antialiased; min-height:100vh; padding:32px 20px 60px;
+  }
+  .contenedor{max-width:960px;margin:0 auto}
+
+  /* Cabecera */
+  .cabecera{display:flex;align-items:center;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+  .cabecera h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+  .cabecera p{color:var(--secundario);font-size:15px}
+  .cabecera .icono-cabecera{
+    display:grid;place-items:center;width:52px;height:52px;border-radius:16px;
+    background:var(--acento);color:#fff;
+  }
+  .cabecera .icono-cabecera .material-icons{font-size:30px}
+  .nav-cabecera{margin-left:auto}
+  .nav-cabecera a{
+    color:var(--acento);text-decoration:none;font-size:14px;font-weight:600;
+    display:inline-flex;align-items:center;gap:4px;
+  }
+  .nav-cabecera a:hover{text-decoration:underline}
+
+  /* Tarjeta */
+  .tarjeta{
+    background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio-tarjeta);
+    padding:26px;margin-bottom:22px;box-shadow:var(--sombra);
+  }
+  .tarjeta h2{
+    font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .tarjeta h2 .material-icons{font-size:22px;color:var(--acento)}
+  .tarjeta .subtitulo{font-size:14px;color:var(--secundario);margin-bottom:20px}
+
+  /* Botones */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    height:42px;padding:0 22px;border-radius:var(--radio-boton);
+    font-family:inherit;font-size:14.5px;font-weight:600;letter-spacing:.01em;
+    border:none;cursor:pointer;transition:all .22s var(--curva);
+    -webkit-appearance:none;appearance:none;
+  }
+  .btn .material-icons{font-size:19px}
+  .btn-primario{background:var(--acento);color:#fff}
+  .btn-primario:hover{background:var(--acento-hover);transform:scale(1.02)}
+  .btn-primario:active{transform:scale(.98)}
+  .btn-primario:disabled{opacity:.55;cursor:wait;transform:none}
+  .btn-secundario{background:#EDF2F8;color:var(--texto)}
+  .btn-secundario:hover{background:#E2E9F2}
+  .btn-peligro{
+    background:transparent;color:var(--danger);border:1px solid rgba(255,59,48,.3);
+    height:34px;padding:0 14px;font-size:13px;
+  }
+  .btn-peligro:hover{background:rgba(255,59,48,.08)}
+  .btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--glow)}
+
+  /* Formulario */
+  .grid-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .campo{display:flex;flex-direction:column;gap:6px}
+  .campo label{font-size:13px;font-weight:600;color:var(--secundario)}
+  .campo input,.campo select{
+    height:44px;padding:0 14px;border:1px solid var(--borde);border-radius:12px;
+    font-family:inherit;font-size:15px;background:#fff;color:var(--texto);outline:none;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .campo input:focus,.campo select:focus{border-color:var(--acento);box-shadow:0 0 0 3px var(--glow)}
+  .campo input.error{border-color:var(--danger);box-shadow:0 0 0 3px rgba(255,59,48,.15)}
+  .acciones-form{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+
+  /* Tabla usuarios */
+  .tabla-wrap{overflow-x:auto;margin-top:8px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead th{
+    text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--secundario);padding:10px 12px;border-bottom:1px solid var(--borde);
+  }
+  tbody td{padding:12px;border-bottom:1px solid #EEF1F5;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#FAFBFD}
+  .chip-rol{
+    display:inline-block;padding:3px 10px;border-radius:980px;font-size:12px;font-weight:600;
+  }
+  .chip-admin{background:rgba(0,113,227,.12);color:#0062C4}
+  .chip-usuario{background:rgba(92,154,30,.14);color:#4A7F18}
+  .chip-mostrador{background:rgba(255,159,10,.16);color:#B26A00}
+  .vacio{text-align:center;color:var(--secundario);padding:28px;font-size:14px}
+
+  /* Aviso */
+  .aviso{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+    z-index:2000;padding:12px 22px;background:rgba(30,30,32,.95);color:#fff;
+    font-size:14px;font-weight:500;border-radius:12px;border:1px solid rgba(255,255,255,.15);
+    opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--curva);
+    max-width:90vw;
+  }
+  .aviso.visible{opacity:1;transform:translate(-50%,0)}
+  .aviso.ok{background:rgba(52,199,89,.97)}
+  .aviso.error{background:rgba(255,59,48,.97)}
+
+  /* Spinner */
+  .spinner{
+    display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);
+    border-top-color:#fff;border-radius:50%;animation:girar .7s linear infinite;
+  }
+  @keyframes girar{to{transform:rotate(360deg)}}
+
+  @media (max-width:600px){
+    body{padding:20px 14px 48px}
+    .cabecera h1{font-size:24px}
+    .tarjeta{padding:20px;border-radius:18px}
+    .nav-cabecera{width:100%;margin-left:0}
+  }
+
+  /* ===== Lista de permisos ===== */
+  .lista-permisos{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:10px;
+    margin:18px 0 4px;
+  }
+  .permiso-item{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 14px;border:1px solid var(--borde);border-radius:12px;
+    background:#fff;cursor:pointer;transition:all .2s var(--curva);
+    font-size:14px;font-weight:500;
+  }
+  .permiso-item:hover{border-color:var(--acento);background:#F8FBFF}
+  .permiso-item.seleccionado{border-color:var(--acento);background:#F0F7FF;color:#0062C4}
+  .permiso-item .material-icons{font-size:20px;color:var(--secundario)}
+  .permiso-item.seleccionado .material-icons{color:var(--acento)}
+  .permiso-item input[type="checkbox"]{
+    width:18px;height:18px;accent-color:var(--acento);cursor:pointer;flex:none;
+  }
+  .permiso-item.bloqueado{opacity:.75;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<script src="db.js"></script>
+
+<div class="contenedor">
+
+  <header class="cabecera">
+    <div class="icono-cabecera"><span class="material-icons">settings</span></div>
+    <div>
+      <h1>Configuración</h1>
+      <p>Crea usuarios y administra los ya registrados.</p>
+    </div>
+    <nav class="nav-cabecera">
+      <a href="programacio.html">← Estado de conexión</a>
+    </nav>
+  </header>
+
+  <!-- ==============================
+       CREAR USUARIO
+       ============================== -->
+  <section class="tarjeta" aria-labelledby="tituloCrear">
+    <h2 id="tituloCrear"><span class="material-icons">person_add</span>Crear usuario</h2>
+    <p class="subtitulo">La contraseña se guarda como hash SHA-256 en la tabla <code>usuarios</code>.</p>
+
+    <form id="formUsuario" autocomplete="off">
+      <div class="grid-form">
+        <div class="campo">
+          <label for="nuevoUsuario">Usuario</label>
+          <input type="text" id="nuevoUsuario" placeholder="Ej. maria" required minlength="3" maxlength="40">
+        </div>
+        <div class="campo">
+          <label for="nuevoRol">Rol</label>
+          <select id="nuevoRol" required>
+            <option value="administrador">Administrador</option>
+            <option value="usuario">Usuario</option>
+            <option value="mostrador">Mostrador</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="nuevoPass">Contraseña</label>
+          <input type="password" id="nuevoPass" placeholder="Mínimo 4 caracteres" required minlength="4">
+        </div>
+        <div class="campo">
+          <label for="nuevoPass2">Confirmar contraseña</label>
+          <input type="password" id="nuevoPass2" placeholder="Repite la contraseña" required minlength="4">
+        </div>
+      </div>
+      <div class="acciones-form">
+        <button class="btn btn-primario" id="btnCrear" type="submit">
+          <span class="material-icons">check</span>
+          <span id="btnCrearTexto">Guardar usuario</span>
+        </button>
+        <button class="btn btn-secundario" type="reset">
+          <span class="material-icons">restart_alt</span>Limpiar
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ==============================
+       PERMISOS POR ROL
+       ============================== -->
+  <section class="tarjeta" aria-labelledby="tituloPermisos">
+    <h2 id="tituloPermisos"><span class="material-icons">admin_panel_settings</span>Permisos por rol</h2>
+    <p class="subtitulo">Elige qué módulos verá cada rol en el menú principal.</p>
+
+    <div class="campo" style="max-width:280px">
+      <label for="rolPermisos">Rol a configurar</label>
+      <select id="rolPermisos">
+        <option value="administrador">Administrador</option>
+        <option value="usuario">Usuario</option>
+        <option value="mostrador">Mostrador</option>
+      </select>
+    </div>
+
+    <div id="listaPermisos" class="lista-permisos"></div>
+
+    <div class="acciones-form">
+      <button class="btn btn-primario" id="btnGuardarPermisos" type="button">
+        <span class="material-icons">save</span>Guardar permisos
+      </button>
+      <button class="btn btn-secundario" id="btnRestaurarPermisos" type="button">
+        <span class="material-icons">restart_alt</span>Restaurar predeterminados
+      </button>
+    </div>
+  </section>
+
+  <!-- ==============================
+       LISTA DE USUARIOS
+       ============================== -->
+  <section class="tarjeta" aria-labelledby="tituloLista">
+    <h2 id="tituloLista"><span class="material-icons">group</span>Usuarios registrados</h2>
+    <p class="subtitulo">Datos leídos desde la base de datos en tiempo real.</p>
+
+    <div class="acciones-form" style="margin-top:0;margin-bottom:16px">
+      <button class="btn btn-secundario" id="btnRefrescar" type="button">
+        <span class="material-icons">refresh</span>Refrescar
+      </button>
+    </div>
+
+    <div class="tabla-wrap">
+      <table aria-label="Usuarios registrados">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Creado</th>
+            <th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+          <tr><td colspan="4" class="vacio">Cargando usuarios…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+<script>
+/* ============ Aviso breve ============ */
+const avisoEl = document.getElementById('aviso');
+let tmpAviso;
+function aviso(texto, tipo = '') {
+  avisoEl.textContent = texto;
+  avisoEl.className = 'aviso visible ' + tipo;
+  clearTimeout(tmpAviso);
+  tmpAviso = setTimeout(() => avisoEl.classList.remove('visible'), 2600);
+}
+
+/* ============ SHA-256 ============ */
+async function sha256(texto) {
+  const buf = new TextEncoder().encode(texto);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+/* ============ Crear usuario ============ */
+const formUsuario   = document.getElementById('formUsuario');
+const btnCrear      = document.getElementById('btnCrear');
+const btnCrearTexto = document.getElementById('btnCrearTexto');
+
+function marcarCampoError(id) {
+  const el = document.getElementById(id);
+  el.classList.add('error');
+  setTimeout(() => el.classList.remove('error'), 1800);
+}
+
+formUsuario.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const usuario = document.getElementById('nuevoUsuario').value.trim();
+  const rol     = document.getElementById('nuevoRol').value;
+  const pass    = document.getElementById('nuevoPass').value;
+  const pass2   = document.getElementById('nuevoPass2').value;
+
+  if (!usuario || usuario.length < 3) return marcarCampoError('nuevoUsuario');
+  if (!pass || pass.length < 4)       return marcarCampoError('nuevoPass');
+  if (pass !== pass2) {
+    marcarCampoError('nuevoPass2');
+    return aviso('Las contraseñas no coinciden', 'error');
+  }
+
+  btnCrear.disabled = true;
+  btnCrearTexto.innerHTML = '<span class="spinner"></span> Guardando…';
+
+  try {
+    const hash = await sha256(pass);
+    await DB.req('POST', 'rpc/crear_usuario', {
+      p_usuario: usuario,
+      p_password_hash: hash,
+      p_rol: rol
+    });
+
+    aviso(`Usuario "${usuario}" creado correctamente`, 'ok');
+    formUsuario.reset();
+    cargarUsuarios();
+  } catch (err) {
+    console.error(err);
+    aviso('Error al crear el usuario: ' + err.message, 'error');
+  } finally {
+    btnCrear.disabled = false;
+    btnCrearTexto.textContent = 'Guardar usuario';
+  }
+});
+
+/* ============ Listar / eliminar usuarios ============ */
+const cuerpoTabla  = document.getElementById('cuerpoTabla');
+const btnRefrescar = document.getElementById('btnRefrescar');
+
+function chipRol(rol) {
+  const clase = rol === 'administrador' ? 'chip-admin'
+              : rol === 'usuario'       ? 'chip-usuario'
+              :                           'chip-mostrador';
+  return `<span class="chip-rol ${clase}">${escapeHtml(rol)}</span>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+async function cargarUsuarios() {
+  cuerpoTabla.innerHTML = '<tr><td colspan="4" class="vacio">Cargando…</td></tr>';
+  try {
+    const rows = await DB.req('POST', 'rpc/listar_usuarios', {});
+
+    if (!rows || rows.length === 0) {
+      cuerpoTabla.innerHTML = '<tr><td colspan="4" class="vacio">No hay usuarios registrados todavía.</td></tr>';
+      return;
+    }
+
+    cuerpoTabla.innerHTML = rows.map(r => `
+      <tr data-id="${r.id}">
+        <td><strong>${escapeHtml(r.usuario)}</strong></td>
+        <td>${chipRol(r.rol)}</td>
+        <td>${r.created_at ? new Date(r.created_at).toLocaleString() : '—'}</td>
+        <td style="text-align:right">
+          <button class="btn btn-peligro" data-eliminar="${r.id}" data-usuario="${escapeHtml(r.usuario)}">
+            <span class="material-icons" style="font-size:16px">delete</span>Eliminar
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    cuerpoTabla.querySelectorAll('[data-eliminar]').forEach(btn => {
+      btn.addEventListener('click', () => eliminarUsuario(btn.dataset.eliminar, btn.dataset.usuario));
+    });
+  } catch (err) {
+    console.error(err);
+    cuerpoTabla.innerHTML =
+      `<tr><td colspan="4" class="vacio" style="color:var(--danger)">Error: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+async function eliminarUsuario(id, usuario) {
+  if (!confirm(`¿Eliminar al usuario "${usuario}"? Esta acción no se puede deshacer.`)) return;
+  try {
+    await DB.req('POST', 'rpc/eliminar_usuario', { p_id: id });
+    aviso(`Usuario "${usuario}" eliminado`, 'ok');
+    cargarUsuarios();
+  } catch (err) {
+    aviso('Error al eliminar: ' + err.message, 'error');
+  }
+}
+
+btnRefrescar.addEventListener('click', cargarUsuarios);
+
+/* ==============================================
+   PERMISOS POR ROL
+   ============================================== */
+const CLAVE_PERMISOS = 'adn_permisos_v1';
+const PERMISOS_DEFAULT = {
+  administrador: ['compras','inventario','articulos','configuracion',
+                  'programacion','surtidos','ventas','PEDIDOS','aire','facturacion'],
+  usuario:       ['compras','inventario','articulos','programacion','surtidos'],
+  mostrador:     ['ventas']
+};
+const MODULOS_DISPONIBLES = [
+  { clave:'compras',       etiqueta:'Compras',                        icono:'add_shopping_cart' },
+  { clave:'inventario',    etiqueta:'Inventario',                     icono:'inventory_2' },
+  { clave:'articulos',     etiqueta:'Artículos',                      icono:'medication' },
+  { clave:'configuracion', etiqueta:'Configuración',                  icono:'settings' },
+  { clave:'programacion',  etiqueta:'Programación',                   icono:'view_list' },
+  { clave:'surtidos',      etiqueta:'Surtidos',                       icono:'local_shipping' },
+  { clave:'ventas',        etiqueta:'Ventas',                         icono:'point_of_sale' },
+  { clave:'PEDIDOS',       etiqueta:'Restaurante',                    icono:'restaurant' },
+  { clave:'aire',          etiqueta:'Tiempo aire y pago de servicios',icono:'smartphone' },
+  { clave:'facturacion',   etiqueta:'Facturación electrónica',        icono:'receipt_long' }
+];
+
+let permisos = leerPermisos();
+const selectRol       = document.getElementById('rolPermisos');
+const listaPermisosEl = document.getElementById('listaPermisos');
+
+function leerPermisos() {
+  try {
+    const raw = localStorage.getItem(CLAVE_PERMISOS);
+    const obj = raw ? JSON.parse(raw) : {};
+    const out = { ...PERMISOS_DEFAULT, ...obj };
+    out.administrador = Array.from(new Set([...(out.administrador || []), 'configuracion']));
+    return out;
+  } catch (e) {
+    return JSON.parse(JSON.stringify(PERMISOS_DEFAULT));
+  }
+}
+
+function guardarPermisos(perms) {
+  localStorage.setItem(CLAVE_PERMISOS, JSON.stringify(perms));
+}
+
+function renderizarPermisos() {
+  const rol      = selectRol.value;
+  const activos  = permisos[rol] || [];
+  const bloqueados = rol === 'administrador' ? ['configuracion'] : [];
+
+  listaPermisosEl.innerHTML = MODULOS_DISPONIBLES.map(m => {
+    const on  = activos.includes(m.clave);
+    const blo = bloqueados.includes(m.clave);
+    return `
+      <label class="permiso-item ${on ? 'seleccionado' : ''} ${blo ? 'bloqueado' : ''}">
+        <input type="checkbox" value="${m.clave}" ${on ? 'checked' : ''} ${blo ? 'disabled' : ''}>
+        <span class="material-icons">${m.icono}</span>
+        <span>${m.etiqueta}</span>
+      </label>`;
+  }).join('');
+
+  listaPermisosEl.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+    chk.addEventListener('change', () => {
+      chk.closest('.permiso-item').classList.toggle('seleccionado', chk.checked);
+    });
+  });
+}
+
+selectRol.addEventListener('change', renderizarPermisos);
+
+document.getElementById('btnGuardarPermisos').addEventListener('click', () => {
+  const rol = selectRol.value;
+  const seleccionados = Array.from(
+    listaPermisosEl.querySelectorAll('input[type="checkbox"]:checked')
+  ).map(c => c.value);
+
+  if (rol === 'administrador' && !seleccionados.includes('configuracion')) {
+    seleccionados.push('configuracion');
+  }
+
+  permisos[rol] = seleccionados;
+  guardarPermisos(permisos);
+  renderizarPermisos();
+  aviso(`Permisos de "${rol}" guardados. Reinicia sesión para verlos en el menú.`, 'ok');
+});
+
+document.getElementById('btnRestaurarPermisos').addEventListener('click', () => {
+  if (!confirm('¿Restaurar los permisos predeterminados para todos los roles?')) return;
+  permisos = JSON.parse(JSON.stringify(PERMISOS_DEFAULT));
+  guardarPermisos(permisos);
+  renderizarPermisos();
+  aviso('Permisos restaurados', 'ok');
+});
+
+renderizarPermisos();
+
+/* ============ Arranque ============ */
+window.addEventListener('DOMContentLoaded', cargarUsuarios);
+</script>
+</body>
+</html>

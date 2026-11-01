@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programación · Estado de conexión · Farmacias ADN</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fondo:#F5F5F7; --tarjeta:#FFFFFF; --texto:#1D1D1F; --secundario:#6E6E73;
+    --acento:#0071E3; --acento-hover:#0077ED; --borde:#D2D2D7;
+    --ok:#34C759; --warn:#FF9F0A; --danger:#FF3B30;
+    --glow:rgba(0,113,227,.18);
+    --radio:14px; --radio-tarjeta:22px; --radio-boton:980px;
+    --curva:cubic-bezier(.16,1,.3,1);
+    --sombra:0 1px 3px rgba(0,0,0,.06),0 8px 28px rgba(31,60,110,.10);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Inter,sans-serif;
+    background:var(--fondo); color:var(--texto); line-height:1.47;
+    -webkit-font-smoothing:antialiased; min-height:100vh; padding:32px 20px 60px;
+  }
+  .contenedor{max-width:960px;margin:0 auto}
+
+  /* Cabecera */
+  .cabecera{display:flex;align-items:center;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+  .cabecera h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+  .cabecera p{color:var(--secundario);font-size:15px}
+  .cabecera .icono-cabecera{
+    display:grid;place-items:center;width:52px;height:52px;border-radius:16px;
+    background:var(--acento);color:#fff;
+  }
+  .cabecera .icono-cabecera .material-icons{font-size:30px}
+  .nav-cabecera{margin-left:auto}
+  .nav-cabecera a{
+    color:var(--acento);text-decoration:none;font-size:14px;font-weight:600;
+    display:inline-flex;align-items:center;gap:4px;
+  }
+  .nav-cabecera a:hover{text-decoration:underline}
+
+  /* Tarjeta */
+  .tarjeta{
+    background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio-tarjeta);
+    padding:26px;margin-bottom:22px;box-shadow:var(--sombra);
+  }
+  .tarjeta h2{
+    font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .tarjeta h2 .material-icons{font-size:22px;color:var(--acento)}
+  .tarjeta .subtitulo{font-size:14px;color:var(--secundario);margin-bottom:20px}
+
+  /* Estado conexión */
+  .estado-conexion{
+    display:flex;align-items:center;gap:14px;padding:18px 20px;
+    background:#F7FAFF;border:1px solid #DCE8FA;border-radius:14px;margin-bottom:16px;
+    transition:all .3s var(--curva);
+  }
+  .estado-punto{
+    flex:none;width:14px;height:14px;border-radius:50%;background:var(--secundario);
+    box-shadow:0 0 0 4px rgba(110,110,115,.12);transition:all .3s;
+  }
+  .estado-punto.conectado{background:var(--ok);box-shadow:0 0 0 4px rgba(52,199,89,.18);animation:pulso 2s infinite}
+  .estado-punto.error{background:var(--danger);box-shadow:0 0 0 4px rgba(255,59,48,.18)}
+  .estado-punto.cargando{background:var(--warn);box-shadow:0 0 0 4px rgba(255,159,10,.18)}
+  @keyframes pulso{0%,100%{box-shadow:0 0 0 4px rgba(52,199,89,.18)}50%{box-shadow:0 0 0 8px rgba(52,199,89,.05)}}
+
+  .estado-texto{flex:1;min-width:0}
+  .estado-titulo{font-size:15px;font-weight:600}
+  .estado-detalle{font-size:13px;color:var(--secundario);margin-top:2px;word-break:break-word}
+
+  /* Botones */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    height:42px;padding:0 22px;border-radius:var(--radio-boton);
+    font-family:inherit;font-size:14.5px;font-weight:600;letter-spacing:.01em;
+    border:none;cursor:pointer;transition:all .22s var(--curva);
+    -webkit-appearance:none;appearance:none;
+  }
+  .btn .material-icons{font-size:19px}
+  .btn-primario{background:var(--acento);color:#fff}
+  .btn-primario:hover{background:var(--acento-hover);transform:scale(1.02)}
+  .btn-primario:active{transform:scale(.98)}
+  .btn-primario:disabled{opacity:.55;cursor:wait;transform:none}
+  .btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--glow)}
+
+  /* Aviso */
+  .aviso{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+    z-index:2000;padding:12px 22px;background:rgba(30,30,32,.95);color:#fff;
+    font-size:14px;font-weight:500;border-radius:12px;border:1px solid rgba(255,255,255,.15);
+    opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--curva);
+    max-width:90vw;
+  }
+  .aviso.visible{opacity:1;transform:translate(-50%,0)}
+  .aviso.ok{background:rgba(52,199,89,.97)}
+  .aviso.error{background:rgba(255,59,48,.97)}
+
+  /* Spinner */
+  .spinner{
+    display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);
+    border-top-color:#fff;border-radius:50%;animation:girar .7s linear infinite;
+  }
+  @keyframes girar{to{transform:rotate(360deg)}}
+
+  @media (max-width:600px){
+    body{padding:20px 14px 48px}
+    .cabecera h1{font-size:24px}
+    .tarjeta{padding:20px;border-radius:18px}
+    .nav-cabecera{width:100%;margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+<script src="db.js"></script>
+
+<div class="contenedor">
+
+  <header class="cabecera">
+    <div class="icono-cabecera"><span class="material-icons">settings</span></div>
+    <div>
+      <h1>Programación</h1>
+      <p>Verifica el estado de la conexión con la base de datos.</p>
+    </div>
+    <nav class="nav-cabecera">
+      <a href="configuracion.html">Gestionar usuarios →</a>
+    </nav>
+  </header>
+
+  <section class="tarjeta" aria-labelledby="tituloConexion">
+    <h2 id="tituloConexion"><span class="material-icons">cloud</span>Estado de la conexión</h2>
+    <p class="subtitulo">Comprobación en tiempo real contra Supabase (tabla <code>configuracion</code>).</p>
+
+    <div class="estado-conexion" id="estadoCaja">
+      <span class="estado-punto" id="estadoPunto"></span>
+      <div class="estado-texto">
+        <div class="estado-titulo" id="estadoTitulo">Sin verificar</div>
+        <div class="estado-detalle" id="estadoDetalle">Pulsa «Probar conexión» para iniciar la comprobación.</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primario" id="btnProbar" type="button">
+      <span class="material-icons">wifi_tethering</span>
+      <span id="btnProbarTexto">Probar conexión</span>
+    </button>
+  </section>
+
+</div>
+
+<div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+<script>
+/* ============ Aviso breve ============ */
+const avisoEl = document.getElementById('aviso');
+let tmpAviso;
+function aviso(texto, tipo = '') {
+  avisoEl.textContent = texto;
+  avisoEl.className = 'aviso visible ' + tipo;
+  clearTimeout(tmpAviso);
+  tmpAviso = setTimeout(() => avisoEl.classList.remove('visible'), 2600);
+}
+
+/* ============ Estado de conexión ============ */
+const estadoPunto   = document.getElementById('estadoPunto');
+const estadoTitulo  = document.getElementById('estadoTitulo');
+const estadoDetalle = document.getElementById('estadoDetalle');
+const btnProbar     = document.getElementById('btnProbar');
+const btnProbarTexto= document.getElementById('btnProbarTexto');
+
+function setEstado(tipo, titulo, detalle) {
+  estadoPunto.className = 'estado-punto ' + tipo;
+  estadoTitulo.textContent = titulo;
+  estadoDetalle.textContent = detalle;
+}
+
+async function probarConexion() {
+  btnProbar.disabled = true;
+  btnProbarTexto.innerHTML = '<span class="spinner"></span> Comprobando…';
+  setEstado('cargando', 'Comprobando…', 'Conectando con Supabase…');
+
+  const t0 = performance.now();
+  try {
+    await DB.req('GET', 'configuracion?select=clave&limit=1');
+    const ms = Math.round(performance.now() - t0);
+    setEstado(
+      'conectado',
+      'Conectado correctamente',
+      `Respuesta en ${ms} ms · ${new Date().toLocaleTimeString()}`
+    );
+    aviso('Conexión verificada ✓', 'ok');
+  } catch (e) {
+    const ms = Math.round(performance.now() - t0);
+    setEstado('error', 'Error de conexión', `${e.message} · ${ms} ms`);
+    aviso('No se pudo conectar con la base de datos', 'error');
+  } finally {
+    btnProbar.disabled = false;
+    btnProbarTexto.textContent = 'Probar conexión';
+  }
+}
+
+btnProbar.addEventListener('click', probarConexion);
+
+/* ============ Arranque ============ */
+window.addEventListener('DOMContentLoaded', probarConexion);
+</script>
+</body>
+</html>
