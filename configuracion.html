@@ -430,23 +430,47 @@ const MODULOS_DISPONIBLES = [
   { clave:'facturacion',   etiqueta:'Facturación electrónica',        icono:'receipt_long' }
 ];
 
-let permisos = leerPermisos();
+let permisos = JSON.parse(JSON.stringify(PERMISOS_DEFAULT));
 const selectRol       = document.getElementById('rolPermisos');
 const listaPermisosEl = document.getElementById('listaPermisos');
 
-function leerPermisos() {
+/* Normaliza: el administrador siempre conserva "configuracion" */
+function normalizarPermisos(obj) {
+  const out = { ...PERMISOS_DEFAULT, ...(obj || {}) };
+  out.administrador = Array.from(new Set([...(out.administrador || []), 'configuracion']));
+  return out;
+}
+
+/* Lee los permisos desde Supabase (fuente de verdad). Si no hay red,
+   usa la copia local como respaldo. */
+async function leerPermisos() {
   try {
-    const raw = localStorage.getItem(CLAVE_PERMISOS);
-    const obj = raw ? JSON.parse(raw) : {};
-    const out = { ...PERMISOS_DEFAULT, ...obj };
-    out.administrador = Array.from(new Set([...(out.administrador || []), 'configuracion']));
+    const rows = await DB.req('POST', 'rpc/obtener_permisos', {});
+    const obj = {};
+    (rows || []).forEach(r => { obj[r.rol] = r.modulos; });
+    const out = normalizarPermisos(obj);
+    localStorage.setItem(CLAVE_PERMISOS, JSON.stringify(out)); // copia local
     return out;
   } catch (e) {
-    return JSON.parse(JSON.stringify(PERMISOS_DEFAULT));
+    console.error('No se pudieron leer los permisos de la base de datos', e);
+    aviso('Sin conexión: mostrando permisos guardados localmente', 'error');
+    try {
+      return normalizarPermisos(JSON.parse(localStorage.getItem(CLAVE_PERMISOS) || '{}'));
+    } catch (_) {
+      return JSON.parse(JSON.stringify(PERMISOS_DEFAULT));
+    }
   }
 }
 
-function guardarPermisos(perms) {
+/* Guarda en Supabase (un rol o todos) y deja copia local */
+async function guardarPermisos(perms, soloRol) {
+  const roles = soloRol ? [soloRol] : Object.keys(perms);
+  for (const rol of roles) {
+    await DB.req('POST', 'rpc/guardar_permisos', {
+      p_rol: rol,
+      p_modulos: perms[rol] || []
+    });
+  }
   localStorage.setItem(CLAVE_PERMISOS, JSON.stringify(perms));
 }
 
@@ -475,7 +499,7 @@ function renderizarPermisos() {
 
 selectRol.addEventListener('change', renderizarPermisos);
 
-document.getElementById('btnGuardarPermisos').addEventListener('click', () => {
+document.getElementById('btnGuardarPermisos').addEventListener('click', async () => {
   const rol = selectRol.value;
   const seleccionados = Array.from(
     listaPermisosEl.querySelectorAll('input[type="checkbox"]:checked')
@@ -486,20 +510,32 @@ document.getElementById('btnGuardarPermisos').addEventListener('click', () => {
   }
 
   permisos[rol] = seleccionados;
-  guardarPermisos(permisos);
-  renderizarPermisos();
-  aviso(`Permisos de "${rol}" guardados. Reinicia sesión para verlos en el menú.`, 'ok');
+  try {
+    await guardarPermisos(permisos, rol);
+    renderizarPermisos();
+    aviso(`Permisos de "${rol}" guardados en la nube. Se aplican en todos los dispositivos al iniciar sesión.`, 'ok');
+  } catch (err) {
+    console.error(err);
+    aviso('Error al guardar permisos: ' + err.message, 'error');
+  }
 });
 
-document.getElementById('btnRestaurarPermisos').addEventListener('click', () => {
+document.getElementById('btnRestaurarPermisos').addEventListener('click', async () => {
   if (!confirm('¿Restaurar los permisos predeterminados para todos los roles?')) return;
   permisos = JSON.parse(JSON.stringify(PERMISOS_DEFAULT));
-  guardarPermisos(permisos);
-  renderizarPermisos();
-  aviso('Permisos restaurados', 'ok');
+  try {
+    await guardarPermisos(permisos);
+    renderizarPermisos();
+    aviso('Permisos restaurados', 'ok');
+  } catch (err) {
+    aviso('Error al restaurar: ' + err.message, 'error');
+  }
 });
 
-renderizarPermisos();
+(async () => {
+  permisos = await leerPermisos();
+  renderizarPermisos();
+})();
 
 /* ============ Arranque ============ */
 window.addEventListener('DOMContentLoaded', cargarUsuarios);

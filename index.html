@@ -274,6 +274,75 @@
         .login-field:focus-within .material-icons.lock { color: var(--acento); }
 
         /* =====================================================
+           RECORDAR CONTRASEÑA
+           ===================================================== */
+        .login-recordar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 2px 2px 16px;
+        }
+
+        .recordar-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--texto-secundario);
+            transition: color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+        .recordar-label:hover { color: var(--texto-principal); }
+
+        /* Input real oculto pero accesible */
+        .recordar-label input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .recordar-caja {
+            flex: none;
+            display: grid;
+            place-items: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            border: 1.5px solid var(--borde);
+            background: #FFFFFF;
+            transition: background-color 0.22s var(--curva-apple),
+                        border-color 0.22s var(--curva-apple),
+                        box-shadow 0.22s ease;
+        }
+        .recordar-caja .material-icons {
+            font-size: 15px;
+            color: #FFFFFF;
+            opacity: 0;
+            transform: scale(0.55);
+            transition: opacity 0.2s var(--curva-apple), transform 0.2s var(--curva-apple);
+        }
+
+        .recordar-label input:checked ~ .recordar-caja {
+            background: var(--acento);
+            border-color: var(--acento);
+            box-shadow: 0 2px 8px rgba(0, 113, 227, 0.28);
+        }
+        .recordar-label input:checked ~ .recordar-caja .material-icons {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .recordar-label input:focus-visible ~ .recordar-caja {
+            box-shadow: 0 0 0 3px var(--glow-acento);
+        }
+        .recordar-label input:disabled ~ .recordar-caja { opacity: 0.5; }
+
+        /* =====================================================
            BOTÓN DE INICIAR SESIÓN
            ===================================================== */
         .login-btn {
@@ -510,9 +579,6 @@
         }
 
         /* ---------- Aviso breve ---------- */
-        .aviso { border-radius: 12px; }
-
-        /* ---------- Aviso breve ---------- */
         .aviso {
             position: fixed;
             left: 50%;
@@ -526,6 +592,7 @@
             font-size: 14px;
             font-weight: 500;
             border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.25s ease, transform 0.25s var(--curva-apple);
@@ -704,6 +771,11 @@
             .menu-rol { font-size: 10px; }
             .menu-usuario-chip { padding: 4px 10px 4px 5px; gap: 6px; }
             .menu-main { padding: 18px 12px 36px; }
+
+            /* Recordar contraseña más compacto en móvil */
+            .recordar-label { font-size: 13px; gap: 8px; }
+            .recordar-caja { width: 20px; height: 20px; border-radius: 6px; }
+            .recordar-caja .material-icons { font-size: 14px; }
         }
 
         /* Móvil en horizontal (poca altura): la barra se reduce al mínimo */
@@ -779,6 +851,18 @@
                     <span class="material-icons eye" id="togglePassword">visibility</span>
                 </div>
             </div>
+
+            <!-- ============ RECORDAR CONTRASEÑA ============ -->
+            <div class="login-recordar">
+                <label class="recordar-label" for="recordarPassword">
+                    <input type="checkbox" id="recordarPassword">
+                    <span class="recordar-caja" aria-hidden="true">
+                        <span class="material-icons">check</span>
+                    </span>
+                    <span class="recordar-texto">Recordar contraseña</span>
+                </label>
+            </div>
+            <!-- ============ FIN RECORDAR CONTRASEÑA ============ -->
 
             <button class="login-btn" id="loginBtn" onclick="iniciarSesion()">
                 Iniciar Sesión
@@ -984,6 +1068,46 @@
             mostrador:     ['ventas']
         };
         const CLAVE_PERMISOS = 'adn_permisos_v1';
+        const CLAVE_RECORDAR = 'adn_recordar_v1';
+
+        /* =============================================
+           RECORDAR CONTRASEÑA
+           Guarda las credenciales en localStorage (codificadas
+           en Base64, NO es cifrado real: es una comodidad para
+           equipos de confianza).
+           ============================================= */
+        const codificar   = t => { try { return btoa(encodeURIComponent(t)); } catch (e) { return ''; } };
+        const decodificar = t => { try { return decodeURIComponent(atob(t)); } catch (e) { return ''; } };
+
+        function guardarCredenciales(usuario, password) {
+            try {
+                if (typeof chkRecordar !== 'undefined' && chkRecordar && chkRecordar.checked) {
+                    localStorage.setItem(CLAVE_RECORDAR, JSON.stringify({
+                        usuario: usuario,
+                        password: codificar(password)
+                    }));
+                } else {
+                    localStorage.removeItem(CLAVE_RECORDAR);
+                }
+            } catch (e) {
+                console.warn('No se pudo guardar el recordatorio:', e && e.message);
+            }
+        }
+
+        function cargarCredencialesRecordadas() {
+            try {
+                const raw = localStorage.getItem(CLAVE_RECORDAR);
+                if (!raw) return;
+                const datos = JSON.parse(raw);
+                if (!datos || !datos.usuario) return;
+
+                inputUsuario.value  = datos.usuario;
+                inputPassword.value = datos.password ? decodificar(datos.password) : '';
+                if (chkRecordar) chkRecordar.checked = true;
+            } catch (e) {
+                localStorage.removeItem(CLAVE_RECORDAR);
+            }
+        }
 
         function leerPermisos() {
             try {
@@ -998,6 +1122,20 @@
                 return resultado;
             } catch (e) {
                 return { ...PERMISOS_DEFAULT };
+            }
+        }
+
+        /* Descarga los permisos desde Supabase y los deja en la copia local
+           (misma clave que lee leerPermisos). Si falla, se usa la copia previa. */
+        async function sincronizarPermisos() {
+            try {
+                const rows = await DB.req('POST', 'rpc/obtener_permisos', {});
+                if (!Array.isArray(rows) || !rows.length) return;
+                const obj = {};
+                rows.forEach(r => { obj[r.rol] = r.modulos; });
+                localStorage.setItem(CLAVE_PERMISOS, JSON.stringify(obj));
+            } catch (e) {
+                console.warn('No se pudieron sincronizar los permisos:', e && e.message);
             }
         }
 
@@ -1034,6 +1172,15 @@
 
         const inputUsuario  = document.getElementById('usuario');
         const inputPassword = document.getElementById('password');
+        const chkRecordar   = document.getElementById('recordarPassword');
+
+        /* Al desmarcar, borra el recordatorio de inmediato */
+        chkRecordar.addEventListener('change', () => {
+            if (!chkRecordar.checked) localStorage.removeItem(CLAVE_RECORDAR);
+        });
+
+        /* Rellena el formulario con las credenciales guardadas (si existen) */
+        cargarCredencialesRecordadas();
 
         const ESTILO_ERROR = {
             borderColor: 'var(--danger)',
@@ -1114,7 +1261,12 @@
 
             /* Guardamos el usuario autenticado junto con su rol */
             usuarioActual = { user: sesion.user, nombre: sesion.nombre, rol: sesion.rol };
-            aplicarPermisos(sesion.rol);   // <-- nueva línea
+
+            /* Guardar u olvidar credenciales según la casilla "Recordar contraseña" */
+            guardarCredenciales(usuario, password);
+
+            await sincronizarPermisos();   // permisos desde Supabase (todos los dispositivos)
+            aplicarPermisos(sesion.rol);
 
             document.getElementById('menuUsuario').textContent = String(sesion.user).toUpperCase();
             document.getElementById('menuRol').textContent     = capitalizar(sesion.rol);
@@ -1180,7 +1332,10 @@
             menuScreen.classList.add('visible');
             marco.src = 'about:blank';
             marco.title = 'Contenido principal';
-            if (usuarioActual) aplicarPermisos(usuarioActual.rol);   // <-- nueva línea
+            if (usuarioActual) {
+                aplicarPermisos(usuarioActual.rol);
+                sincronizarPermisos().then(() => aplicarPermisos(usuarioActual.rol));
+            }
         }
 
         document.querySelectorAll('.tile').forEach(tile => {
