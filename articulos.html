@@ -399,6 +399,75 @@ body.en-iframe .menu-spacer {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* =====================================================
+   ESQUELETO (SKELETON) — se muestra mientras cargan los datos
+   ===================================================== */
+.sk {
+    position: relative;
+    overflow: hidden;
+    background: var(--borde-suave);
+    border-radius: 6px;
+    flex: 0 0 auto;
+}
+.sk::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.65) 50%,
+        rgba(255,255,255,0) 100%);
+    animation: skShimmer 1.25s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+@keyframes skShimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+    .sk::after { animation: none; opacity: 0.5; }
+}
+
+/* Tarjeta esqueleto: replica la estructura de .prod-card */
+.sk-card {
+    background: var(--tarjeta);
+    border: 1px solid var(--borde-suave);
+    border-radius: var(--radio-tarjeta);
+    box-shadow: var(--sombra-tarjeta);
+    padding: 12px 14px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    pointer-events: none;
+    user-select: none;
+}
+.sk-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sk-line { height: 12px; width: 100%; border-radius: 6px; }
+.sk-code { height: 20px; width: 92px; max-width: 62%; border-radius: 8px; }
+.sk-badges { display: flex; align-items: center; gap: 5px; justify-content: flex-end; }
+.sk-badge { height: 19px; width: 58px; border-radius: var(--radio-boton); }
+.sk-badge.b2 { width: 44px; }
+.sk-desc { height: 15px; border-radius: 6px; }
+.sk-desc.w85 { width: 85%; }
+.sk-desc.w60 { width: 60%; }
+.sk-foot { display: flex; align-items: center; gap: 6px; margin-top: 1px; }
+.sk-chip { height: 19px; width: 64px; border-radius: var(--radio-boton); }
+.sk-chip.w48 { width: 48px; }
+.sk-precio { height: 15px; width: 74px; margin-left: auto; }
+
+/* Encabezado del panel (titulo + contador) en estado de carga */
+.sk-title { height: 12px; width: 128px; }
+.sk-count { height: 12px; width: 34px; border-radius: var(--radio-boton); }
+.panel-count.is-loading {
+    background: transparent;
+    border-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    min-height: 21px;
+}
+
+@media (min-width: 901px) {
+    .sk-desc.w85 { width: 90%; }
+    .sk-desc.w60 { width: 68%; }
+}
+
+/* =====================================================
    DETALLE (hoja inferior en movil)
    ===================================================== */
 .detail-content {
@@ -918,10 +987,46 @@ body.en-iframe .menu-spacer {
                 <span class="panel-title">
                     <span class="material-icons">inventory_2</span>Medicamentos
                 </span>
-                <span class="panel-count" id="resultsCount">0</span>
+                <span class="panel-count is-loading" id="resultsCount"><span class="sk sk-count" aria-label="Cargando"></span></span>
             </div>
-            <div class="results-list" id="resultsList">
-                <div class="loading-state"><div class="spinner"></div>Cargando datos...</div>
+            <div class="results-list" id="resultsList" aria-busy="true">
+                <!-- Esqueleto visible de inmediato (se reemplaza cuando llegan los datos) -->
+                <div class="sk-card" aria-hidden="true">
+                    <div class="sk-top"><div class="sk sk-code"></div><div class="sk-badges"><div class="sk sk-badge"></div><div class="sk sk-badge b2"></div></div></div>
+                    <div class="sk sk-desc w85"></div>
+                    <div class="sk sk-desc w60"></div>
+                    <div class="sk-foot"><div class="sk sk-chip"></div><div class="sk sk-chip w48"></div><div class="sk sk-precio"></div></div>
+                </div>
+                <div class="sk-card" aria-hidden="true">
+                    <div class="sk-top"><div class="sk sk-code"></div><div class="sk-badges"><div class="sk sk-badge"></div><div class="sk sk-badge b2"></div></div></div>
+                    <div class="sk sk-desc w85"></div>
+                    <div class="sk sk-desc w60"></div>
+                    <div class="sk-foot"><div class="sk sk-chip"></div><div class="sk sk-chip w48"></div><div class="sk sk-precio"></div></div>
+                </div>
+                <div class="sk-card" aria-hidden="true">
+                    <div class="sk-top"><div class="sk sk-code"></div><div class="sk-badges"><div class="sk sk-badge"></div><div class="sk sk-badge b2"></div></div></div>
+                    <div class="sk sk-desc w85"></div>
+                    <div class="sk sk-desc w60"></div>
+                    <div class="sk-foot"><div class="sk sk-chip"></div><div class="sk sk-chip w48"></div><div class="sk sk-precio"></div></div>
+                </div>
+                <div class="sk-card" aria-hidden="true">
+                    <div class="sk-top"><div class="sk sk-code"></div><div class="sk-badges"><div class="sk sk-badge"></div><div class="sk sk-badge b2"></div></div></div>
+                    <div class="sk sk-desc w85"></div>
+                    <div class="sk sk-desc w60"></div>
+                    <div class="sk-foot"><div class="sk sk-chip"></div><div class="sk sk-chip w48"></div><div class="sk sk-precio"></div></div>
+                </div>
+                <div class="sk-card" aria-hidden="true">
+                    <div class="sk-top"><div class="sk sk-code"></div><div class="sk-badges"><div class="sk sk-badge"></div><div class="sk sk-badge b2"></div></div></div>
+                    <div class="sk sk-desc w85"></div>
+                    <div class="sk sk-desc w60"></div>
+                    <div class="sk-foot"><div class="sk sk-chip"></div><div class="sk sk-chip w48"></div><div class="sk sk-precio"></div></div>
+                </div>
+                <div class="sk-card" aria-hidden="true">
+                    <div class="sk-top"><div class="sk sk-code"></div><div class="sk-badges"><div class="sk sk-badge"></div><div class="sk sk-badge b2"></div></div></div>
+                    <div class="sk sk-desc w85"></div>
+                    <div class="sk sk-desc w60"></div>
+                    <div class="sk-foot"><div class="sk sk-chip"></div><div class="sk sk-chip w48"></div><div class="sk sk-precio"></div></div>
+                </div>
             </div>
         </section>
     </div>
@@ -1379,9 +1484,33 @@ function buscar(query) {
 // ========== RENDER LISTA ==========
 const MAX_RESULTS = 200;
 
+// ----- Esqueleto (skeleton) mientras llegan los datos -----
+function renderEsqueleto(cantidad = 6) {
+    const listEl = document.getElementById('resultsList');
+    const countEl = document.getElementById('resultsCount');
+    const tarjeta = `
+            <div class="sk-card" aria-hidden="true">
+                <div class="sk-top"><div class="sk sk-code"></div><div class="sk-badges"><div class="sk sk-badge"></div><div class="sk sk-badge b2"></div></div></div>
+                <div class="sk sk-desc w85"></div>
+                <div class="sk sk-desc w60"></div>
+                <div class="sk-foot"><div class="sk sk-chip"></div><div class="sk sk-chip w48"></div><div class="sk sk-precio"></div></div>
+            </div>`;
+    listEl.setAttribute('aria-busy', 'true');
+    countEl.classList.add('is-loading');
+    countEl.innerHTML = '<span class="sk sk-count"></span>';
+    listEl.innerHTML = tarjeta.repeat(Math.max(1, cantidad));
+}
+function quitarEsqueleto() {
+    const listEl = document.getElementById('resultsList');
+    const countEl = document.getElementById('resultsCount');
+    listEl.removeAttribute('aria-busy');
+    countEl.classList.remove('is-loading');
+}
+
 function renderLista(items) {
     const listEl = document.getElementById('resultsList');
     const countEl = document.getElementById('resultsCount');
+    quitarEsqueleto();
 
     if (!items || items.length === 0) {
         countEl.textContent = '0';
@@ -1763,15 +1892,33 @@ clearBtn.addEventListener('click', () => {
 });
 
 document.getElementById('btnRefresh').addEventListener('click', async () => {
-    await recargarDatos();
+    await recargarDatos(true);
     showToast('Datos actualizados', 'success');
 });
 
 // ========== INIT ==========
-async function recargarDatos() {
-    await cargarTodo();
+async function recargarDatos(forzarEsqueleto = false) {
+    // Mientras se leen los datos mostramos el esqueleto de la página,
+    // nunca un texto de "Cargando datos...".
+    if (forzarEsqueleto || productosUnificados.length === 0) renderEsqueleto();
+
+    try {
+        await cargarTodo();
+    } catch (e) {
+        console.error('Error al cargar los datos:', e);
+        quitarEsqueleto();
+        document.getElementById('resultsList').innerHTML = `
+            <div class="detail-empty" style="padding: 30px 20px;">
+                <span class="material-icons">error_outline</span>
+                <h3>No se pudieron cargar los datos</h3>
+                <p>Verifica la conexión y vuelve a intentarlo con el botón de <strong>Actualizar</strong>.</p>
+            </div>`;
+        showToast('Error al cargar los datos', 'danger');
+        return;
+    }
 
     if (productosUnificados.length === 0) {
+        quitarEsqueleto();
         if (productos.length === 0 && proveedores.length === 0) {
             document.getElementById('resultsList').innerHTML = `
                 <div class="detail-empty" style="padding: 30px 20px;">
