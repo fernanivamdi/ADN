@@ -501,6 +501,73 @@
       }
     }
 
+
+    /* =========================================================
+       RECÁLCULO DE SURTIDOS (misma lógica que articulos.html)
+       Los surtidos se guardan en Supabase como valores fijos; aquí se
+       recalculan con las existencias/ventas actuales antes de generar el PDF.
+       ========================================================= */
+    const OK_MARCAS = new Set([
+      'MEDICAMENTO GRUPO SSA IV', 'MEDICAMENTO OTC LIBRE VENTA', 'PRODUCTOS DE CURACION EN GENERAL',
+      'PRODUCTOS DE REBOTICA', 'PRODUCTOS EN GENERAL DE ABARROTERAS'
+    ]);
+    const OK_LINEAS = new Set([
+      'ABARROTES EN GENERAL','BEBE','BIBERONES','COMESTIBLES','CREMAS','CURA','DES CABALLERO','DES DAMA',
+      'ENJUAGUES BUCALES','ESTETICA','FARMACIA','HIG','HUMEDAS','LECHES','MAMP','MANT','MCRM','MEDJABON',
+      'MGOT','MSUPO','MSUSP','MTAB','PAÑALES','REBOTICA','REFRESCOS','REFRIGERADOS','SANITARIAS','SHAMPOO',
+      'TOCADOR','TRATAMIENTO CAPILAR','MED ENCARGO'
+    ]);
+    const up = x => (x || '').trim().toUpperCase();
+    const okMatriz = it => up(it.fabricante) === 'SYS' && OK_MARCAS.has(up(it.marca)) && OK_LINEAS.has(up(it.linea));
+    const okSucursal = it => up(it.fabricanteSucursal) === 'SYS' && OK_MARCAS.has(up(it.marca)) && OK_LINEAS.has(up(it.linea));
+
+    function calcularDerivados(item) {
+      const indMatriz = item.stockEditado?.matriz || 0, indSucursal = item.stockEditado?.sucursal || 0;
+      const ventasTotales = item.ventasMatriz + item.ventasSucursal;
+      const invMatriz = item.ventasMatriz > 0 ? Math.ceil((item.ventasMatriz / 180) * 7) : 0;
+      const invSucursal = item.ventasSucursal > 0 ? Math.ceil((item.ventasSucursal / 180) * 7) : 0;
+      const rangoMatriz = ventasTotales >= 91 ? 3 : ventasTotales >= 61 ? 2 : ventasTotales >= 7 ? 1 : 0;
+      const rangoSucursal = ventasTotales >= 91 ? 3 : ventasTotales >= 61 ? 2 : ventasTotales >= 21 ? 1 : 0;
+      const mayorMatriz = Math.max(invMatriz, indMatriz, rangoMatriz);
+      const mayorSucursal = Math.max(invSucursal, indSucursal, rangoSucursal);
+
+      const pedidoAlmacen = 0 - (item.existenciaAlmacen || 0);
+      let pedidoMatriz = mayorMatriz - (item.existenciaMatriz || 0);
+      let pedidoSucursal = mayorSucursal - (item.existenciaSucursal || 0);
+      if (item.noDisponibleMatriz) pedidoMatriz = 0;
+      if (item.noDisponibleSucursal) pedidoSucursal = 0;
+
+      let aM = 0, aS = 0, mS = 0, sM = 0;
+      if (pedidoAlmacen < 0 && pedidoMatriz > 0) { const abs = Math.abs(pedidoAlmacen); aM = pedidoMatriz <= abs ? pedidoMatriz : abs; }
+      if (pedidoAlmacen < 0 && pedidoSucursal > 0) { const neto = Math.abs(pedidoAlmacen) - aM; if (neto > 0) aS = pedidoSucursal <= neto ? pedidoSucursal : neto; }
+      if (pedidoMatriz < 0 && pedidoSucursal > 0) { const nec = pedidoSucursal - aS; if (nec > 0) mS = Math.min(Math.abs(pedidoMatriz), nec); }
+      if (pedidoSucursal < 0 && pedidoMatriz > 0) { const exc = Math.abs(pedidoSucursal); sM = pedidoMatriz <= exc ? pedidoMatriz : exc; }
+
+      const sin = aM === 0 && aS === 0 && mS === 0 && sM === 0;
+      return {
+        pedido_matriz_ok: (okMatriz(item) && sin && pedidoMatriz > 0) ? pedidoMatriz : 0,
+        pedido_sucursal_ok: (okSucursal(item) && sin && pedidoSucursal > 0) ? pedidoSucursal : 0,
+        surtido_alm_mat: aM, surtido_alm_suc: aS, surtido_mat_suc: mS, surtido_suc_mat: sM
+      };
+    }
+
+    /* Recalcula todos los artículos y guarda solo los que cambiaron. Devuelve cuántos. */
+    async function recalcularSurtidos() {
+      const items = await DB.articulos.cargar();
+      const actual = it => ({
+        pedido_matriz_ok: it.pedidoMatrizOk, pedido_sucursal_ok: it.pedidoSucursalOk,
+        surtido_alm_mat: it.surtidoAlmacenAMatriz, surtido_alm_suc: it.surtidoAlmacenASucursal,
+        surtido_mat_suc: it.surtidoMatrizASucursal, surtido_suc_mat: it.surtidoSucursalAMatriz
+      });
+      const cambios = [];
+      for (const it of items) {
+        const d = calcularDerivados(it), a = actual(it);
+        if (Object.keys(d).some(k => d[k] !== a[k])) cambios.push({ codigo: it.codigo, d });
+      }
+      if (cambios.length) await DB.articulos.actualizarDerivados(cambios);
+      return cambios.length;
+    }
+
     /* Descarga de Supabase solo los artículos con surtido > 0 (de 1000 en 1000) */
     async function traerFilas(cfg) {
       const sel = ['codigo', 'articulo', 'ubicacion', cfg.e1, cfg.e2, cfg.col].join(',');
@@ -595,6 +662,9 @@
       estado('Consultando Supabase…', 'cargando');
 
       try {
+        estado('Actualizando surtidos…', 'cargando');
+        await recalcularSurtidos();
+        estado('Consultando Supabase…', 'cargando');
         const filas = await traerFilas(cfg);
         if (!filas.length) {
           estado('Sin datos para ' + cfg.col, 'error');
