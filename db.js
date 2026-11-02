@@ -80,7 +80,30 @@
     },
     guardar: rows => chunked(rows, 1000, c => upsert('articulos', 'codigo', c)),
     borrar: codigos => chunked(codigos, 100, c =>
-      req('DELETE', 'articulos?codigo=in.(' + c.map(x => '"' + String(x).replace(/"/g, '\\"') + '"').join(',') + ')', undefined, { Prefer: 'return=minimal' }))
+      req('DELETE', 'articulos?codigo=in.(' + c.map(x => '"' + String(x).replace(/"/g, '\\"') + '"').join(',') + ')', undefined, { Prefer: 'return=minimal' })),
+    // Stock capturado de UN artículo. Solo toca esas columnas (no pisa existencias ni ventas).
+    // derivados = { pedido_matriz_ok, surtido_alm_mat, ... } recalculados con el nuevo stock (opcional)
+    guardarStock(codigo, se, derivados) {
+      const body = {
+        stock_editado_almacen: num(se.almacen), stock_editado_matriz: num(se.matriz), stock_editado_sucursal: num(se.sucursal),
+        ...(derivados || {})
+      };
+      return req('PATCH', 'articulos?codigo=eq.' + encodeURIComponent(codigo), body, { Prefer: 'return=minimal' });
+    },
+    // cambios: [{ codigo, d }] con d = { columna: valor }. Agrupa por valores idénticos
+    // para hacer pocas peticiones (un PATCH por grupo y por cada 100 códigos).
+    async actualizarDerivados(cambios) {
+      const q = x => '"' + String(x).replace(/"/g, '\\"') + '"';
+      const grupos = new Map();
+      for (const c of cambios) {
+        const k = JSON.stringify(c.d);
+        if (!grupos.has(k)) grupos.set(k, { d: c.d, codigos: [] });
+        grupos.get(k).codigos.push(c.codigo);
+      }
+      for (const g of grupos.values())
+        await chunked(g.codigos, 100, c =>
+          req('PATCH', 'articulos?codigo=in.(' + c.map(q).join(',') + ')', g.d, { Prefer: 'return=minimal' }));
+    }
   };
 
   /* ---------- STOCK POR LÍNEA ---------- */
