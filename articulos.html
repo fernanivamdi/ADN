@@ -958,6 +958,50 @@ body.en-iframe .menu-spacer {
     box-shadow: 0 0 0 3px var(--acento-anillo);
 }
 
+/* ===== STOCK EDITABLE (artículo) ===== */
+.stock-edit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stock-field {
+    background: var(--fondo-suave);
+    border: 1px solid var(--borde-suave);
+    border-radius: var(--radio-suave);
+    padding: 8px 10px;
+    min-width: 0;
+    transition: var(--transicion);
+}
+.stock-field label {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600;
+    color: var(--texto-secundario);
+    margin-bottom: 2px;
+}
+.stock-field label .material-icons { font-size: 14px; }
+.stock-field input {
+    width: 100%;
+    border: none; outline: none; background: transparent;
+    font: inherit; font-size: 20px; font-weight: 700;
+    color: var(--texto-principal);
+    padding: 2px 0;
+    -moz-appearance: textfield; appearance: textfield;
+}
+.stock-field input::-webkit-outer-spin-button,
+.stock-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stock-field:focus-within { border-color: var(--acento); background: var(--tarjeta); box-shadow: 0 0 0 3px var(--acento-anillo); }
+.stock-field.dirty { border-color: var(--alerta-borde); background: var(--alerta-suave); }
+.stock-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.stock-hint { font-size: 12px; color: var(--texto-secundario); flex: 1; min-width: 0; }
+.btn-primary {
+    flex: 0 0 auto;
+    border: none; cursor: pointer;
+    background: var(--acento); color: #fff;
+    font: inherit; font-size: 13px; font-weight: 600;
+    padding: 9px 20px;
+    border-radius: var(--radio-boton);
+    transition: var(--transicion);
+    touch-action: manipulation;
+}
+.btn-primary:hover:not(:disabled) { background: var(--acento-hover); }
+.btn-primary:disabled { opacity: 0.35; cursor: default; }
+
 </style>
 </head>
 <body>
@@ -1046,8 +1090,6 @@ body.en-iframe .menu-spacer {
 
 <script>
 // ========== DETECCIÓN DE IFRAME ==========
-// Si la página se abre dentro del contenedor (index2.html) reservamos el
-// espacio del botón flotante "Menú" para que no tape el buscador.
 (function () {
     try { if (window.self !== window.top) document.body.classList.add('en-iframe'); }
     catch (e) { document.body.classList.add('en-iframe'); }
@@ -1155,7 +1197,6 @@ let indiceProveedoresDesc = new Map();
 let proveedoresOrden = new Map();
 let productosUnificados = [];
 let seleccionActual = null;
-let stockLineaGlobal = {};
 let costosMatriz = new Map();
 
 // ========== COSTOS MATRIZ ==========
@@ -1169,14 +1210,13 @@ function conIVA(monto, impuestoPct) {
 
 // ========== CARGA GENERAL ==========
 async function cargarTodo(soloInventario) {
-    const [prod, sl, prov, costos] = await Promise.all([
+    const [prod, prov, costos] = await Promise.all([
         DB.articulos.cargar().catch(e => { console.warn('Error leyendo productos:', e); return []; }),
-        DB.stockLinea.cargar().catch(() => ({})),
         (soloInventario && proveedores.length) ? Promise.resolve(proveedores)
             : DB.proveedores.cargar().catch(e => { console.warn('Error leyendo proveedores:', e); return []; }),
         cargarCostos().catch(e => { console.warn('Error leyendo costos_matriz:', e); return costosMatriz; })
     ]);
-    productos = prod; stockLineaGlobal = sl; proveedores = prov; costosMatriz = costos;
+    productos = prod; proveedores = prov; costosMatriz = costos;
     reconstruirIndice();
 }
 
@@ -1314,17 +1354,14 @@ function esPedidoSucursalOK(item) {
 function calcularValores(item) {
     const indMatriz = item.stockEditado?.matriz || 0;
     const indSucursal = item.stockEditado?.sucursal || 0;
-    const linea = item.linea || 'Sin línea';
-    const stockMatriz = Math.max(indMatriz, stockLineaGlobal[linea]?.matriz || 0);
-    const stockSucursal = Math.max(indSucursal, stockLineaGlobal[linea]?.sucursal || 0);
     const ventasTotales = item.ventasMatriz + item.ventasSucursal;
 
     let invMatriz = item.ventasMatriz > 0 ? Math.ceil((item.ventasMatriz / 180) * 7) : 0;
     let invSucursal = item.ventasSucursal > 0 ? Math.ceil((item.ventasSucursal / 180) * 7) : 0;
     let rangoMatriz = ventasTotales >= 91 ? 3 : ventasTotales >= 61 ? 2 : ventasTotales >= 7 ? 1 : 0;
     let rangoSucursal = ventasTotales >= 91 ? 3 : ventasTotales >= 61 ? 2 : ventasTotales >= 21 ? 1 : 0;
-    const mayorMatriz = Math.max(invMatriz, stockMatriz, rangoMatriz);
-    const mayorSucursal = Math.max(invSucursal, stockSucursal, rangoSucursal);
+    const mayorMatriz = Math.max(invMatriz, indMatriz, rangoMatriz);
+    const mayorSucursal = Math.max(invSucursal, indSucursal, rangoSucursal);
 
     const rawAlmacen = item.existenciaAlmacen || 0;
     const rawMatriz = item.existenciaMatriz || 0;
@@ -1349,7 +1386,8 @@ function calcularValores(item) {
     if (esPedidoSucursalOK(item) && sinSurtidos && pedidoSucursal > 0) pedidoSucursalOk = pedidoSucursal;
 
     return {
-        stockMatriz, stockSucursal, invMatriz, invSucursal,
+        stockMatriz: indMatriz, stockSucursal: indSucursal,
+        invMatriz, invSucursal,
         rangoMatriz, rangoSucursal, mayorMatriz, mayorSucursal,
         pedidoAlmacen, pedidoMatriz, pedidoSucursal,
         surtidoAlmacenAMatriz, surtidoAlmacenASucursal, surtidoMatrizASucursal, surtidoSucursalAMatriz,
@@ -1364,7 +1402,6 @@ function analizarPedido(item, ubicacion) {
     const resultado = { pedido: pedidoOk, esPositivo: pedidoOk > 0, motivoPrincipal: '', desglose: [], motivos: [] };
 
     const ind = esMatriz ? (item.stockEditado?.matriz || 0) : (item.stockEditado?.sucursal || 0);
-    const stockLineaVal = stockLineaGlobal[item.linea]?.[ubicacion] || 0;
     const inv = esMatriz ? v.invMatriz : v.invSucursal;
     const rango = esMatriz ? v.rangoMatriz : v.rangoSucursal;
     const mayor = esMatriz ? v.mayorMatriz : v.mayorSucursal;
@@ -1372,7 +1409,6 @@ function analizarPedido(item, ubicacion) {
     resultado.desglose = [
         { label: 'Inv. ventas', valor: inv },
         { label: 'Stock art.', valor: ind },
-        { label: 'Stock línea', valor: stockLineaVal },
         { label: 'Rango ventas', valor: rango }
     ];
 
@@ -1380,7 +1416,6 @@ function analizarPedido(item, ubicacion) {
         const candidatos = [];
         if (inv === mayor && inv > 0) candidatos.push('inventario calculado por ventas (' + inv + ' pzas)');
         if (ind === mayor && ind > 0) candidatos.push('stock capturado del artículo (' + ind + ' pzas)');
-        if (stockLineaVal === mayor && stockLineaVal > 0) candidatos.push('stock asignado a la línea "' + abrevLinea(item.linea) + '" (' + stockLineaVal + ' pzas)');
         if (rango === mayor && rango > 0) candidatos.push('rango de ventas (' + rango + ')');
 
         if (candidatos.length === 0) {
@@ -1770,6 +1805,8 @@ function renderDetalle(item) {
                </div>
            </div>`;
 
+    const editorStock = soloProveedor ? '' : editorStockHTML(item);
+
     detailEl.innerHTML = `
         <div class="detail-header">
             <div class="detail-code-row">
@@ -1791,6 +1828,8 @@ function renderDetalle(item) {
             <div class="section-title"><span class="material-icons">inventory</span>Existencias</div>
             ${existenciasHTML}
         </div>
+
+        ${editorStock}
 
         <div class="detail-section">
             <div class="section-title"><span class="material-icons">trending_up</span>Ventas</div>
@@ -1852,6 +1891,139 @@ function showToast(msg, type = 'info', duration = 2600) {
     }, duration);
 }
 
+// ========== STOCK EDITABLE (artículo) ==========
+const normStock = v => Math.max(0, Math.floor(Number(v)) || 0);
+const UBIC_STOCK = [['almacen', 'warehouse', 'Almacén'], ['matriz', 'business', 'Matriz'], ['sucursal', 'storefront', 'Sucursal']];
+
+// Columnas de "articulos" que dependen del stock: [columna en Supabase, campo local / de calcularValores]
+const DERIVADOS = [
+    ['pedido_matriz_ok', 'pedidoMatrizOk'], ['pedido_sucursal_ok', 'pedidoSucursalOk'],
+    ['surtido_alm_mat', 'surtidoAlmacenAMatriz'], ['surtido_alm_suc', 'surtidoAlmacenASucursal'],
+    ['surtido_mat_suc', 'surtidoMatrizASucursal'], ['surtido_suc_mat', 'surtidoSucursalAMatriz']
+];
+const derivadosDe = v => Object.fromEntries(DERIVADOS.map(([col, k]) => [col, Number(v[k]) || 0]));
+const aplicarDerivados = (bin, v) => DERIVADOS.forEach(([, k]) => { bin[k] = Number(v[k]) || 0; });
+
+function camposStockHTML(vals) {
+    return '<div class="stock-edit">' + UBIC_STOCK.map(([k, icono, etiqueta]) => {
+        const v = normStock(vals && vals[k]);
+        return `<div class="stock-field">
+            <label><span class="material-icons">${icono}</span>${etiqueta}</label>
+            <input type="number" inputmode="numeric" min="0" step="1" data-ub="${k}" data-orig="${v}" value="${v}" aria-label="Stock ${etiqueta}">
+        </div>`;
+    }).join('') + '</div>';
+}
+
+function editorStockHTML(item) {
+    const art = item.stockEditado || {};
+    return `
+        <div class="detail-section" data-editor="articulo" data-codigo="${escapeAttr(item.codigo)}">
+            <div class="section-title"><span class="material-icons">edit_note</span>Stock del artículo</div>
+            ${camposStockHTML(art)}
+            <div class="stock-actions">
+                <span class="stock-hint">Piezas que debe haber en cada ubicación para este artículo.</span>
+                <button class="btn-primary" data-act="guardar" disabled>Guardar</button>
+            </div>
+        </div>`;
+}
+
+function leerCampos(box) {
+    const o = {};
+    box.querySelectorAll('input[data-ub]').forEach(i => { o[i.dataset.ub] = normStock(i.value); });
+    return o;
+}
+function actualizarSucio(box) {
+    let alguno = false;
+    box.querySelectorAll('input[data-ub]').forEach(i => {
+        const sucio = String(normStock(i.value)) !== i.dataset.orig;
+        i.closest('.stock-field').classList.toggle('dirty', sucio);
+        if (sucio) alguno = true;
+    });
+    const btn = box.querySelector('button[data-act]');
+    if (btn) btn.disabled = !alguno;
+}
+
+// Re-dibuja el detalle sin perder lo que el usuario está escribiendo
+function conservarEdicion(fn, excluir) {
+    const cont = document.getElementById('detailContent');
+    const top = cont.scrollTop;
+    const pendientes = [...cont.querySelectorAll('[data-editor]')]
+        .filter(b => b.dataset.editor !== excluir && b.querySelector('.stock-field.dirty'))
+        .map(b => ({ editor: b.dataset.editor, vals: leerCampos(b) }));
+    fn();
+    pendientes.forEach(g => {
+        const box = cont.querySelector(`[data-editor="${g.editor}"]`);
+        if (!box) return;
+        box.querySelectorAll('input[data-ub]').forEach(i => { i.value = g.vals[i.dataset.ub]; });
+        actualizarSucio(box);
+    });
+    cont.scrollTop = top;
+}
+
+function refrescarLista() {
+    const q = searchInput.value.trim();
+    renderLista(q ? buscar(q) : productosUnificados.slice(0, 50));
+}
+
+// ---- Guardar stock de UN artículo ----
+async function guardarStockArticulo(codigo, vals) {
+    const item = productosUnificados.find(p => String(p.codigo) === String(codigo));
+    if (!item || !item._binario) throw Object.assign(new Error('sin registro'), { amigable: 'Este artículo no existe en la tabla de artículos.' });
+    const bin = item._binario;
+    const previo = bin.stockEditado;
+    const nuevo = { almacen: vals.almacen, matriz: vals.matriz, sucursal: vals.sucursal };
+    bin.stockEditado = nuevo; item.stockEditado = nuevo;
+    try {
+        const v = calcularValores(item);
+        await DB.articulos.guardarStock(item.codigo, nuevo, derivadosDe(v));
+        aplicarDerivados(bin, v);
+    } catch (e) {
+        bin.stockEditado = previo; item.stockEditado = previo;
+        throw e;
+    }
+}
+
+// ---- Eventos del editor de stock ----
+function engancharEditores(cont) {
+    cont.addEventListener('input', e => {
+        if (!e.target.matches('input[data-ub]')) return;
+        actualizarSucio(e.target.closest('[data-editor]'));
+    });
+    cont.addEventListener('focusin', e => {
+        if (e.target.matches('input[data-ub]')) { try { e.target.select(); } catch (_) {} }
+    });
+    cont.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' || !e.target.matches('input[data-ub]')) return;
+        e.preventDefault();
+        const b = e.target.closest('[data-editor]').querySelector('button[data-act]');
+        if (b && !b.disabled) b.click();
+    });
+    cont.addEventListener('click', async e => {
+        const btn = e.target.closest('button[data-act]');
+        if (!btn || btn.disabled) return;
+        const box = btn.closest('[data-editor]');
+        const vals = leerCampos(box);
+        const texto = btn.textContent;
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+            await guardarStockArticulo(box.dataset.codigo, vals);
+        } catch (err) {
+            console.error('Error al guardar stock:', err);
+            showToast(err.amigable || 'No se pudo guardar el stock', 'danger', 4200);
+            btn.textContent = texto; btn.disabled = false;
+            return;
+        }
+        btn.textContent = texto;
+        refrescarLista();
+        if (seleccionActual && modalAbierto()) {
+            const f = productosUnificados.find(p => String(p.codigo) === seleccionActual);
+            if (f) conservarEdicion(() => renderDetalle(f), box.dataset.editor);
+        }
+        showToast('Stock guardado', 'success');
+    });
+}
+engancharEditores(document.getElementById('detailContent'));
+
 // ========== EVENTOS ==========
 const searchInput = document.getElementById('searchInput');
 const clearBtn = document.getElementById('clearSearch');
@@ -1898,8 +2070,6 @@ document.getElementById('btnRefresh').addEventListener('click', async () => {
 
 // ========== INIT ==========
 async function recargarDatos(forzarEsqueleto = false) {
-    // Mientras se leen los datos mostramos el esqueleto de la página,
-    // nunca un texto de "Cargando datos...".
     if (forzarEsqueleto || productosUnificados.length === 0) renderEsqueleto();
 
     try {
@@ -1968,7 +2138,7 @@ document.addEventListener('visibilitychange', () => {
                 renderLista(results);
                 if (seleccionActual && modalAbierto()) {
                     const found = productosUnificados.find(p => String(p.codigo) === seleccionActual);
-                    if (found) renderDetalle(found);
+                    if (found) conservarEdicion(() => renderDetalle(found));
                 }
             } else if (productosUnificados.length > 0) {
                 renderLista(productosUnificados.slice(0, 50));
