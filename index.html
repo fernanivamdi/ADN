@@ -546,6 +546,7 @@
         .tile-configuracion { --tono: #5A6B7D; }
         .tile-programacion  { --tono: #E0821E; }
         .tile-surtidos      { --tono: #D6336C; }
+        .tile-pedido        { --tono: #B8860B; }
 
         /* Módulos próximos */
         .tile-chico {
@@ -958,25 +959,33 @@
                     <span class="tile-detalle">Reparto y surtido de mercancía</span>
                 </span>
             </button>
+            <button class="tile tile-grande tile-pedido" type="button" data-modulo="pedido" style="--i:6">
+                <span class="tile-icono"><span class="material-icons" aria-hidden="true">shopping_bag</span></span>
+                <span class="tile-ir" aria-hidden="true"><span class="material-icons">chevron_right</span></span>
+                <span class="tile-texto">
+                    <span class="tile-etiqueta">Pedido</span>
+                    <span class="tile-detalle">Gestión de pedidos</span>
+                </span>
+            </button>
                     </div>
                 </section>
 
                 <section class="menu-seccion" aria-labelledby="tituloProximos">
                     <h2 class="menu-seccion-titulo" id="tituloProximos">Próximamente</h2>
                     <div class="menu-secundarios">
-            <button class="tile tile-chico" type="button" data-modulo="ventas" style="--i:6">
+            <button class="tile tile-chico" type="button" data-modulo="ventas" style="--i:7">
                 <span class="tile-icono"><span class="material-icons" aria-hidden="true">point_of_sale</span></span>
                 <span class="tile-etiqueta">Ventas</span>
             </button>
-            <button class="tile tile-chico" type="button" data-modulo="PEDIDOS" style="--i:7">
+            <button class="tile tile-chico" type="button" data-modulo="PEDIDOS" style="--i:8">
                 <span class="tile-icono"><span class="material-icons" aria-hidden="true">restaurant</span></span>
                 <span class="tile-etiqueta">Restaurante</span>
             </button>
-            <button class="tile tile-chico" type="button" data-modulo="aire" style="--i:8">
+            <button class="tile tile-chico" type="button" data-modulo="aire" style="--i:9">
                 <span class="tile-icono"><span class="material-icons" aria-hidden="true">smartphone</span></span>
                 <span class="tile-etiqueta">Tiempo aire y pago de servicios</span>
             </button>
-            <button class="tile tile-chico" type="button" data-modulo="facturacion" style="--i:9">
+            <button class="tile tile-chico" type="button" data-modulo="facturacion" style="--i:10">
                 <span class="tile-icono"><span class="material-icons" aria-hidden="true">receipt_long</span></span>
                 <span class="tile-etiqueta">Facturación electrónica</span>
             </button>
@@ -1053,7 +1062,8 @@
             articulos:     { pagina: 'articulos.html',      etiqueta: 'Artículos',     icono: 'medication' },
             configuracion: { pagina: 'configuracion.html',  etiqueta: 'Configuración', icono: 'settings' },
             programacion:  { pagina: 'programacion.html',   etiqueta: 'Programación',  icono: 'view_list' },
-            surtidos:      { pagina: 'surtidos.html',       etiqueta: 'Surtidos',      icono: 'local_shipping' }
+            surtidos:      { pagina: 'surtidos.html',       etiqueta: 'Surtidos',      icono: 'local_shipping' },
+            pedido:        { pagina: 'pedidos.html',        etiqueta: 'Pedido',        icono: 'shopping_bag' }
         };
 
         /* =============================================
@@ -1063,8 +1073,8 @@
            ============================================= */
         const PERMISOS_DEFAULT = {
             administrador: ['compras','inventario','articulos','configuracion',
-                            'programacion','surtidos','ventas','PEDIDOS','aire','facturacion'],
-            usuario:       ['compras','inventario','articulos','programacion','surtidos'],
+                            'programacion','surtidos','pedido','ventas','PEDIDOS','aire','facturacion'],
+            usuario:       ['compras','inventario','articulos','programacion','surtidos','pedido'],
             mostrador:     ['ventas']
         };
         const CLAVE_PERMISOS = 'adn_permisos_v1';

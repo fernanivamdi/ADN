@@ -413,8 +413,8 @@ btnRefrescar.addEventListener('click', cargarUsuarios);
 const CLAVE_PERMISOS = 'adn_permisos_v1';
 const PERMISOS_DEFAULT = {
   administrador: ['compras','inventario','articulos','configuracion',
-                  'programacion','surtidos','ventas','PEDIDOS','aire','facturacion'],
-  usuario:       ['compras','inventario','articulos','programacion','surtidos'],
+                  'programacion','surtidos','pedido','ventas','PEDIDOS','aire','facturacion'],
+  usuario:       ['compras','inventario','articulos','programacion','surtidos','pedido'],
   mostrador:     ['ventas']
 };
 const MODULOS_DISPONIBLES = [
@@ -424,6 +424,7 @@ const MODULOS_DISPONIBLES = [
   { clave:'configuracion', etiqueta:'Configuración',                  icono:'settings' },
   { clave:'programacion',  etiqueta:'Programación',                   icono:'view_list' },
   { clave:'surtidos',      etiqueta:'Surtidos',                       icono:'local_shipping' },
+  { clave:'pedido',        etiqueta:'Pedido',                         icono:'shopping_bag' },
   { clave:'ventas',        etiqueta:'Ventas',                         icono:'point_of_sale' },
   { clave:'PEDIDOS',       etiqueta:'Restaurante',                    icono:'restaurant' },
   { clave:'aire',          etiqueta:'Tiempo aire y pago de servicios',icono:'smartphone' },
