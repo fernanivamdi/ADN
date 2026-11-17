@@ -1110,6 +1110,32 @@ function escapeAttr(str) {
 function normTxt(s) {
     return String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
+// ========== VALIDACIÓN: CÓDIGO = SOLO NÚMEROS / DESCRIPCIÓN = TEXTO ==========
+// Código de barras: únicamente dígitos (acepta "123.0" que viene de Excel).
+function limpiarCodigo(v) {
+    if (v === null || v === undefined) return '';
+    let c = String(v).trim().replace(/\.0+$/, '');
+    return /^\d+$/.test(c) ? c : '';
+}
+// Descripción: debe tener al menos una letra.
+function esTexto(v) {
+    return /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(String(v ?? ''));
+}
+// Devuelve { codigo, descripcion } validados, o null si no hay un código numérico válido.
+// - Si código y descripción vienen intercambiados, los acomoda.
+// - A la descripción le quita números largos (8+ dígitos) que sean códigos de barras.
+function normalizarArticulo(codigoRaw, descRaw) {
+    let c = limpiarCodigo(codigoRaw);
+    let d = String(descRaw ?? '').trim();
+    if (!c) {
+        const alt = limpiarCodigo(descRaw);
+        if (alt && esTexto(codigoRaw)) { c = alt; d = String(codigoRaw).trim(); }
+    }
+    if (!c) return null;
+    d = d.replace(/\b\d{8,}\b/g, '').replace(/\s{2,}/g, ' ').trim();
+    if (!esTexto(d)) d = '';
+    return { codigo: c, descripcion: d };
+}
 function formatCurrency(amount) {
     const n = Number(amount) || 0;
     return '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1230,8 +1256,10 @@ function reconstruirIndice() {
         proveedoresOrden.set(p.nombre, i);
         if (!Array.isArray(p.productos)) return;
         p.productos.forEach(prod => {
-            if (!prod || prod.codigo === undefined || prod.codigo === null) return;
-            const key = String(prod.codigo);
+            if (!prod) return;
+            const norm = normalizarArticulo(prod.codigo, prod.descripcion);
+            if (!norm) return;                 // código no numérico: se ignora
+            const key = norm.codigo;
 
             if (!indiceProveedores.has(key)) indiceProveedores.set(key, []);
             indiceProveedores.get(key).push({
@@ -1242,7 +1270,7 @@ function reconstruirIndice() {
                 activarStock: !!p.activarStock
             });
 
-            const desc = String(prod.descripcion || '').trim();
+            const desc = norm.descripcion;
             if (desc) {
                 const existing = indiceProveedoresDesc.get(key);
                 if (!existing || desc.length > existing.length) {
@@ -1258,11 +1286,15 @@ function reconstruirIndice() {
 function construirProductosUnificados() {
     const mapa = new Map();
 
+    let descartados = 0;
     for (const p of productos) {
-        const key = String(p.codigo);
+        const norm = normalizarArticulo(p.codigo, p.articulo);
+        if (!norm) { descartados++; continue; }   // sin código numérico válido
+        const key = norm.codigo;
         mapa.set(key, {
-            codigo: p.codigo,
-            articulo: p.articulo || '',
+            codigo: norm.codigo,
+            codigoDB: p.codigo,                    // valor original para guardar en la BD
+            articulo: norm.descripcion,
             linea: p.linea || '',
             marca: p.marca || '',
             ubicacion: p.ubicacion || '',
@@ -1280,6 +1312,8 @@ function construirProductosUnificados() {
             existeEnBinario: true
         });
     }
+
+    if (descartados) console.warn(`${descartados} artículo(s) ignorados por no tener código de barras numérico`);
 
     for (const [codigo, ops] of indiceProveedores.entries()) {
         if (mapa.has(codigo)) continue;
@@ -1975,7 +2009,7 @@ async function guardarStockArticulo(codigo, vals) {
     bin.stockEditado = nuevo; item.stockEditado = nuevo;
     try {
         const v = calcularValores(item);
-        await DB.articulos.guardarStock(item.codigo, nuevo, derivadosDe(v));
+        await DB.articulos.guardarStock(item.codigoDB ?? item.codigo, nuevo, derivadosDe(v));
         aplicarDerivados(bin, v);
     } catch (e) {
         bin.stockEditado = previo; item.stockEditado = previo;
